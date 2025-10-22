@@ -14,7 +14,6 @@ const games = [
   { title:"Asteroids", "html-link":"game/asteroids/", "obg-track-link":"" },
   { title:"Dino", "html-link":"game/dino/", "obg-track-link":"" },
   { title:"DinoGame++", "html-link":"game/dinoplusplus/", "obg-track-link":"" },
-  { title:"Dino 3D", "html-link":"game/dino3d/", "obg-track-link":"" },
   { title:"2048", "html-link":"game/2048/", "obg-track-link":"" },
   { title:"ASCII Space", "html-link":"game/asciispace", "obg-track-link":"" },
   { title:"Terraria (broken, fixing)", "html-link":"game/terraria", "obg-track-link":"" },
