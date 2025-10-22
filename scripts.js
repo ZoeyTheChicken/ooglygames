@@ -24,8 +24,8 @@ const games = [
   { title:"Henry Stickman: Fleeing the Complex", "html-link":"game/ftc", "obg-track-link":"" },
   { title:"Henry Stickman: Infiltrating the Airship", "html-link":"game/ita", "obg-track-link":"" },
   { title:"Henry Stickman: Stealing the Diamond", "html-link":"game/stealingthediamond", "obg-track-link":"" },
-  { title:"Cookie Clicker", "html-link":"game/cookieworking", "obg-track-link":"" },
-  { title:"Drift Boss", "html-link":"game/", "obg-track-link":"" },
+  { title:"Cookie Clicker", "html-link":"game/index.html", "obg-track-link":"" },
+  { title:"Drift Boss", "html-link":"game/driftboss", "obg-track-link":"" },
   { title:"Snake.io", "html-link":"game/snakeio", "obg-track-link":"" },
   { title:"Drift Hunters", "html-link":"game/drifthunters", "obg-track-link":"" },
 ];
