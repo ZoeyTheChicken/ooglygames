@@ -5,7 +5,7 @@ document.getElementById('toggleDark').addEventListener('click', () => {
 
 // Game list
 const games = [
-  { title:"Report an issue", "html-link":"/help", "obg-track-link":""},
+  { title:"Report an issue", "html-link":"./help", "obg-track-link":""},
   { title:"______________________________",},
   { title:"Minecraft 1.12.2", "html-link":"game/eagler1122w/", "obg-track-link":"" },
   { title:"Minecraft 1.8.8", "html-link":"game/eagler188w/", "obg-track-link":"" },
