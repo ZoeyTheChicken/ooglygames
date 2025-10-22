@@ -1,80 +1,111 @@
-// ad-nuke.js — remove Google ads and any node containing "^ Sponsored link ^"
-// Place this BEFORE the game's main JS so it runs early.
+// ad-kong-playsaurus-nuke.js — aggressive ad + kong + playsaurus remover
+// Place this BEFORE the game's main JS. Highly aggressive: removes nodes containing "sponsored" or "playsaurus"
+// and blocks ad / kong / playsaurus network requests & injected scripts/iframes.
 
 (function () {
   'use strict';
 
   const SILENT = false;
-  const AUTO_CLEAN_MS = 2500; // periodic sweep
-  const AD_DOMAINS = [
+  const AUTO_CLEAN_MS = 2500;
+
+  // domains / substrings to block on network & element src/href
+  const BLOCK_DOMAINS = [
+    // Google ad stuff
     'googlesyndication.com',
-    'adsbygoogle.js',
     'pagead2.googlesyndication',
+    'adsbygoogle',
     'doubleclick.net',
     'googleadservices.com',
-    'adservice.google.com',
     'adservice.google',
-    'ads.google.com',
     'googleads.g.doubleclick.net',
-    'securepubads.g.doubleclick.net'
+    'securepubads.g.doubleclick.net',
+    // Kong-like
+    'kongregate.com',
+    'kongcdn.com',
+    'cdn.kongregate',
+    'kong-static',
+    // Playsaurus (games devs like to hide stuff under multiple hosts)
+    'playsaurus',
+    'playsaurus.com',
+    'play-saurus',
+    // optional extras
+    'adservice',
+    'ads.',
+    'adserver'
   ];
 
-  function log(...a) { if (!SILENT) console.info('[ad-nuke]', ...a); }
+  function log(...args) { if (!SILENT) console.info('[nuke]', ...args); }
 
-  function isAdUrl(url) {
-    if (!url) return false;
+  function urlMatchesBlocked(u) {
+    if (!u) return false;
     try {
-      const s = String(url).toLowerCase();
-      return AD_DOMAINS.some(d => d && s.includes(d));
+      const s = String(u).toLowerCase();
+      return BLOCK_DOMAINS.some(d => d && s.includes(d));
     } catch (e) { return false; }
   }
 
-  // --- 1) Stub common ad globals so code won't throw ---
+  // ---------- defensive stubs ----------
   try {
-    // adsbygoogle global array pattern: window.adsbygoogle = window.adsbygoogle || [];
     if (!window.adsbygoogle) {
       window.adsbygoogle = [];
       window.adsbygoogle.push = function () { /* noop */ };
     } else {
-      // ensure push exists and is safe
       window.adsbygoogle.push = window.adsbygoogle.push || function () {};
     }
   } catch (e) {}
 
-  // some ad libs call googletag, define minimal stub
   try {
     window.googletag = window.googletag || {};
     window.googletag.cmd = window.googletag.cmd || [];
-    if (!window.googletag.pubads) {
-      window.googletag.pubads = function () { return { enableSingleRequest: () => {}, enableAsyncRendering: () => {} }; };
+    window.googletag.pubads = window.googletag.pubads || function () { return { enableSingleRequest: ()=>{}, enableAsyncRendering: ()=>{} }; };
+  } catch (e) {}
+
+  // kong/playsaurus defensive API stubs
+  try {
+    if (!window.kongregateAPI) {
+      window.kongregateAPI = {
+        loadAPI: function (cb) { try { if (typeof cb === 'function') cb(window.kongregateAPI); } catch(e){} return { then: f => { try { f(window.kongregateAPI); } catch(e){} } }; },
+        services: { stats: { submit: ()=>{} }, payments: { purchaseItem: ()=>Promise.resolve({ success: false }) } },
+        getAPI: function () { return window.kongregateAPI; }
+      };
+      log('stubbed kongregateAPI');
     }
   } catch (e) {}
 
-  // --- 2) override fetch/XHR/Beacon to short-circuit ad domain requests ---
-  (function overrideNetwork() {
-    const _fetch = window.fetch;
-    window.fetch = function (input, init) {
-      try {
-        const url = typeof input === 'string' ? input : (input && input.url);
-        if (isAdUrl(url)) {
-          log('blocked fetch to ad url', url);
-          return Promise.resolve(new Response(null, { status: 204, statusText: 'Blocked by ad-nuke' }));
-        }
-      } catch (e) {}
-      return _fetch.apply(this, arguments);
-    };
+  try {
+    if (!window.playsaurus) {
+      window.playsaurus = { analytics: {}, ads: {} };
+      log('stubbed playsaurus global');
+    }
+  } catch (e) {}
+
+  // ---------- network blocking: fetch / XHR / beacon ----------
+  (function () {
+    const nativeFetch = window.fetch;
+    if (nativeFetch) {
+      window.fetch = function (input, init) {
+        try {
+          const url = typeof input === 'string' ? input : (input && input.url);
+          if (urlMatchesBlocked(url)) {
+            log('blocked fetch', url);
+            return Promise.resolve(new Response(null, { status: 204, statusText: 'Blocked' }));
+          }
+        } catch (e) {}
+        return nativeFetch.apply(this, arguments);
+      };
+    }
 
     const origOpen = XMLHttpRequest.prototype.open;
     const origSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.open = function (method, url) {
       try {
-        this._adNukeBlocked = isAdUrl(url);
-        if (this._adNukeBlocked) log('marked XHR blocked', url);
-      } catch (e) { this._adNukeBlocked = false; }
+        this._nukeBlocked = urlMatchesBlocked(url);
+        if (this._nukeBlocked) log('marked XHR blocked', url);
+      } catch (e) { this._nukeBlocked = false; }
       return origOpen.apply(this, arguments);
     };
     XMLHttpRequest.prototype.send = function () {
-      if (this._adNukeBlocked) {
+      if (this._nukeBlocked) {
         try { this.abort && this.abort(); this.dispatchEvent && this.dispatchEvent(new Event('loadend')); } catch (e) {}
         return;
       }
@@ -84,33 +115,40 @@
     if (navigator.sendBeacon) {
       const nativeBeacon = navigator.sendBeacon.bind(navigator);
       navigator.sendBeacon = function (url, data) {
-        try { if (isAdUrl(url)) { log('blocked beacon', url); return true; } } catch (e) {}
+        try { if (urlMatchesBlocked(url)) { log('blocked beacon', url); return true; } } catch (e) {}
         return nativeBeacon.apply(this, arguments);
       };
     }
   })();
 
-  // --- 3) block script/iframe/link insertion and createElement src protection ---
-  (function protectDOM() {
+  // ---------- DOM insertion protections ----------
+  (function () {
     const origCreate = Document.prototype.createElement;
-    Document.prototype.createElement = function (tagName, options) {
-      const el = origCreate.call(this, tagName, options);
+    Document.prototype.createElement = function (tagName, opts) {
+      const el = origCreate.call(this, tagName, opts);
       try {
-        const tag = (tagName || '').toLowerCase();
-        if (tag === 'script' || tag === 'iframe' || tag === 'link') {
-          // define setter interception for src/href/data-src to refuse ad URLs
-          const setSrc = function (v) {
-            try {
-              if (isAdUrl(v)) { log('blocked set src on', tag, v); return; }
-            } catch (e) {}
-            try {
-              if (tag === 'link') this.setAttribute('href', v);
-              else this.setAttribute('src', v);
-            } catch (e) {}
-          };
+        const t = (tagName||'').toLowerCase();
+        if (t === 'script' || t === 'iframe' || t === 'link' || t === 'img') {
+          // intercept src/href setters
           try {
-            Object.defineProperty(el, 'src', { set: setSrc, get: function () { return this.getAttribute('src'); }, configurable: true });
-            Object.defineProperty(el, 'href', { set: setSrc, get: function () { return this.getAttribute('href'); }, configurable: true });
+            Object.defineProperty(el, 'src', {
+              set(v) {
+                try { if (urlMatchesBlocked(v)) { log('blocked src set', v); return; } } catch (e) {}
+                try { this.setAttribute('src', v); } catch (e) {}
+              },
+              get() { return this.getAttribute && this.getAttribute('src'); },
+              configurable: true
+            });
+          } catch (e) {}
+          try {
+            Object.defineProperty(el, 'href', {
+              set(v) {
+                try { if (urlMatchesBlocked(v)) { log('blocked href set', v); return; } } catch (e) {}
+                try { this.setAttribute('href', v); } catch (e) {}
+              },
+              get() { return this.getAttribute && this.getAttribute('href'); },
+              configurable: true
+            });
           } catch (e) {}
         }
       } catch (e) {}
@@ -122,9 +160,9 @@
       try {
         if (node && node.tagName) {
           const t = node.tagName.toLowerCase();
-          const src = node.src || node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src'));
-          if ((t === 'script' || t === 'iframe' || t === 'link') && isAdUrl(src)) {
-            log('blocked appendChild for ad node', src);
+          const src = node.src || (node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src')));
+          if ((t === 'script' || t === 'iframe' || t === 'link' || t === 'img') && urlMatchesBlocked(src)) {
+            log('blocked appendChild for blocked node', src);
             return node;
           }
         }
@@ -132,29 +170,29 @@
       return origAppend.call(this, node);
     };
 
-    const origInsert = Node.prototype.insertBefore;
+    const origInsertBefore = Node.prototype.insertBefore;
     Node.prototype.insertBefore = function (node, ref) {
       try {
         if (node && node.tagName) {
           const t = node.tagName.toLowerCase();
-          const src = node.src || node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src'));
-          if ((t === 'script' || t === 'iframe' || t === 'link') && isAdUrl(src)) {
-            log('blocked insertBefore for ad node', src);
+          const src = node.src || (node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src')));
+          if ((t === 'script' || t === 'iframe' || t === 'link' || t === 'img') && urlMatchesBlocked(src)) {
+            log('blocked insertBefore for blocked node', src);
             return node;
           }
         }
       } catch (e) {}
-      return origInsert.call(this, node, ref);
+      return origInsertBefore.call(this, node, ref);
     };
   })();
 
-  // --- 4) Block document.write that injects ad content ---
-  (function protectWrite() {
+  // block document.write that injects blocked content
+  (function () {
     const origWrite = Document.prototype.write;
     Document.prototype.write = function (str) {
       try {
-        if (typeof str === 'string' && AD_DOMAINS.some(d => str.toLowerCase().includes(d))) {
-          log('blocked document.write that contained ad domain');
+        if (typeof str === 'string' && BLOCK_DOMAINS.some(d => str.toLowerCase().includes(d))) {
+          log('blocked document.write containing blocked domain');
           return;
         }
       } catch (e) {}
@@ -162,143 +200,119 @@
     };
   })();
 
-  // --- 5) Remove nodes with the exact-looking "Sponsored link" text and ad nodes ---
-  const sponsoredRegex = /^\s*\^\s*Sponsored\s+link\s*\^\s*$/i; // matches lines like: ^ Sponsored link ^
-  function removeSponsoredNodes(root) {
+  // tame innerHTML setter to avoid wholesale injections containing blocked domains or "sponsored"/"playsaurus"
+  (function () {
     try {
-      // search for nodes that directly contain the pattern as a full text node or as trimmed innerText line
-      const walker = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT, null, false);
-      const toRemove = new Set();
-      let n;
-      while (n = walker.nextNode()) {
-        const txt = n.nodeValue && String(n.nodeValue).trim();
-        if (!txt) continue;
-        // test each line inside the text node in case it's multi-line
-        const lines = txt.split(/\r?\n/).map(s => s.trim());
-        for (const line of lines) {
-          if (sponsoredRegex.test(line)) {
-            // mark the parent element for removal (or the node if safe)
-            const parent = n.parentElement || n.parentNode;
-            if (parent) toRemove.add(parent);
+      const prop = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML') || Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML');
+      if (prop && prop.set) {
+        const origSetter = prop.set;
+        Object.defineProperty(Element.prototype, 'innerHTML', {
+          set: function (val) {
+            try {
+              if (typeof val === 'string') {
+                const v = val.toLowerCase();
+                if (BLOCK_DOMAINS.some(d => v.includes(d)) || v.includes('sponsored') || v.includes('playsaurus')) {
+                  log('blocked innerHTML containing blocked content');
+                  return;
+                }
+              }
+            } catch (e) {}
+            return origSetter.call(this, val);
           }
-        }
-      }
-      // Also do a broader scan: any element whose visible innerText contains the phrase
-      const els = (root || document.body).querySelectorAll('*');
-      for (const el of els) {
-        try {
-          const it = (el.innerText || '').split(/\r?\n/).map(s => s.trim());
-          for (const line of it) {
-            if (sponsoredRegex.test(line)) {
-              toRemove.add(el);
-              break;
-            }
-          }
-        } catch (e) {}
-      }
-      // perform removals
-      for (const el of toRemove) {
-        try {
-          log('removed sponsored node:', el.tagName, el.className || '');
-          el.parentNode && el.parentNode.removeChild(el);
-        } catch (e) {}
+        });
       }
     } catch (e) {}
+  })();
+
+  // ---------- remove nodes containing "sponsored" / "playsaurus" / "sponsored" + "link" ----------
+  const sponsoredRegexLine = /\bsponsored\b/i;
+  const playsaurusRegex = /\bplaysaurus\b/i;
+  const sponsoredAndLinkRegex = /\bsponsored\b.*\blink\b|\blink\b.*\bsponsored\b/i;
+
+  function shouldRemoveElement(el) {
+    try {
+      if (!el) return false;
+      // text content check
+      const txt = (el.innerText || el.textContent || '').trim().toLowerCase();
+      if (!txt) return false;
+      if (sponsoredRegexLine.test(txt) || playsaurusRegex.test(txt)) return true;
+      if (sponsoredAndLinkRegex.test(txt)) return true;
+      // aria/title attributes
+      const aria = (el.getAttribute && (el.getAttribute('aria-label') || el.getAttribute('title') || '')) || '';
+      if (aria && (sponsoredRegexLine.test(aria) || playsaurusRegex.test(aria) || sponsoredAndLinkRegex.test(aria))) return true;
+      return false;
+    } catch (e) { return false; }
   }
 
-  // --- 6) sweep function to remove ad nodes and scripts that slipped through ---
-  function sweepAds(root) {
+  function sweepAndRemove(root) {
     try {
-      // remove scripts/iframes/links whose src/href look ad-like
-      const all = (root || document).querySelectorAll('script[src], iframe[src], link[href], img[src]');
+      const rootEl = root || document;
+      // remove ad/blocked element sources
+      const nodes = rootEl.querySelectorAll('script[src], iframe[src], link[href], img[src], [data-ad], .adsbygoogle, [data-ad-client], [data-ad-slot]');
+      for (const n of nodes) {
+        try {
+          const src = n.src || n.getAttribute('src') || n.getAttribute('href') || '';
+          if (urlMatchesBlocked(src)) { log('removed blocked src element', src); n.parentNode && n.parentNode.removeChild(n); continue; }
+          // crude class removal for ad classes
+          const cls = (n.className || '').toString().toLowerCase();
+          if (cls.includes('adsbygoogle') || cls.includes('ad-') || cls.includes('adslot') || cls.includes('google-ad')) {
+            log('removed element by ad-class', n.tagName, n.className); n.parentNode && n.parentNode.removeChild(n); continue;
+          }
+        } catch (e) {}
+      }
+
+      // remove nodes with sponsored/playsaurus text
+      const all = rootEl.querySelectorAll('*');
       for (const el of all) {
         try {
-          const src = el.src || el.getAttribute('src') || el.getAttribute('href') || '';
-          if (isAdUrl(src)) {
-            log('removed ad element', el.tagName, src);
-            el.parentNode && el.parentNode.removeChild(el);
-            continue;
-          }
-          // remove typical google ad attributes e.g. class="adsbygoogle"
-          const cls = (el.className || '').toString().toLowerCase();
-          if (cls.includes('adsbygoogle') || cls.includes('ad') || cls.includes('google-ad')) {
-            // be conservative: if element contains ad-related class and small size, remove
-            log('removed ad-like element by class', el.tagName, el.className);
+          if (shouldRemoveElement(el)) {
+            log('removed element by text match', el.tagName, (el.className||'').toString().slice(0,60));
             el.parentNode && el.parentNode.removeChild(el);
           }
         } catch (e) {}
       }
-
-      // remove elements with data-ad-* attributes
-      const dataAdEls = (root || document).querySelectorAll('[data-ad], [data-ad-client], [data-ad-slot]');
-      for (const el of dataAdEls) {
-        try { log('removed data-ad element', el.tagName); el.parentNode && el.parentNode.removeChild(el); } catch (e) {}
-      }
-
-      // remove inline ad placeholders like ins.adsbygoogle
-      const insEls = (root || document).querySelectorAll('ins.adsbygoogle, .adsbygoogle');
-      for (const el of insEls) {
-        try { log('removed ins.adsbygoogle'); el.parentNode && el.parentNode.removeChild(el); } catch (e) {}
-      }
-
-      // remove elements with aria-label or title that look like 'Sponsored'
-      const possible = (root || document).querySelectorAll('[aria-label], [title]');
-      for (const el of possible) {
-        try {
-          const label = (el.getAttribute('aria-label') || el.getAttribute('title') || '').toLowerCase();
-          if (label.includes('sponsored') || label.includes('sponsored link')) {
-            log('removed element by aria/title sponsored', el.tagName);
-            el.parentNode && el.parentNode.removeChild(el);
-          }
-        } catch (e) {}
-      }
-
-      // finally remove nodes containing the explicit sponsored text
-      removeSponsoredNodes(root || document.body);
     } catch (e) {}
   }
 
-  // initial sweep as soon as DOM exists
+  // initial sweep
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { sweepAds(document); });
+    document.addEventListener('DOMContentLoaded', () => sweepAndRemove(document));
   } else {
-    sweepAds(document);
+    sweepAndRemove(document);
   }
 
-  // MutationObserver to react to dynamically added ad nodes
-  const mo = new MutationObserver(muts => {
-    for (const m of muts) {
-      try {
-        // check added nodes subtree quickly
-        for (const n of m.addedNodes) {
-          try {
-            if (!n) continue;
-            if (n.nodeType === 3) { // text node
-              const text = (n.nodeValue || '').trim();
-              if (text && sponsoredRegex.test(text)) {
-                const p = n.parentElement || n.parentNode;
-                try { p && p.parentNode && p.parentNode.removeChild(p); log('MO removed sponsored text'); } catch (e) {}
-              }
-              continue;
+  // MutationObserver to catch dynamic insertions
+  const mo = new MutationObserver(mutations => {
+    for (const m of mutations) {
+      for (const n of m.addedNodes) {
+        try {
+          if (!n) continue;
+          if (n.nodeType === 3) { // text node
+            const t = (n.nodeValue||'').trim();
+            if (t && (sponsoredRegexLine.test(t) || playsaurusRegex.test(t) || sponsoredAndLinkRegex.test(t))) {
+              const p = n.parentNode; try { p && p.parentNode && p.parentNode.removeChild(p); log('MO removed text node parent'); } catch(e) {}
             }
-            // if element node, sweep its subtree
-            sweepAds(n);
-          } catch (e) {}
-        }
-      } catch (e) {}
+            continue;
+          }
+          // sweep subtree
+          sweepAndRemove(n);
+        } catch (e) {}
+      }
     }
   });
+
   try { mo.observe(document.documentElement || document, { childList: true, subtree: true }); } catch (e) {}
 
-  // periodic aggressive sweep in case something sneaks through
-  const periodic = setInterval(() => { try { sweepAds(document); } catch (e) {} }, AUTO_CLEAN_MS);
+  // periodic sweep
+  const periodic = setInterval(() => { try { sweepAndRemove(document); } catch (e) {} }, AUTO_CLEAN_MS);
 
-  // runtime API
-  window.__adNuke = {
-    addAdDomain(d) { try { AD_DOMAINS.push(d.toLowerCase()); log('ad domain added', d); } catch (e) {} },
-    stop() { try { mo.disconnect(); clearInterval(periodic); log('ad-nuke stopped'); } catch (e) {} },
-    sweep: () => sweepAds(document)
+  // runtime controls
+  window.__nuke = {
+    addBlockedDomain(d) { try { BLOCK_DOMAINS.push(d.toLowerCase()); log('added blocked domain', d); } catch (e) {} },
+    listBlocked() { return BLOCK_DOMAINS.slice(); },
+    stop() { try { mo.disconnect(); clearInterval(periodic); log('stopped nuke'); } catch (e) {} },
+    sweep() { try { sweepAndRemove(document); } catch (e) {} }
   };
 
-  log('ad-nuke active — blocking Google ad domains and removing "Sponsored link" nodes.');
+  log('ad-kong-playsaurus-nuke active — removing nodes with "sponsored" or "playsaurus" and blocking ad domains.');
 })();
