@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Chrome Dino 3D - A 3D version of the popular Chrome offline dinosaur game">
+	<meta name="keywords" content="Chrome Dino, T-Rex, dinosaur game, 3D game, offline game">
+	<meta http-equiv="origin-trial" content="AzLxaQdE9+2XOU3GxizhX1YNafReKyQRK7x6hkWNIkFppJ0aTCZDETgvSZSpCd0eFY0ZvRW1OMxC/noyYo/EEAoAAACHeyJvcmlnaW4iOiJodHRwczovL2Rpbm8uYWRkeS5pZTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+
+	<title>Chrome Dino 3D</title>
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="css/style.min.css?patch=3x1">
+
+	<!-- Preload -->
+	<link rel="preload" as="image" href="media/repeat.png" />
+	<link rel="preload" as="image" href="media/preloader-dino.png">
+	<link rel="preload" as="image" href="media/3d-title.png">
+
+</head>
+
+<body>
+
+	<div id="preloader">
+		<div class="progress">
+			<div class="chart">
+				<div id="game-load-progress" class="bar lime bar-0">
+					<div class="face top">
+						<div class="growing-bar"></div>
+					</div>
+					<div class="face side-0">
+						<div class="growing-bar"></div>
+					</div>
+					<div class="face floor">
+						<div class="growing-bar"></div>
+					</div>
+					<div class="face side-a"></div>
+					<div class="face side-b"></div>
+					<div class="face side-1">
+						<div class="growing-bar"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="chrome-no-internet">
+		<div class="poster"></div>
+		<h1 data-translate="no-internet-title">No Internet Connection</h1>
+		<div class="info">
+			<p data-translate="try-following">Try the following:</p>
+			<ul>
+				<li data-translate="check-network">Check your network cables, modem, and router.</li>
+				<li data-translate="reconnect-wifi">Reconnect to your Wi-Fi network.</li>
+				<li id="game-start" class="hidden" data-translate="start-game">&laquo;Start Game&raquo;</li>
+			</ul>
+			<small>ERR_LOADING_ASSETS</small>
+			<small id="game-load-progress">0%</small>
+		</div>
+	</div>
+
+	<div id="game-restart" class="hidden">
+		<h1 data-translate="game-over">GAME OVER</h1>
+		<img src="media/repeat.png">
+	</div>
+
+	<div id="language-selector">
+		<div>
+			<label for="language-select" data-translate="language-label">Language:</label>
+			<select id="language-select">
+				<option value="en">English</option>
+				<option value="es">Español</option>
+				<option value="ru">Русский</option>
+				<option value="ja">日本語</option>
+				<option value="zh">中文</option>
+				<option value="hi">हिन्दी</option>
+			</select>
+		</div>
+		<div id="translation-status"></div>
+	</div>
+
+	<div id="recent-scores" class="hidden">
+		<h1 data-translate="recent-game-text">Recent Games</h1>
+		<div id="recent-scores-list">
+		</div>
+	</div>
+
+	<div id="ai-feedback" class="hidden">
+		<h1 data-translate="ai-game-summary">AI Game Summary</h1>
+		<div id="ai-feedback-wrapper">
+			<p id="ai-feedback-text" data-translate="ai-feedback-content"></p>
+		</div>
+		<p id="llm-type"></p>
+	</div>
+
+	<script src="libs/three/three.min.js"></script>
+	<script src="libs/three/controls/OrbitControls.js"></script>
+	<!-- <script src="libs/three/helpers/CameraHelper.js"></script> -->
+	<script src="libs/three/loaders/OBJLoader.js"></script>
+	<script src="libs/vox/vox.min.js"></script>
+
+	<!-- Shaders & Postprocessing -->
+	<script src="libs/three/postprocessing/EffectComposer.js"></script>
+	<script src="libs/three/postprocessing/RenderPass.js"></script>
+	<script src="libs/three/postprocessing/ShaderPass.js"></script>
+	<script src="libs/three/shaders/CopyShader.js"></script>
+	<script src="libs/three/shaders/ConvolutionShader.js"></script>
+	<script src="libs/three/postprocessing/SAOPass.js"></script>
+	<script src="libs/three/shaders/SAOShader.js"></script>
+	<script src="libs/three/shaders/DepthLimitedBlurShader.js"></script>
+	<script src="libs/three/shaders/UnpackDepthRGBAShader.js"></script>
+
+	<script src="libs/nebula/three-nebula.js"></script>
+	<script src="libs/howler/howler.min.js"></script>
+
+	<script src="libs/visibly/visibly.js"></script>
+	<script src="js/config-high.js?patch=3x1"></script>
+	<script type="module" src="js/build.js"></script>
+
+</body>
+
+</html>
