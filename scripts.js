@@ -17,7 +17,7 @@ const games = [
   { title:"Dino 3D", "html-link":"game/dino3d/", "obg-track-link":"" },
   { title:"2048", "html-link":"game/2048/", "obg-track-link":"" },
   { title:"ASCII Space", "html-link":"game/asciispace", "obg-track-link":"" },
-  { title:"Terraria", "html-link":"game/terraria", "obg-track-link":"" },
+  { title:"Terraria (broken, fixing)", "html-link":"game/terraria", "obg-track-link":"" },
   { title:"Henry Stickman: Breaking the Bank", "html-link":"game/btb", "obg-track-link":"" },
   { title:"Henry Stickman: Escaping the Prison", "html-link":"game/etp", "obg-track-link":"" },
   { title:"Henry Stickman: Crossing the Pit", "html-link":"game/fctp", "obg-track-link":"" },
