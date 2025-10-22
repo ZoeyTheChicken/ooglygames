@@ -28,6 +28,7 @@
     'playsaurus',
     'playsaurus.com',
     'play-saurus',
+    'playsaurusstats.com',
     // optional extras
     'adservice',
     'ads.',
