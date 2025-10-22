@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Oogly Boogly Emulator</title>
+  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #game {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+
+  <script>
+    async function goFull() {
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      }
+    }
+
+    window.addEventListener("load", async () => {
+      await goFull(); // try to auto fullscreen immediately
+      window.RufflePlayer = window.RufflePlayer || {};
+      const ruffle = window.RufflePlayer.newest();
+      const player = ruffle.createPlayer();
+      document.getElementById("game").appendChild(player);
+      player.load("../game/hsmc/flash_crossingthepit.swf");
+    });
+  </script>
+</body>
+</html>
