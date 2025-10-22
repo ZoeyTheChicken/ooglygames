@@ -1,178 +1,130 @@
-// kong-nuke.js — aggressive Kongregate/ad network blocker + defensive stubs
-// Place this BEFORE the game's main JS. Designed to be robust and low-noise.
-// WARNING: This blocks domains by substring. Do not add PlayFab domains to BLOCK_DOMAINS.
+// ad-nuke.js — remove Google ads and any node containing "^ Sponsored link ^"
+// Place this BEFORE the game's main JS so it runs early.
 
 (function () {
   'use strict';
 
-  // ========== CONFIG ==========
-  const SILENT = false; // true = minimize console noise
-  const AUTO_CLEAN_MS = 3000; // periodic sweep interval (ms)
-  const BLOCK_DOMAINS = [
-    'kongregate.com',
-    'kongcdn.com',
-    'cdn.kongregate',
-    'kong-static',
-    'kongregate',
-    'playigame', // example extras if needed; you can extend at runtime
+  const SILENT = false;
+  const AUTO_CLEAN_MS = 2500; // periodic sweep
+  const AD_DOMAINS = [
+    'googlesyndication.com',
+    'adsbygoogle.js',
+    'pagead2.googlesyndication',
+    'doubleclick.net',
+    'googleadservices.com',
+    'adservice.google.com',
+    'adservice.google',
+    'ads.google.com',
+    'googleads.g.doubleclick.net',
+    'securepubads.g.doubleclick.net'
   ];
 
-  function log(...args) { if (!SILENT) console.info('[kong-nuke]', ...args); }
+  function log(...a) { if (!SILENT) console.info('[ad-nuke]', ...a); }
 
-  function isBlockedUrl(url) {
+  function isAdUrl(url) {
     if (!url) return false;
     try {
       const s = String(url).toLowerCase();
-      return BLOCK_DOMAINS.some(d => d && s.includes(d));
-    } catch (e) {
-      return false;
-    }
+      return AD_DOMAINS.some(d => d && s.includes(d));
+    } catch (e) { return false; }
   }
 
-  // ========= Defensive API stubs =========
-  (function setupStubs() {
-    // Full defensive kongregateAPI and kongregate objects
-    const fakeServices = {
-      stats: { submit: () => {} },
-      payments: { purchaseItem: () => Promise.resolve({ success: false }) },
-      privileges: {},
-      chat: {},
-    };
-
-    if (!window.kongregateAPI) {
-      window.kongregateAPI = {
-        loadAPI: function (cb) {
-          try { if (typeof cb === 'function') cb(window.kongregateAPI); } catch (e) {}
-          return { then: function (f) { try { f(window.kongregateAPI); } catch (e) {} } };
-        },
-        services: fakeServices,
-        getAPI: function () { return window.kongregateAPI; }
-      };
+  // --- 1) Stub common ad globals so code won't throw ---
+  try {
+    // adsbygoogle global array pattern: window.adsbygoogle = window.adsbygoogle || [];
+    if (!window.adsbygoogle) {
+      window.adsbygoogle = [];
+      window.adsbygoogle.push = function () { /* noop */ };
     } else {
-      window.kongregateAPI.services = window.kongregateAPI.services || fakeServices;
+      // ensure push exists and is safe
+      window.adsbygoogle.push = window.adsbygoogle.push || function () {};
     }
+  } catch (e) {}
 
-    if (!window.kongregate) {
-      window.kongregate = {
-        services: window.kongregateAPI.services,
-        stats: window.kongregateAPI.services.stats,
-        submitStat: function () {}
-      };
-    } else {
-      window.kongregate.services = window.kongregate.services || window.kongregateAPI.services;
-      window.kongregate.stats = window.kongregate.stats || window.kongregate.services.stats;
+  // some ad libs call googletag, define minimal stub
+  try {
+    window.googletag = window.googletag || {};
+    window.googletag.cmd = window.googletag.cmd || [];
+    if (!window.googletag.pubads) {
+      window.googletag.pubads = function () { return { enableSingleRequest: () => {}, enableAsyncRendering: () => {} }; };
     }
+  } catch (e) {}
 
-    // Defensive no-op functions often used by scripts
-    const noop = () => {};
-    const noopAsync = () => Promise.resolve();
-
-    window.kongregateAPI.services.stats.submit = window.kongregateAPI.services.stats.submit || noop;
-    window.kongregateAPI.services.payments.purchaseItem = window.kongregateAPI.services.payments.purchaseItem || (() => Promise.resolve({ success: false }));
-    window.kongregateAPI.getAPI = window.kongregateAPI.getAPI || (() => window.kongregateAPI);
-
-    // legacy niceties
-    window.kongregateStub = window.kongregateStub || window.kongregateAPI;
-    log('kongregate API stubbed');
-  })();
-
-  // ========= Network-layer blocking =========
-  // Fetch override
-  (function overrideFetch() {
+  // --- 2) override fetch/XHR/Beacon to short-circuit ad domain requests ---
+  (function overrideNetwork() {
     const _fetch = window.fetch;
     window.fetch = function (input, init) {
       try {
         const url = typeof input === 'string' ? input : (input && input.url);
-        if (isBlockedUrl(url)) {
-          log('blocked fetch', url);
-          // Return a harmless response object to avoid breaking callers
-          return Promise.resolve(new Response(null, { status: 204, statusText: 'Blocked by kong-nuke' }));
+        if (isAdUrl(url)) {
+          log('blocked fetch to ad url', url);
+          return Promise.resolve(new Response(null, { status: 204, statusText: 'Blocked by ad-nuke' }));
         }
       } catch (e) {}
       return _fetch.apply(this, arguments);
     };
-  })();
 
-  // XHR override
-  (function overrideXHR() {
     const origOpen = XMLHttpRequest.prototype.open;
     const origSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.open = function (method, url) {
       try {
-        this._kongNukeBlocked = isBlockedUrl(url);
-        if (this._kongNukeBlocked) log('marked XHR blocked', url);
-      } catch (e) { this._kongNukeBlocked = false; }
+        this._adNukeBlocked = isAdUrl(url);
+        if (this._adNukeBlocked) log('marked XHR blocked', url);
+      } catch (e) { this._adNukeBlocked = false; }
       return origOpen.apply(this, arguments);
     };
     XMLHttpRequest.prototype.send = function () {
-      if (this._kongNukeBlocked) {
-        try {
-          // Trigger events to avoid hangups in libraries
-          this.abort && this.abort();
-          this.dispatchEvent && this.dispatchEvent(new Event('loadend'));
-        } catch (e) {}
+      if (this._adNukeBlocked) {
+        try { this.abort && this.abort(); this.dispatchEvent && this.dispatchEvent(new Event('loadend')); } catch (e) {}
         return;
       }
       return origSend.apply(this, arguments);
     };
-  })();
 
-  // Override navigator.sendBeacon to no-op for blocked urls
-  (function overrideBeacon() {
-    const nativeBeacon = navigator.sendBeacon && navigator.sendBeacon.bind(navigator);
-    if (nativeBeacon) {
+    if (navigator.sendBeacon) {
+      const nativeBeacon = navigator.sendBeacon.bind(navigator);
       navigator.sendBeacon = function (url, data) {
-        try {
-          if (isBlockedUrl(url)) {
-            log('blocked beacon', url);
-            return true; // pretend success
-          }
-        } catch (e) {}
+        try { if (isAdUrl(url)) { log('blocked beacon', url); return true; } } catch (e) {}
         return nativeBeacon.apply(this, arguments);
       };
     }
   })();
 
-  // ========= DOM insertion blocking =========
-  (function overrideDOMInsertion() {
+  // --- 3) block script/iframe/link insertion and createElement src protection ---
+  (function protectDOM() {
     const origCreate = Document.prototype.createElement;
     Document.prototype.createElement = function (tagName, options) {
       const el = origCreate.call(this, tagName, options);
-      // If script/iframe created, wrap src-setters to block setting blocked URLs
       try {
         const tag = (tagName || '').toLowerCase();
-        if (tag === 'script' || tag === 'iframe') {
-          Object.defineProperty(el, 'src', {
-            set(v) {
-              try {
-                if (isBlockedUrl(v)) {
-                  log('blocked set src on element', v);
-                  // leave src unset
-                  return;
-                }
-              } catch (e) {}
-              // default behavior
-              HTMLScriptElement.prototype.__lookupSetter__ && HTMLScriptElement.prototype.__lookupSetter__('src') 
-                ? HTMLScriptElement.prototype.__lookupSetter__('src').call(this, v)
-                : (this.setAttribute && this.setAttribute('src', v));
-            },
-            get() { return this.getAttribute && this.getAttribute('src'); },
-            configurable: true
-          });
+        if (tag === 'script' || tag === 'iframe' || tag === 'link') {
+          // define setter interception for src/href/data-src to refuse ad URLs
+          const setSrc = function (v) {
+            try {
+              if (isAdUrl(v)) { log('blocked set src on', tag, v); return; }
+            } catch (e) {}
+            try {
+              if (tag === 'link') this.setAttribute('href', v);
+              else this.setAttribute('src', v);
+            } catch (e) {}
+          };
+          try {
+            Object.defineProperty(el, 'src', { set: setSrc, get: function () { return this.getAttribute('src'); }, configurable: true });
+            Object.defineProperty(el, 'href', { set: setSrc, get: function () { return this.getAttribute('href'); }, configurable: true });
+          } catch (e) {}
         }
       } catch (e) {}
       return el;
     };
 
-    // appendChild/insertBefore guards (catch append-based injection)
     const origAppend = Element.prototype.appendChild;
     Element.prototype.appendChild = function (node) {
       try {
         if (node && node.tagName) {
-          const tag = node.tagName.toLowerCase();
-          const src = node.src || (node.getAttribute && (node.getAttribute('src') || node.getAttribute('data-src')));
-          if ((tag === 'script' || tag === 'iframe') && isBlockedUrl(src)) {
-            log('blocked appendChild', tag, src);
+          const t = node.tagName.toLowerCase();
+          const src = node.src || node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src'));
+          if ((t === 'script' || t === 'iframe' || t === 'link') && isAdUrl(src)) {
+            log('blocked appendChild for ad node', src);
             return node;
           }
         }
@@ -180,170 +132,173 @@
       return origAppend.call(this, node);
     };
 
-    const origInsertBefore = Node.prototype.insertBefore;
+    const origInsert = Node.prototype.insertBefore;
     Node.prototype.insertBefore = function (node, ref) {
       try {
         if (node && node.tagName) {
-          const tag = node.tagName.toLowerCase();
-          const src = node.src || (node.getAttribute && (node.getAttribute('src') || node.getAttribute('data-src')));
-          if ((tag === 'script' || tag === 'iframe') && isBlockedUrl(src)) {
-            log('blocked insertBefore', tag, src);
+          const t = node.tagName.toLowerCase();
+          const src = node.src || node.getAttribute && (node.getAttribute('src') || node.getAttribute('href') || node.getAttribute('data-src'));
+          if ((t === 'script' || t === 'iframe' || t === 'link') && isAdUrl(src)) {
+            log('blocked insertBefore for ad node', src);
             return node;
           }
         }
       } catch (e) {}
-      return origInsertBefore.call(this, node, ref);
+      return origInsert.call(this, node, ref);
     };
   })();
 
-  // Intercept innerHTML/document.write to strip blocked tags/URLs
-  (function overrideWriteInner() {
+  // --- 4) Block document.write that injects ad content ---
+  (function protectWrite() {
     const origWrite = Document.prototype.write;
     Document.prototype.write = function (str) {
       try {
-        if (typeof str === 'string' && BLOCK_DOMAINS.some(d => str.toLowerCase().includes(d))) {
-          log('blocked document.write with kong content');
+        if (typeof str === 'string' && AD_DOMAINS.some(d => str.toLowerCase().includes(d))) {
+          log('blocked document.write that contained ad domain');
           return;
         }
       } catch (e) {}
       return origWrite.call(this, str);
     };
+  })();
 
-    // Tame Element.prototype.innerHTML setter
+  // --- 5) Remove nodes with the exact-looking "Sponsored link" text and ad nodes ---
+  const sponsoredRegex = /^\s*\^\s*Sponsored\s+link\s*\^\s*$/i; // matches lines like: ^ Sponsored link ^
+  function removeSponsoredNodes(root) {
     try {
-      const info = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML') ||
-                   Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML');
-      if (info && info.set) {
-        const origSetter = info.set;
-        Object.defineProperty(Element.prototype, 'innerHTML', {
-          set: function (val) {
-            try {
-              if (typeof val === 'string' && BLOCK_DOMAINS.some(d => val.toLowerCase().includes(d))) {
-                log('blocked innerHTML containing kong');
-                return;
-              }
-            } catch (e) {}
-            return origSetter.call(this, val);
+      // search for nodes that directly contain the pattern as a full text node or as trimmed innerText line
+      const walker = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT, null, false);
+      const toRemove = new Set();
+      let n;
+      while (n = walker.nextNode()) {
+        const txt = n.nodeValue && String(n.nodeValue).trim();
+        if (!txt) continue;
+        // test each line inside the text node in case it's multi-line
+        const lines = txt.split(/\r?\n/).map(s => s.trim());
+        for (const line of lines) {
+          if (sponsoredRegex.test(line)) {
+            // mark the parent element for removal (or the node if safe)
+            const parent = n.parentElement || n.parentNode;
+            if (parent) toRemove.add(parent);
           }
-        });
-      }
-    } catch (e) {}
-  })();
-
-  // ========= Worker & importScripts interception =========
-  (function overrideWorkers() {
-    // Override importScripts for workers created by same-origin blobs
-    try {
-      const origImport = Worker.prototype.importScripts;
-      if (origImport) {
-        Worker.prototype.importScripts = function () {
-          try {
-            for (let i = 0; i < arguments.length; i++) {
-              if (isBlockedUrl(arguments[i])) {
-                log('blocked importScripts', arguments[i]);
-                // skip blocked scripts
-              } else {
-                origImport.call(this, arguments[i]);
-              }
-            }
-          } catch (e) {}
-        };
-      }
-    } catch (e) {}
-
-    // Intercept Worker constructor to prevent passing a direct kong script URL
-    const OrigWorker = window.Worker;
-    window.Worker = function (scriptURL, options) {
-      try {
-        if (isBlockedUrl(scriptURL)) {
-          log('blocked Worker script creation', scriptURL);
-          // create a tiny no-op worker using blob
-          const blob = new Blob([`self.onmessage = function () {};`], { type: 'application/javascript' });
-          const blobURL = URL.createObjectURL(blob);
-          return new OrigWorker(blobURL, options);
-        }
-      } catch (e) {}
-      return new OrigWorker(scriptURL, options);
-    };
-  })();
-
-  // ========= MutationObserver sweep & initial cleanup =========
-  const mo = new MutationObserver(mutations => {
-    try {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          try {
-            if (!node || !node.tagName) continue;
-            const tag = node.tagName.toLowerCase();
-            const src = node.src || (node.getAttribute && (node.getAttribute('src') || node.getAttribute('href')));
-            if ((tag === 'script' || tag === 'iframe' || tag === 'link') && isBlockedUrl(src)) {
-              log('MO removed node', tag, src);
-              node.parentNode && node.parentNode.removeChild(node);
-            }
-          } catch (e) {}
         }
       }
-    } catch (e) {}
-  });
-
-  try {
-    mo.observe(document.documentElement || document, { childList: true, subtree: true });
-  } catch (e) {}
-
-  function initialSweep() {
-    try {
-      const tags = document.querySelectorAll('script[src], iframe[src], link[href]');
-      for (const el of tags) {
+      // Also do a broader scan: any element whose visible innerText contains the phrase
+      const els = (root || document.body).querySelectorAll('*');
+      for (const el of els) {
         try {
-          const src = el.src || el.getAttribute('src') || el.getAttribute('href');
-          if (isBlockedUrl(src)) {
-            log('initial sweep removed', src);
-            el.parentNode && el.parentNode.removeChild(el);
+          const it = (el.innerText || '').split(/\r?\n/).map(s => s.trim());
+          for (const line of it) {
+            if (sponsoredRegex.test(line)) {
+              toRemove.add(el);
+              break;
+            }
           }
+        } catch (e) {}
+      }
+      // perform removals
+      for (const el of toRemove) {
+        try {
+          log('removed sponsored node:', el.tagName, el.className || '');
+          el.parentNode && el.parentNode.removeChild(el);
         } catch (e) {}
       }
     } catch (e) {}
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialSweep);
-  else initialSweep();
-
-  // ========= Periodic aggressive sweep =========
-  const periodicCleaner = setInterval(() => {
+  // --- 6) sweep function to remove ad nodes and scripts that slipped through ---
+  function sweepAds(root) {
     try {
-      // remove iframes/scripts that sneaked through
-      const all = document.querySelectorAll('iframe, script, link');
+      // remove scripts/iframes/links whose src/href look ad-like
+      const all = (root || document).querySelectorAll('script[src], iframe[src], link[href], img[src]');
       for (const el of all) {
         try {
-          const src = el.src || el.getAttribute && (el.getAttribute('src') || el.getAttribute('href') || '');
-          if (isBlockedUrl(src)) {
+          const src = el.src || el.getAttribute('src') || el.getAttribute('href') || '';
+          if (isAdUrl(src)) {
+            log('removed ad element', el.tagName, src);
             el.parentNode && el.parentNode.removeChild(el);
-            log('periodic removed', src);
+            continue;
+          }
+          // remove typical google ad attributes e.g. class="adsbygoogle"
+          const cls = (el.className || '').toString().toLowerCase();
+          if (cls.includes('adsbygoogle') || cls.includes('ad') || cls.includes('google-ad')) {
+            // be conservative: if element contains ad-related class and small size, remove
+            log('removed ad-like element by class', el.tagName, el.className);
+            el.parentNode && el.parentNode.removeChild(el);
           }
         } catch (e) {}
       }
-    } catch (e) {}
-  }, AUTO_CLEAN_MS);
 
-  // ========= Runtime control API =========
-  window.__kongNuke = {
-    addBlocked(domain) {
-      try { BLOCK_DOMAINS.push(domain.toLowerCase()); log('added block', domain); } catch (e) {}
-    },
-    removeBlocked(domain) {
+      // remove elements with data-ad-* attributes
+      const dataAdEls = (root || document).querySelectorAll('[data-ad], [data-ad-client], [data-ad-slot]');
+      for (const el of dataAdEls) {
+        try { log('removed data-ad element', el.tagName); el.parentNode && el.parentNode.removeChild(el); } catch (e) {}
+      }
+
+      // remove inline ad placeholders like ins.adsbygoogle
+      const insEls = (root || document).querySelectorAll('ins.adsbygoogle, .adsbygoogle');
+      for (const el of insEls) {
+        try { log('removed ins.adsbygoogle'); el.parentNode && el.parentNode.removeChild(el); } catch (e) {}
+      }
+
+      // remove elements with aria-label or title that look like 'Sponsored'
+      const possible = (root || document).querySelectorAll('[aria-label], [title]');
+      for (const el of possible) {
+        try {
+          const label = (el.getAttribute('aria-label') || el.getAttribute('title') || '').toLowerCase();
+          if (label.includes('sponsored') || label.includes('sponsored link')) {
+            log('removed element by aria/title sponsored', el.tagName);
+            el.parentNode && el.parentNode.removeChild(el);
+          }
+        } catch (e) {}
+      }
+
+      // finally remove nodes containing the explicit sponsored text
+      removeSponsoredNodes(root || document.body);
+    } catch (e) {}
+  }
+
+  // initial sweep as soon as DOM exists
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { sweepAds(document); });
+  } else {
+    sweepAds(document);
+  }
+
+  // MutationObserver to react to dynamically added ad nodes
+  const mo = new MutationObserver(muts => {
+    for (const m of muts) {
       try {
-        const idx = BLOCK_DOMAINS.indexOf(domain.toLowerCase());
-        if (idx >= 0) BLOCK_DOMAINS.splice(idx, 1);
-        log('removed block', domain);
+        // check added nodes subtree quickly
+        for (const n of m.addedNodes) {
+          try {
+            if (!n) continue;
+            if (n.nodeType === 3) { // text node
+              const text = (n.nodeValue || '').trim();
+              if (text && sponsoredRegex.test(text)) {
+                const p = n.parentElement || n.parentNode;
+                try { p && p.parentNode && p.parentNode.removeChild(p); log('MO removed sponsored text'); } catch (e) {}
+              }
+              continue;
+            }
+            // if element node, sweep its subtree
+            sweepAds(n);
+          } catch (e) {}
+        }
       } catch (e) {}
-    },
-    listBlocked() { return BLOCK_DOMAINS.slice(); },
-    stop() {
-      try { mo.disconnect(); clearInterval(periodicCleaner); log('stopped kong-nuke'); } catch (e) {}
-    },
-    isBlockedUrl
+    }
+  });
+  try { mo.observe(document.documentElement || document, { childList: true, subtree: true }); } catch (e) {}
+
+  // periodic aggressive sweep in case something sneaks through
+  const periodic = setInterval(() => { try { sweepAds(document); } catch (e) {} }, AUTO_CLEAN_MS);
+
+  // runtime API
+  window.__adNuke = {
+    addAdDomain(d) { try { AD_DOMAINS.push(d.toLowerCase()); log('ad domain added', d); } catch (e) {} },
+    stop() { try { mo.disconnect(); clearInterval(periodic); log('ad-nuke stopped'); } catch (e) {} },
+    sweep: () => sweepAds(document)
   };
 
-  log('kong-nuke active — aggressive mode (PlayFab NOT blocked).');
-
+  log('ad-nuke active — blocking Google ad domains and removing "Sponsored link" nodes.');
 })();
