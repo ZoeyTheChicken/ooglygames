@@ -242,7 +242,7 @@ class game {
                         else {
                             window.alert("Your Score: " + Math.floor(mySnake[i].score));
                             die = true;
-                            window.location.href = ".";
+                            window.location.href = "./snakeio/";
                         }
                     }
                 }
