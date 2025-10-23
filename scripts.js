@@ -16,7 +16,8 @@ const games = [
   { title:"Minecraft 1.5.2 (Precision Client)", "html-link":"game/eagler152precisionc/", "obg-track-link":"", category:"Action" },
   { title:"Minecraft 1.8.8", "html-link":"game/eagler188w/", "obg-track-link":"", category:"Action" },
   { title:"Minecraft 1.5.2", "html-link":"game/eagler152/", "obg-track-link":"", category:"Action" },
-  { title:"Snow Rider 3D", "html-link":"game/snowrider/", "obg-track-link":"", category:"Arcade" },
+  { title:"Snow Rider 3D", "html-link":"game/snowrider/", category:"Arcade", new: true },
+  { title:"Cookie Clicker", "html-link":"game/index.html", category:"Idle", new: true },
   { title:"Asteroids", "html-link":"game/asteroids/", "obg-track-link":"", category:"Arcade" },
   { title:"Dino", "html-link":"game/dino/", "obg-track-link":"", category:"Arcade" },
   { title:"DinoGame++", "html-link":"game/dinoplusplus/", "obg-track-link":"", category:"Arcade" },
@@ -29,7 +30,6 @@ const games = [
   { title:"Henry Stickman: Fleeing the Complex", "html-link":"game/ftc", "obg-track-link":"", category:"Arcade" },
   { title:"Henry Stickman: Infiltrating the Airship", "html-link":"game/ita", "obg-track-link":"", category:"Arcade" },
   { title:"Henry Stickman: Stealing the Diamond", "html-link":"game/stealingthediamond", "obg-track-link":"", category:"Arcade" },
-  { title:"Cookie Clicker", "html-link":"game/index.html", "obg-track-link":"", category:"Idle" },
   { title:"Drift Boss", "html-link":"game/driftboss", "obg-track-link":"", category:"Arcade" },
   { title:"Snake.io", "html-link":"game/snakeio", "obg-track-link":"", category:"Arcade" },
   { title:"Drift Hunters", "html-link":"game/drifthunters", "obg-track-link":"", category:"Arcade" },
@@ -280,3 +280,118 @@ function init(){
   statCount.textContent = games.length;
 }
 init();
+// Add these constants at the top with your other constants
+const VERSION_KEY = 'obg_version';
+const CURRENT_VERSION = '2.40';
+
+// Changelog Modal System
+const changelogModal = document.createElement('div');
+changelogModal.id = 'changelogModal';
+changelogModal.className = 'modal';
+changelogModal.innerHTML = `
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🎉 What's New</h2>
+      <button class="close-btn" id="closeModal">×</button>
+    </div>
+    <div class="changelog-item">
+      <h3>v2.40 - October 23, 2025</h3>
+      <ul>
+        <li>✨ Enhanced UI with smooth animations</li>
+        <li>🎊 Added confetti effects for new games</li>
+        <li>📋 Changelog popup system</li>
+        <li>⚡ Performance improvements</li>
+        <li>🎮 5 new games added</li>
+        <li>🎨 Refined glassmorphism design</li>
+      </ul>
+    </div>
+    <div class="changelog-item">
+      <h3>Previous Updates</h3>
+      <ul>
+        <li>Added 3 new alternative domains</li>
+        <li>Improved game loading speed</li>
+        <li>Enhanced keyboard navigation</li>
+      </ul>
+    </div>
+  </div>
+`;
+document.body.appendChild(changelogModal);
+
+// Check version and show changelog
+function checkVersion() {
+  try {
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+    if (savedVersion !== CURRENT_VERSION) {
+      setTimeout(() => {
+        changelogModal.classList.add('active');
+        createConfettiBurst(window.innerWidth / 2, 200, 40);
+      }, 800);
+      localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
+    }
+  } catch(e) {}
+}
+
+// Close modal handlers
+document.getElementById('closeModal').addEventListener('click', () => {
+  changelogModal.classList.remove('active');
+});
+
+changelogModal.addEventListener('click', (e) => {
+  if (e.target === changelogModal) {
+    changelogModal.classList.remove('active');
+  }
+});
+
+// Confetti System
+function createConfetti(x, y) {
+  const confetti = document.createElement('div');
+  confetti.className = 'confetti';
+  confetti.style.left = x + 'px';
+  confetti.style.top = y + 'px';
+  
+  const colors = ['#0b6ef6', '#ec4899', '#f97316', '#10b981'];
+  confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+  confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+  confetti.style.transform = `translateX(${(Math.random() - 0.5) * 100}px) scale(${0.5 + Math.random()})`;
+  
+  document.body.appendChild(confetti);
+  setTimeout(() => confetti.remove(), 3500);
+}
+
+function createConfettiBurst(x, y, count) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      createConfetti(
+        x + (Math.random() - 0.5) * 300,
+        y + (Math.random() - 0.5) * 100
+      );
+    }, i * 20);
+  }
+}
+
+// Mark new games in your games array (add 'new: true' property)
+// Example: { title:"Snow Rider 3D", "html-link":"game/snowrider/", category:"Arcade", new: true },
+
+// Modify your renderList function to add the new-game class:
+// Add this inside your item creation loop:
+// if (g.new) item.classList.add('new-game');
+
+// Add confetti on new game click - modify your openGame function:
+const originalOpenGame = openGame;
+function openGame(g) {
+  if (g && g.new) {
+    const items = Array.from(listEl.querySelectorAll('.item'));
+    const clickedItem = items.find(item => {
+      return item.querySelector('.item-title').textContent === g.title;
+    });
+    if (clickedItem) {
+      const rect = clickedItem.getBoundingClientRect();
+      createConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 15);
+    }
+  }
+  originalOpenGame(g);
+}
+
+// Call checkVersion at the end of your init() function
+// Add this line to your existing init():
+checkVersion();
