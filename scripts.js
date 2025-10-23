@@ -280,3 +280,94 @@ function init(){
   statCount.textContent = games.length;
 }
 init();
+
+
+// OUI 2.31 + //
+
+const changelogData=[
+  "Added 2 new games: Dino & Cookie Clicker",
+  "⚙️ Move all settings to the new Settings modal.",
+  "🎉 Add confetti animation for new games",
+];
+
+const $ = s => document.querySelector(s);
+const listEl = $('#list'), searchEl = $('#search'), catEl = $('#categoryFilter'), countEl = $('#count'), recentEl = $('#recent'), statCount = $('#stat-count'), statRecent = $('#stat-recent');
+const modeSelect = $('#modeSelect'), accentPicker = $('#accentPicker'), sidebarWidth = $('#sidebarWidth'), sidebarWidthVal = $('#sidebarWidthVal');
+const openSettings = $('#openSettings'), settingsModal = $('#settingsModal'), closeSettings = $('#closeSettings');
+const changelogModal = $('#changelogModal'), changelogList = $('#changelogList'), closeChangelog = $('#closeChangelog');
+
+const RECENT_KEY='obg_recent_v2', CHANGELOG_KEY='obg_changelog_v2';
+let filtered=games.slice();
+
+/* --- Render list --- */
+function renderList(items){
+  listEl.innerHTML='';
+  items.forEach(g=>{
+    const item=document.createElement('div');
+    item.className='item';
+    if(g.new && !localStorage.getItem('obg_seen_'+g.title)) item.classList.add('confetti-new');
+    item.tabIndex=0;
+
+    const left=document.createElement('div'); left.style.display='flex'; left.style.flexDirection='column';
+    const title=document.createElement('div'); title.className='item-title'; title.textContent=g.title;
+    const meta=document.createElement('div'); meta.className='item-meta'; meta.textContent=g.category||'';
+    left.appendChild(title); left.appendChild(meta);
+    const chevron=document.createElement('div'); chevron.innerHTML='▶'; chevron.style.opacity=0.6; chevron.style.fontWeight=700;
+    item.appendChild(left); item.appendChild(chevron);
+
+    item.addEventListener('click',()=>openGame(g,item));
+    listEl.appendChild(item);
+  });
+  countEl.textContent=`${items.length} game${items.length===1?'':'s'}`;
+  statCount.textContent=games.length;
+}
+
+/* --- Open game & recent --- */
+function openGame(g,item){
+  if(!g||!g['html-link']) return;
+  window.open(g['html-link'],'_blank','noopener');
+  addRecent(g);
+  if(g.new) localStorage.setItem('obg_seen_'+g.title,'1');
+  if(item) item.classList.remove('confetti-new');
+}
+
+function addRecent(g){
+  let cur = JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
+  const normalized={title:g.title,htmlLink:g['html-link']};
+  cur = cur.filter(x=>x.htmlLink!==normalized.htmlLink);
+  cur.unshift(normalized);
+  cur=cur.slice(0,8);
+  localStorage.setItem(RECENT_KEY,JSON.stringify(cur));
+  renderRecent();
+}
+
+function renderRecent(){
+  recentEl.innerHTML='';
+  const cur=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
+  statRecent.textContent=cur.length;
+  if(!cur.length){recentEl.textContent='No recent plays'; return;}
+  cur.forEach(r=>{
+    const b=document.createElement('button'); b.textContent=r.title;
+    b.addEventListener('click',()=>window.open(r.htmlLink,'_blank','noopener'));
+    recentEl.appendChild(b);
+  });
+}
+
+/* --- Settings --- */
+function loadSettings(){
+  const mode=localStorage.getItem('obg_mode')||'dark';
+  document.body.classList.remove('light','dark','oled'); document.body.classList.add(mode);
+  modeSelect.value=mode;
+  const accent=localStorage.getItem('obg_accent')||'#0b6ef6';
+  document.documentElement.style.setProperty('--accent',accent);
+  accentPicker.value=accent;
+  const sw=localStorage.getItem('obg_sidebar_w')||'320';
+  document.documentElement.style.setProperty('--sidebar-w',sw+'px');
+  sidebarWidth.value=sw; sidebarWidthVal.textContent=sw+'px';
+}
+modeSelect.addEventListener('change',()=>{
+  document.body.classList.remove('dark','light','oled'); document.body.classList.add(modeSelect.value);
+  localStorage.setItem('obg_mode',modeSelect.value);
+});
+accentPicker.addEventListener('input',()=>{document.documentElement.style.setProperty('--accent',accentPicker.value); localStorage.setItem('obg_accent',accentPicker.value);});
+sidebarWidth.addEventListener('input',()=>{document.documentElement.style.setProperty('--sidebar-w',sidebarWidth.value+'px'); sidebarWidthVal.textContent=sidebarWidth.value+'px'; localStorage.setItem('obg_sidebar_w',sidebarWidth.va
