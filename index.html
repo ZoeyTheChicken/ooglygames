@@ -3,54 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oogly Boogly — Neumorphic Hub</title>
-<script src="scripts.js"></script>
-<style>
-:root{
-  --bg: #e0e0e0;
-  --card: #e0e0e0;
-  --accent: #0b6ef6;
-  --muted: #7a7a7a;
-  --text: #222;
-  --radius: 14px;
-  --shadow-light: rgba(255,255,255,0.7);
-  --shadow-dark: rgba(0,0,0,0.2);
-  --transition: all 0.25s ease;
-}
-body.dark{
-  --bg:#1e1e1e; --card:#2a2a2a; --text:#eee; --muted:#999;
-  --shadow-light: rgba(255,255,255,0.05); --shadow-dark: rgba(0,0,0,0.6);
-}
-*{box-sizing:border-box;}
-body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);transition:var(--transition);}
-.shell{display:flex;flex:1;min-height:100vh;}
-.sidebar{width:320px;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--card);border-radius:var(--radius);box-shadow:6px 6px 16px var(--shadow-dark), -6px -6px 16px var(--shadow-light);transition:var(--transition);}
-.content{flex:1;padding:28px;overflow:auto;display:flex;flex-direction:column;gap:12px;transition:var(--transition);}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;}
-.logo{font-weight:800;font-size:1.2rem;}
-.controls{display:flex;gap:10px;}
-.search, select, input[type="color"]{border:none;border-radius:var(--radius);padding:10px 12px;background:var(--card);color:var(--text);box-shadow:6px 6px 16px var(--shadow-dark), -6px -6px 16px var(--shadow-light);transition:var(--transition);}
-.search:focus, select:focus, input[type="color"]:focus{box-shadow: inset 2px 2px 6px var(--shadow-dark), inset -2px -2px 6px var(--shadow-light);outline:none;}
-.list{display:flex;flex-direction:column;gap:12px;overflow:auto;}
-.item{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:var(--radius);background:var(--card);cursor:pointer;box-shadow:6px 6px 16px var(--shadow-dark), -6px -6px 16px var(--shadow-light);transition:transform 0.25s ease, box-shadow 0.25s ease;}
-.item:hover{transform: translateY(-3px);box-shadow:4px 4px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);}
-.item:active{transform: translateY(1px);box-shadow: inset 4px 4px 12px var(--shadow-dark), inset -4px -4px 12px var(--shadow-light);}
-.item-title{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.item-meta{font-size:0.85rem;color:var(--muted);}
-.recent-wrap{margin-top:auto;}
-.recent{display:flex;gap:8px;flex-wrap:wrap;}
-.recent button{border:none;border-radius:var(--radius);padding:6px 12px;background:var(--card);color:var(--muted);cursor:pointer;box-shadow:4px 4px 12px var(--shadow-dark), -4px -4px 12px var(--shadow-light);transition:transform 0.15s ease, box-shadow 0.15s ease;}
-.recent button:hover{transform:translateY(-2px);box-shadow:2px 2px 8px var(--shadow-dark), -2px -2px 8px var(--shadow-light);color:var(--accent);}
-.foot{padding:16px;text-align:center;}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.item, .recent button{animation:fadeInUp 0.25s ease forwards;}
-.item:nth-child(even){animation-delay:0.05s;} .item:nth-child(odd){animation-delay:0.1s;}
-@media(max-width:720px){.shell{flex-direction:column;}.sidebar{width:100%;}.content{order:1;padding:16px;}}
-</style>
+<title>Oogly Boogly — Glass UI</title>
+<link rel="stylesheet" href="styles.css">
 </head>
-<body>
-<div class="topbar">
-  <div class="logo">Oogly Boogly <span class="mini">Neumorphic</span></div>
+<body class="dark">
+<div class="topbar glass-card">
+  <div class="logo">Oogly Boogly <span class="mini">Glass UI</span></div>
   <div class="controls">
     <input type="text" id="search" class="search" placeholder="Search games..." />
     <select id="categoryFilter">
@@ -62,51 +20,41 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
       <option value="Utility">Utility</option>
     </select>
     <input type="color" id="accentPicker" title="Pick Accent Color">
-    <button id="toggleDark">🌓</button>
+    <button id="toggleDark" class="iconbtn">🌓</button>
+    <button id="open-altdom" class="iconbtn">🌐</button>
   </div>
 </div>
+
 <div class="shell">
-  <div class="sidebar">
-    <strong>Games <span id="count">0 games</span></strong>
+  <div class="sidebar glass-card">
+    <div class="sidebar-header">
+      <strong>Games</strong>
+      <span id="count">0 games</span>
+    </div>
     <div id="list" class="list"></div>
     <div class="recent-wrap">
       <strong>Recent Plays (<span id="stat-recent">0</span>)</strong>
       <div id="recent" class="recent"></div>
     </div>
   </div>
-  <div class="content">
-    <h2>Welcome!</h2>
-    <p class="muted">Use search or filter to find games. Click a game to open in new tab. Hover items for neat microanimations!</p>
+
+  <div class="content glass-card">
+    <div class="welcome">
+      <h2>Welcome to Oogly Boogly</h2>
+      <p class="muted">Use search or filter to find games. Click a game to open it in a new tab. Hover over items for smooth microanimations.</p>
+      <div class="meta-row">
+        <div class="stat"><strong id="stat-count">0</strong> total games</div>
+        <div class="stat"><strong id="stat-recent">0</strong> recent plays</div>
+      </div>
+    </div>
+    <div id="empty" class="empty" hidden>No games found</div>
   </div>
 </div>
-<div class="foot">&copy; 2025 Oogly Boogly — Neumorphic Hub</div>
 
-<script>
-const $=s=>document.querySelector(s);
-const listEl=$('#list'), searchEl=$('#search'), catEl=$('#categoryFilter'), countEl=$('#count'), recentEl=$('#recent'), statRecent=$('#stat-recent'), accentPicker=$('#accentPicker'), toggleDark=$('#toggleDark');
+<div class="foot glass-card">
+  &copy; 2025 Oogly Boogly — Glass UI
+</div>
 
-let filtered=games.slice(), focusedIndex=-1;
-const RECENT_KEY='obg_recent_v2', ACCENT_KEY='obg_accent', MODE_KEY='obg_mode';
-
-function renderList(items){listEl.innerHTML='';items.forEach((g,idx)=>{const item=document.createElement('div');item.className='item';item.tabIndex=0;item.dataset.idx=idx;const left=document.createElement('div');left.style.display='flex';left.style.flexDirection='column';const title=document.createElement('div');title.className='item-title';title.textContent=g.title;const meta=document.createElement('div');meta.className='item-meta';meta.textContent=g.category||'';left.append(title,meta);const chevron=document.createElement('div');chevron.innerHTML='▶';chevron.style.opacity=0.6;chevron.style.fontWeight=700;item.append(left,chevron);item.addEventListener('click',()=>openGame(g));item.addEventListener('keydown',(e)=>{if(e.key==='Enter')openGame(g);if(e.key==='ArrowDown')focusNext();if(e.key==='ArrowUp')focusPrev();});let warmed=false;item.addEventListener('pointerenter',()=>{if(!warmed){warmed=true;fetch(g['html-link'],{method:'HEAD',mode:'no-cors'}).catch(()=>{});}});listEl.appendChild(item);});countEl.textContent=`${items.length} game${items.length!==1?'s':''}`;}
-
-function openGame(g){if(!g||!g['html-link']||g['html-link']==='#')return;window.open(g['html-link'],'_blank','noopener');addRecent(g);}
-function addRecent(g){const cur=getRecent();const normalized={title:g.title,htmlLink:g['html-link']};let next=cur.filter(x=>x.htmlLink!==normalized.htmlLink);next.unshift(normalized);next=next.slice(0,8);localStorage.setItem(RECENT_KEY,JSON.stringify(next));renderRecent();}
-function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]')}catch(e){return[];}}
-function renderRecent(){recentEl.innerHTML='';const cur=getRecent();statRecent.textContent=cur.length;if(!cur.length){recentEl.textContent='No recent plays';return;}cur.forEach(r=>{const b=document.createElement('button');b.textContent=r.title;b.addEventListener('click',()=>window.open(r.htmlLink,'_blank','noopener'));recentEl.appendChild(b);});}
-
-searchEl.addEventListener('input',()=>{const q=searchEl.value.trim().toLowerCase();filtered=games.filter(g=>{if(catEl.value!=='all'&&g.category.toLowerCase()!==catEl.value.toLowerCase())return false;if(!q)return true;return g.title.toLowerCase().includes(q)||g.category.toLowerCase().includes(q);});renderList(filtered);});
-catEl.addEventListener('change',()=>{searchEl.dispatchEvent(new Event('input'));});
-
-function focusNext(){const items=Array.from(listEl.querySelectorAll('.item'));if(!items.length)return;focusedIndex=Math.min(focusedIndex+1,items.length-1);items[focusedIndex].focus();}
-function focusPrev(){const items=Array.from(listEl.querySelectorAll('.item'));if(!items.length)return;focusedIndex=Math.max(focusedIndex-1,0);items[focusedIndex].focus();}
-listEl.addEventListener('focusin',e=>{const it=e.target.closest('.item');if(!it)return;focusedIndex=parseInt(it.dataset.idx||0,10);});
-
-toggleDark.addEventListener('click',()=>{document.body.classList.toggle('dark');localStorage.setItem(MODE_KEY,document.body.classList.contains('dark')?'dark':'light');});
-
-accentPicker.addEventListener('input',e=>{document.documentElement.style.setProperty('--accent',e.target.value);localStorage.setItem(ACCENT_KEY,e.target.value);});
-
-(function init(){renderList(games.slice());renderRecent();const savedAccent=localStorage.getItem(ACCENT_KEY);if(savedAccent){accentPicker.value=savedAccent;document.documentElement.style.setProperty('--accent',savedAccent);}const savedMode=localStorage.getItem(MODE_KEY)||'light';if(savedMode==='dark')document.body.classList.add('dark');})();
-</script>
+<script src="scripts.js"></script>
 </body>
 </html>
