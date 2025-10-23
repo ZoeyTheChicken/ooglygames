@@ -1,74 +1,309 @@
-<header class="topbar">
-  <div class="left">
-    <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
-    <button id="open-altdom" class="btn ghost">Alternative Domains</button>
-  </div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Oogly Boogly Games</title>
+<link rel="stylesheet" href="styles.css">
 
-  <div class="controls">
-    <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
-    <select id="categoryFilter" aria-label="Filter by category">
-      <option value="all">All Categories</option>
-      <option value="Action">Action</option>
-      <option value="Puzzle">Puzzle</option>
-      <option value="Arcade">Arcade</option>
-      <option value="Idle">Idle</option>
-      <option value="Utility">Utility</option>
-    </select>
+<style>
+/* ---- Compact game list ---- */
+.list .item {
+  padding: 6px 8px;       /* tighter spacing */
+  font-size: 14px;
+  line-height: 1.2;       /* compact lines */
+  margin-bottom: 2px;
+}
+.list .item div:last-child {
+  font-size: 12px;
+  opacity: 0.5;
+}
 
-    <div class="tab-buttons">
-      <button id="openSettings" class="btn ghost">⚙️ Settings</button>
-      <button id="openRecent" class="btn ghost">🕹 Recently Played</button>
-    </div>
-  </div>
-</header>
+/* ---- Ghost button styling ---- */
+button.ghost {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--accent, #0b6ef6);
+  background: transparent;
+  color: var(--accent, #0b6ef6);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+button.ghost:hover {
+  background: var(--accent, #0b6ef6);
+  color: #fff;
+  box-shadow: 0 0 8px var(--accent, #0b6ef6);
+}
 
-<aside id="sidebar" class="sidebar" aria-label="Game list">
-  <div class="sidebar-header">
-    <h2>All Games</h2>
-    <div class="subtitle" id="count">0 games</div>
-  </div>
-  <div id="list" class="list compact" role="list"></div>
-</aside>
+/* ---- Modal tweaks ---- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.modal.show { opacity: 1; }
+.modal-content {
+  max-width: 420px;
+  width: 90%;
+  padding: 20px;
+  border-radius: 14px;
+  position: relative;
+}
 
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal" hidden>
-  <div class="modal-content glass-card">
-    <h2>Settings</h2>
-    <div class="settings-row">
-      <label>Theme Mode</label>
-      <select id="modeSelect">
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="oled">OLED</option>
-      </select>
-    </div>
-    <div class="settings-row">
-      <label>Accent Color</label>
-      <input type="color" id="accentPicker" value="#0b6ef6">
-    </div>
-    <div class="settings-row">
-      <label>Sidebar Width</label>
-      <input type="range" id="sidebarWidth" min="220" max="400" value="320">
-      <span id="sidebarWidthVal">320px</span>
-    </div>
-    <button id="closeSettings" class="btn ghost">Close</button>
-  </div>
-</div>
+/* ---- Recently Played list ---- */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.recent-list button {
+  text-align: left;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.05);
+  color: inherit;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.recent-list button:hover {
+  background: rgba(255,255,255,0.15);
+}
 
-<!-- Recently Played Modal -->
-<div id="recentModal" class="modal" hidden>
+/* ---- Confetti-new marker ---- */
+.confetti-new {
+  position: relative;
+  overflow: hidden;
+}
+.confetti-new::after {
+  content: "🎉";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 14px;
+  animation: pop 1s ease-out infinite;
+}
+@keyframes pop {
+  0%,100% { transform: translateY(0) scale(1); opacity:1; }
+  50% { transform: translateY(-6px) scale(1.2); opacity:0.8; }
+}
+</style>
+
+<script>
+// ---- Recently Played Modal ----
+const openSettings = document.getElementById('openSettings');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+
+const changelogModal = document.getElementById('changelogModal');
+const closeChangelog = document.getElementById('closeChangelog');
+const changelogList = document.getElementById('changelogList');
+
+const RECENT_KEY = 'obg_recent_v2';
+let recentModal, openRecentBtn, closeRecentBtn;
+
+// Dynamically create Recently Played modal
+recentModal = document.createElement('div');
+recentModal.id = 'recentModal';
+recentModal.className = 'modal';
+recentModal.hidden = true;
+recentModal.innerHTML = `
   <div class="modal-content glass-card">
     <h2>Recently Played</h2>
     <div id="recent" class="recent-list"></div>
-    <button id="closeRecent" class="btn ghost">Close</button>
-  </div>
-</div>
+    <button id="closeRecent" class="ghost">Close</button>
+  </div>`;
+document.body.appendChild(recentModal);
 
-<!-- Changelog Modal -->
-<div id="changelogModal" class="modal" hidden>
-  <div class="modal-content glass-card">
-    <h2>What's New</h2>
-    <ul id="changelogList"></ul>
-    <button id="closeChangelog" class="btn ghost">Got it!</button>
+openRecentBtn = document.createElement('button');
+openRecentBtn.id = 'openRecent';
+openRecentBtn.className = 'ghost';
+openRecentBtn.textContent = '🕹 Recently Played';
+document.querySelector('.controls').appendChild(openRecentBtn);
+
+closeRecentBtn = recentModal.querySelector('#closeRecent');
+
+// ---- Modal helpers ----
+function openModal(modal) {
+  modal.hidden = false;
+  setTimeout(()=> modal.classList.add('show'), 20);
+}
+function closeModal(modal) {
+  modal.classList.remove('show');
+  setTimeout(()=> modal.hidden=true, 250);
+}
+
+// ---- Event listeners ----
+openSettings.addEventListener('click', ()=> openModal(settingsModal));
+closeSettings.addEventListener('click', ()=> closeModal(settingsModal));
+
+openRecentBtn.addEventListener('click', ()=>{
+  renderRecent();
+  openModal(recentModal);
+});
+closeRecentBtn.addEventListener('click', ()=> closeModal(recentModal));
+
+closeChangelog.addEventListener('click', ()=> closeModal(changelogModal));
+
+// ---- Render Recently Played ----
+function renderRecent(){
+  const recentEl = recentModal.querySelector('#recent');
+  recentEl.innerHTML = '';
+  const cur = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+  if (!cur.length){ recentEl.textContent='No recent plays'; return; }
+  cur.forEach(r=>{
+    const b = document.createElement('button');
+    b.textContent = r.title;
+    b.addEventListener('click', ()=> window.open(r.htmlLink,'_blank','noopener'));
+    recentEl.appendChild(b);
+  });
+}
+
+// ---- Changelog modal + LS ----
+const CHANGELOG_KEY = 'obg_changelog_v2';
+const changelogData = [
+  "Added Snake.io & Race Survival Arena King (new games 🎉)",
+  "Settings moved to modal tab ⚙️",
+  "Game list compact and improved buttons",
+];
+
+function showChangelogIfNeeded() {
+  const lastSeen = localStorage.getItem(CHANGELOG_KEY);
+  const current = JSON.stringify(changelogData);
+  if (lastSeen !== current) {
+    changelogList.innerHTML = '';
+    changelogData.forEach(line=>{
+      const li = document.createElement('li'); li.textContent = line;
+      changelogList.appendChild(li);
+    });
+    openModal(changelogModal);
+    localStorage.setItem(CHANGELOG_KEY, current);
+  }
+}
+window.addEventListener('load', showChangelogIfNeeded);
+
+// ---- Confetti-new marker ----
+function markConfetti(item, title){
+  const seenKey = 'obg_seen_'+title;
+  if (!localStorage.getItem(seenKey)) {
+    item.classList.add('confetti-new');
+  }
+}
+
+// Example: when rendering game list, mark new games
+document.addEventListener('DOMContentLoaded', ()=>{
+  const items = document.querySelectorAll('.list .item');
+  items.forEach(it=>{
+    const title = it.querySelector('.item-title')?.textContent || '';
+    if(['Snake.io','Race Survival Arena King'].includes(title)){
+      markConfetti(it,title);
+    }
+  });
+});
+</script>
+
+
+</head>
+<body>
+  <header class="topbar">
+    <div class="left">
+      <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
+      <button id="open-altdom" class="ghost">Alternative Domains</button>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
+      <select id="categoryFilter" aria-label="Filter by category">
+        <option value="all">All Categories</option>
+        <option value="Action">Action</option>
+        <option value="Puzzle">Puzzle</option>
+        <option value="Arcade">Arcade</option>
+        <option value="Idle">Idle</option>
+        <option value="Utility">Utility</option>
+      </select>
+      <button id="openSettings" class="ghost">Settings ⚙️</button>
+    </div>
+  </header>
+
+  <main class="shell" id="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Game list">
+      <div class="sidebar-header">
+        <h2>All Games</h2>
+        <div class="subtitle" id="count">0 games</div>
+      </div>
+      <div id="list" class="list" role="list"></div>
+
+      <div class="recent-wrap">
+        <h3>Recently played</h3>
+        <div id="recent" class="recent"></div>
+      </div>
+    </aside>
+
+    <section class="content" id="content">
+      <div id="welcome" class="welcome glass-card">
+        <h1>Welcome to Oogly Boogly Games</h1>
+        <p><strong>No ads. No trackers. Just games.</strong></p>
+        <p><strong>What's new today?</strong> Check the changelog for updates!</p>
+        <div class="meta-row">
+          <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
+          <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
+        </div>
+        <div class="muted">Pro tip: press <kbd>/</kbd> to focus search.</div>
+      </div>
+
+      <div id="empty" class="empty glass-card" hidden>
+        <h2>No matches</h2>
+        <p>Try a different search or category.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot glass-card">
+    <small>© 2025 Oogly Boogly Games</small>
+    <a href="/alt.html" class="ghost">Alternative Domains page</a>
+  </footer>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-content glass-card">
+      <h2>Settings</h2>
+      <div class="settings-row">
+        <label>Theme Mode</label>
+        <select id="modeSelect">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="oled">OLED</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <label>Accent Color</label>
+        <input type="color" id="accentPicker" value="#0b6ef6">
+      </div>
+      <div class="settings-row">
+        <label>Sidebar Width</label>
+        <input type="range" id="sidebarWidth" min="220" max="400" value="320"> <span id="sidebarWidthVal">320px</span>
+      </div>
+      <button id="closeSettings" class="ghost">Close</button>
+    </div>
   </div>
-</div>
+
+  <!-- Changelog Modal -->
+  <div id="changelogModal" class="modal" hidden>
+    <div class="modal-content glass-card">
+      <h2>What's New</h2>
+      <ul id="changelogList"></ul>
+      <button id="closeChangelog" class="ghost">Got it!</button>
+    </div>
+  </div>
+
+<script src="scripts.js" defer></script>
+</body>
+</html>
