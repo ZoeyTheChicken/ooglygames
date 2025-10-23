@@ -27,6 +27,9 @@ const games = [
   { title:"Drift Boss", "html-link":"game/driftboss", "obg-track-link":"" },
   { title:"Snake.io", "html-link":"game/snakeio", "obg-track-link":"" },
   { title:"Drift Hunters", "html-link":"game/drifthunters", "obg-track-link":"" },
+  { title:"Race Survival Arena King", "html-link":"/rsak", "obg-track-link":"" },
+  { title:"Deadly Descent", "html-link":"/dd", "obg-track-link":"" },
+  { title:"ArrowMaster.io", "html-link":"/am", "obg-track-link":"" },
 ];
 
 // Populate sidebar
