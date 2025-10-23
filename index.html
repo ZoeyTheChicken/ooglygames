@@ -7,53 +7,62 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dark">
-<div class="topbar glass-card">
-  <div class="logo">Oogly Boogly <span class="mini">Glass UI</span></div>
-  <div class="controls">
-    <input type="text" id="search" class="search" placeholder="Search games..." />
-    <select id="categoryFilter">
-      <option value="all">All Categories</option>
-      <option value="Action">Action</option>
-      <option value="Arcade">Arcade</option>
-      <option value="Puzzle">Puzzle</option>
-      <option value="Idle">Idle</option>
-      <option value="Utility">Utility</option>
-    </select>
-    <input type="color" id="accentPicker" title="Pick Accent Color">
-    <button id="toggleDark" class="iconbtn">🌓</button>
-    <button id="open-altdom" class="iconbtn">🌐</button>
-  </div>
-</div>
 
-<div class="shell">
-  <div class="sidebar glass-card">
-    <div class="sidebar-header">
-      <strong>Games</strong>
-      <span id="count">0 games</span>
-    </div>
-    <div id="list" class="list"></div>
-    <div class="recent-wrap">
-      <strong>Recent Plays (<span id="stat-recent">0</span>)</strong>
-      <div id="recent" class="recent"></div>
+  <!-- TOPBAR -->
+  <div class="topbar glass-card">
+    <div class="logo">Oogly Boogly <span class="mini">Glass UI</span></div>
+    <div class="controls">
+      <input type="text" id="search" class="search" placeholder="Search games..." />
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="Action">Action</option>
+        <option value="Arcade">Arcade</option>
+        <option value="Puzzle">Puzzle</option>
+        <option value="Idle">Idle</option>
+        <option value="Utility">Utility</option>
+      </select>
+      <input type="color" id="accentPicker" title="Pick Accent Color">
+      <button id="toggleDark" class="iconbtn">🌓</button>
+      <button id="open-altdom" class="iconbtn">🌐</button>
     </div>
   </div>
 
-  <div class="content glass-card">
-    <div class="welcome">
-      <h2>Welcome to Oogly Boogly</h2>
-      <p class="muted">Use search or filter to find games. Click a game to open it in a new tab. Hover over items for smooth microanimations.</p>
-      <div class="meta-row">
-        <div class="stat"><strong id="stat-count">0</strong> total games</div>
-        <div class="stat"><strong id="stat-recent">0</strong> recent plays</div>
+  <!-- MAIN SHELL -->
+  <div class="shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar glass-card">
+      <div class="sidebar-header">
+        <strong>Games</strong>
+        <span id="count">0 games</span>
+      </div>
+      <div id="list" class="list"></div>
+
+      <div class="recent-wrap">
+        <strong>Recent Plays (<span id="stat-recent">0</span>)</strong>
+        <div id="recent" class="recent"></div>
       </div>
     </div>
-    <div id="empty" class="empty" hidden>No games found</div>
-  </div>
-</div>
 
-<div class="foot glass-card">
-  &copy; 2025 Oogly Boogly — Glass UI
-</div>
+    <!-- CONTENT AREA -->
+    <div class="content glass-card">
+      <div class="welcome" id="welcome">
+        <h2>Welcome to Oogly Boogly</h2>
+        <p class="muted">Hover over games to prefetch, click to play instantly. Use search and category filters to find your favorite games. Microanimations everywhere make everything smoother.</p>
+        <div class="meta-row">
+          <div class="stat"><strong id="stat-count">0</strong> total games</div>
+          <div class="stat"><strong id="stat-recent">0</strong> recent plays</div>
+        </div>
+      </div>
+      <div id="empty" class="empty" hidden>No games found</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot glass-card">
+    &copy; 2025 Oogly Boogly — Glass UI
+  </div>
 
 <script src="scripts.js"></script>
 </body>

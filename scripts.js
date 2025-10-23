@@ -289,3 +289,140 @@ function applyAccent(color){
     el.style.boxShadow += `, 0 0 10px rgba(${rgb},0.15)`;
   });
 }
+// ====== DOM References ======
+const $ = s => document.querySelector(s);
+const listEl = $('#list');
+const searchEl = $('#search');
+const catEl = $('#categoryFilter');
+const countEl = $('#count');
+const recentEl = $('#recent');
+const statCount = $('#stat-count');
+const statRecent = $('#stat-recent');
+const modeSelect = $('#modeSelect');
+const accentPicker = $('#accentPicker');
+const openAltdom = $('#open-altdom');
+
+// ====== State ======
+let filtered = games.slice();
+let focusedIndex = -1;
+const RECENT_KEY = 'obg_recent_v2';
+const ACCENT_KEY = 'obg_accent';
+const MODE_KEY = 'obg_mode';
+
+// ====== Render List ======
+function renderList(items){
+  listEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  items.forEach((g, idx) => {
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.tabIndex = 0;
+    item.dataset.idx = idx;
+
+    const left = document.createElement('div');
+    left.style.display = 'flex';
+    left.style.flexDirection = 'column';
+
+    const title = document.createElement('div');
+    title.className = 'item-title';
+    title.textContent = g.title;
+
+    const meta = document.createElement('div');
+    meta.className = 'item-meta';
+    meta.textContent = g.category || '';
+
+    left.appendChild(title);
+    left.appendChild(meta);
+
+    const chevron = document.createElement('div');
+    chevron.innerHTML = '▶';
+    chevron.style.opacity = 0.6;
+    chevron.style.fontWeight = 700;
+
+    item.appendChild(left);
+    item.appendChild(chevron);
+
+    item.addEventListener('click', ()=> openGame(g));
+    item.addEventListener('keydown', (e)=> {
+      if(e.key==='Enter') openGame(g);
+      if(e.key==='ArrowDown') focusNext();
+      if(e.key==='ArrowUp') focusPrev();
+    });
+
+    // Micro-prefetch
+    let warmed=false;
+    item.addEventListener('pointerenter', ()=> { if(!warmed){ prefetch(g['html-link']); warmed=true; } });
+
+    frag.appendChild(item);
+  });
+  listEl.appendChild(frag);
+  updateCount(items.length);
+}
+
+// ====== Open Game & Recent ======
+function openGame(g){
+  if(!g||!g['html-link']||g['html-link']==='#') return;
+  window.open(g['html-link'],'_blank','noopener');
+  addRecent(g);
+}
+function addRecent(g){
+  const cur = getRecent();
+  const normalized = { title:g.title, htmlLink:g['html-link'] };
+  const existing = cur.find(x=>x.htmlLink===normalized.htmlLink);
+  let next;
+  if(existing){ next = cur.filter(x=>x.htmlLink!==normalized.htmlLink); next.unshift(normalized); }
+  else next=[normalized,...cur];
+  next = next.slice(0,8);
+  try{ localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch(e){}
+  renderRecent();
+}
+function getRecent(){
+  try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');} catch(e){return[];}
+}
+function renderRecent(){
+  recentEl.innerHTML='';
+  const cur=getRecent();
+  statRecent.textContent=cur.length;
+  if(!cur.length){ recentEl.textContent='No recent plays'; return; }
+  cur.forEach(r=>{
+    const b=document.createElement('button');
+    b.textContent=r.title;
+    b.addEventListener('click',()=>window.open(r.htmlLink,'_blank','noopener'));
+    recentEl.appendChild(b);
+  });
+}
+
+// ====== Count ======
+function updateCount(n){
+  countEl.textContent=`${n} game${n===1?'':'s'}`;
+  statCount.textContent=games.length;
+}
+
+// ====== Search & Filter ======
+let searchTimer=null;
+function applyFilters(){
+  const q=(searchEl.value||'').trim().toLowerCase();
+  const cat=catEl.value;
+  filtered = games.filter(g=>{
+    if(cat!=='all' && (g.category||'').toLowerCase()!==cat.toLowerCase()) return false;
+    if(!q) return true;
+    return (g.title||'').toLowerCase().includes(q) || (g.category||'').toLowerCase().includes(q);
+  });
+  $('#empty').hidden = filtered.length!==0;
+  $('#welcome').hidden = filtered.length===0;
+  renderList(filtered);
+}
+function debounceApply(){ if(searchTimer) clearTimeout(searchTimer); searchTimer=setTimeout(applyFilters,160); }
+searchEl.addEventListener('input',debounceApply);
+catEl.addEventListener('change',applyFilters);
+
+// ====== Prefetch ======
+function prefetch(url){ if(!url) return; fetch(url,{method:'HEAD',mode:'no-cors'}).catch(()=>{}); }
+
+// ====== Init ======
+function init(){
+  renderList(games.slice());
+  renderRecent();
+  updateCount(games.length);
+}
+init();
