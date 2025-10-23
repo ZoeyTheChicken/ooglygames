@@ -147,3 +147,22 @@ function init(){
   showChangelog();
 }
 init();
+const openRecent = $('#openRecent');
+const recentModal = $('#recentModal');
+const closeRecent = $('#closeRecent');
+
+openRecent.addEventListener('click', ()=> openModal(recentModal));
+closeRecent.addEventListener('click', ()=> closeModal(recentModal));
+
+function renderRecent(){
+  const recentEl = document.querySelector('#recent');
+  recentEl.innerHTML='';
+  const cur=JSON.parse(localStorage.getItem('obg_recent_v2')||'[]');
+  statRecent.textContent=cur.length;
+  if(!cur.length){recentEl.textContent='No recent plays'; return;}
+  cur.forEach(r=>{
+    const b=document.createElement('button'); b.textContent=r.title;
+    b.addEventListener('click',()=> window.open(r.htmlLink,'_blank','noopener'));
+    recentEl.appendChild(b);
+  });
+}

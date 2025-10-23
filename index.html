@@ -1,103 +1,74 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Oogly Boogly Games</title>
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <div class="left">
-      <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
-      <button id="open-altdom" class="ghost">Alternative Domains</button>
-    </div>
+<header class="topbar">
+  <div class="left">
+    <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
+    <button id="open-altdom" class="btn ghost">Alternative Domains</button>
+  </div>
 
-    <div class="controls">
-      <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
-      <select id="categoryFilter" aria-label="Filter by category">
-        <option value="all">All Categories</option>
-        <option value="Action">Action</option>
-        <option value="Puzzle">Puzzle</option>
-        <option value="Arcade">Arcade</option>
-        <option value="Idle">Idle</option>
-        <option value="Utility">Utility</option>
+  <div class="controls">
+    <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
+    <select id="categoryFilter" aria-label="Filter by category">
+      <option value="all">All Categories</option>
+      <option value="Action">Action</option>
+      <option value="Puzzle">Puzzle</option>
+      <option value="Arcade">Arcade</option>
+      <option value="Idle">Idle</option>
+      <option value="Utility">Utility</option>
+    </select>
+
+    <div class="tab-buttons">
+      <button id="openSettings" class="btn ghost">⚙️ Settings</button>
+      <button id="openRecent" class="btn ghost">🕹 Recently Played</button>
+    </div>
+  </div>
+</header>
+
+<aside id="sidebar" class="sidebar" aria-label="Game list">
+  <div class="sidebar-header">
+    <h2>All Games</h2>
+    <div class="subtitle" id="count">0 games</div>
+  </div>
+  <div id="list" class="list compact" role="list"></div>
+</aside>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal" hidden>
+  <div class="modal-content glass-card">
+    <h2>Settings</h2>
+    <div class="settings-row">
+      <label>Theme Mode</label>
+      <select id="modeSelect">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="oled">OLED</option>
       </select>
-      <button id="openSettings" class="ghost">Settings ⚙️</button>
     </div>
-  </header>
-
-  <main class="shell" id="shell">
-    <aside id="sidebar" class="sidebar" aria-label="Game list">
-      <div class="sidebar-header">
-        <h2>All Games</h2>
-        <div class="subtitle" id="count">0 games</div>
-      </div>
-      <div id="list" class="list" role="list"></div>
-
-      <div class="recent-wrap">
-        <h3>Recently played</h3>
-        <div id="recent" class="recent"></div>
-      </div>
-    </aside>
-
-    <section class="content" id="content">
-      <div id="welcome" class="welcome glass-card">
-        <h1>Welcome to Oogly Boogly Games</h1>
-        <p><strong>No ads. No trackers. Just games.</strong></p>
-        <p><strong>What's new today?</strong> Check the changelog for updates!</p>
-        <div class="meta-row">
-          <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
-          <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
-        </div>
-        <div class="muted">Pro tip: press <kbd>/</kbd> to focus search.</div>
-      </div>
-
-      <div id="empty" class="empty glass-card" hidden>
-        <h2>No matches</h2>
-        <p>Try a different search or category.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="foot glass-card">
-    <small>© 2025 Oogly Boogly Games</small>
-    <a href="/alt.html" class="ghost">Alternative Domains page</a>
-  </footer>
-
-  <!-- Settings Modal -->
-  <div id="settingsModal" class="modal" hidden>
-    <div class="modal-content glass-card">
-      <h2>Settings</h2>
-      <div class="settings-row">
-        <label>Theme Mode</label>
-        <select id="modeSelect">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="oled">OLED</option>
-        </select>
-      </div>
-      <div class="settings-row">
-        <label>Accent Color</label>
-        <input type="color" id="accentPicker" value="#0b6ef6">
-      </div>
-      <div class="settings-row">
-        <label>Sidebar Width</label>
-        <input type="range" id="sidebarWidth" min="220" max="400" value="320"> <span id="sidebarWidthVal">320px</span>
-      </div>
-      <button id="closeSettings" class="ghost">Close</button>
+    <div class="settings-row">
+      <label>Accent Color</label>
+      <input type="color" id="accentPicker" value="#0b6ef6">
     </div>
+    <div class="settings-row">
+      <label>Sidebar Width</label>
+      <input type="range" id="sidebarWidth" min="220" max="400" value="320">
+      <span id="sidebarWidthVal">320px</span>
+    </div>
+    <button id="closeSettings" class="btn ghost">Close</button>
   </div>
+</div>
 
-  <!-- Changelog Modal -->
-  <div id="changelogModal" class="modal" hidden>
-    <div class="modal-content glass-card">
-      <h2>What's New</h2>
-      <ul id="changelogList"></ul>
-      <button id="closeChangelog" class="ghost">Got it!</button>
-    </div>
+<!-- Recently Played Modal -->
+<div id="recentModal" class="modal" hidden>
+  <div class="modal-content glass-card">
+    <h2>Recently Played</h2>
+    <div id="recent" class="recent-list"></div>
+    <button id="closeRecent" class="btn ghost">Close</button>
   </div>
+</div>
 
-<script src="scripts.js" defer></script>
-</body>
-</html>
+<!-- Changelog Modal -->
+<div id="changelogModal" class="modal" hidden>
+  <div class="modal-content glass-card">
+    <h2>What's New</h2>
+    <ul id="changelogList"></ul>
+    <button id="closeChangelog" class="btn ghost">Got it!</button>
+  </div>
+</div>
