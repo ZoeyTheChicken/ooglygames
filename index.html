@@ -1,32 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oogly Boogly Games</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Oogly Boogly Games</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="logo">Oogly Boogly Games</div>
-    <button id="toggleDark">🌙</button>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
+      <div class="tag">72 games • 100% ad-free</div>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" type="search" placeholder="Search games... (press / to focus)" aria-label="Search games" />
+      <select id="categoryFilter" aria-label="Filter by category">
+        <option value="all">All Categories</option>
+        <option value="Action">Action</option>
+        <option value="Puzzle">Puzzle</option>
+        <option value="Arcade">Arcade</option>
+      </select>
+      <button id="toggleDark" class="iconbtn" aria-label="Toggle theme">🌙</button>
+    </div>
   </header>
 
-  <main class="container">
-    <aside class="sidebar" id="sidebar"></aside>
-    <section class="welcome">
-      <h1>Welcome!</h1>
-      <h2>How many games can you play right now, completely ad free and unblocked? 21 games!</h2>
-      <h3>We are adding new games every so often</h3>
-      <h1>Change Log</h1>
-      <h2>October 21, 2025: Add 21 games</h2>
+  <main class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Game list">
+      <div class="sidebar-header">
+        <h2>All Games</h2>
+        <div class="subtitle" id="count">0 games</div>
+      </div>
+      <div id="list" class="list" role="list"></div>
+
+      <div class="recent-wrap">
+        <h3>Recently played</h3>
+        <div id="recent" class="recent"></div>
+      </div>
+    </aside>
+
+    <section class="content" id="content">
+      <div class="welcome" id="welcome">
+        <h1>Welcome to Oogly Boogly Games</h1>
+        <p>Click any title in the sidebar to open the game in a new tab (clean, fullscreen). Use search or categories to find games fast.</p>
+      </div>
+
+      <div id="empty" class="empty" hidden>
+        <h2>No matches</h2>
+        <p>Try a different search or category.</p>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>© 2025 Oogly Boogly Games — Clean, ad-free, fun!</p>
+  <footer class="foot">
+    <small>© 2025 Oogly Boogly Games — Clean, ad-free, fun!</small>
   </footer>
 
-  <script src="scripts.js"></script>
+<script src="scripts.js" defer></script>
 </body>
 </html>
