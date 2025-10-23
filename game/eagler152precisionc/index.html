@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Precision Client (1.5.2-beta_0.2)</title>
+	<meta charset="UTF-8" />
+	<meta content="Precision Client is a custom eaglercraft client with QOL features, custom texture packs, and more." name="description" />
+	<meta content="//precisionclient.vercel.app" name="url" />
+	<meta content="EtcherFX" name="author" />
+	<meta content="Precision Client" property="og:title" />
+	<meta content="en-US" property="og:locale" />
+	<meta content="website" property="og:type" />
+	<meta content="//precisionclient.vercel.app" property="og:url" />
+	<!--meta content="IMAGE" property="og:image"/>-->
+	<meta content="Precision Client is a custom eaglercraft client with QOL features, custom texture packs, and more."
+		property="og:description" />
+	<script type="8294970c776becc063e6793a-text/javascript" src="eagswebrtc.js"></script>
+	<script type="8294970c776becc063e6793a-text/javascript" src="classes.js"></script>
+	<script src="/js/ga4.js" type="8294970c776becc063e6793a-text/javascript"></script>
+	<script async src="https://arc.io/widget.min.js#pchPqjfw" type="8294970c776becc063e6793a-text/javascript"></script>
+	<style>
+		@font-face {
+			font-family: "Product Sans";
+			src: url(ProductSans.ttf);
+		}
+	</style>
+</head>
+
+<body style="margin: 0; width: 100vw; height: 100vh; font-family:
+'Product Sans'" id="game_frame" class="gameframe">
+	<div id="Selection"
+		style="display: inline-block; position: absolute; top:50%; left: 50%; transform: translate(-50%, -50%)">
+		<style>
+			html {
+				color: #fff;
+			}
+
+			.starter {
+				border-radius: 5px;
+				border: 1px solid #fff;
+				background-color: #0d0c0c;
+				color: #fff;
+			}
+
+			.dropdown {
+				position: relative;
+				display: inline-block;
+				border-radius: 5px;
+				border: 1px solid #fff;
+				background-color: #0d0c0c;
+				color: #fff;
+			}
+
+			.gameframe {
+				background-image: url("bg.png");
+				background-size: cover;
+				background-repeat: no-repeat;
+			}
+		</style>
+		<h1>Precision Client</h1>
+		<h3>Select a texture pack:</h3>
+		<select id="Packs" class="dropdown">
+			<option>-- Choose one --</option>
+			<option value="defaultold">Default Old</option>
+			<option value="defaultnew">Default 1.17+</option>
+			<option value="bombies">Bombies 180k</option>
+			<option value="bones">Bare Bones</option>
+			<option value="modifiednew">Modified 1.17+</option>
+			<option value="miamiprivate">Miami Private</option>
+			<option value="nebula">Nebula</option>
+			<option value="ricefault">Ricefault</option>
+			<option value="tightfault">Tightfault</option>
+			<option value="walifault">Walifault</option>
+		</select>
+		<br /><br />
+		<input class="starter" type="button" value="Launch" onclick="if (!window.__cfRLUnblockHandlers) return false; Start();" data-cf-modified-8294970c776becc063e6793a-="" />
+	</div>
+	<script type="8294970c776becc063e6793a-text/javascript">
+		if (document.location.href.startsWith("file:")) {
+			alert("You cannot 'open' this file in your browser, the code doesn't work. Upload this folder to your HTTP(s) server and access it via the internet to launch the stable-download game. This is not a bug, please read the documentation.");
+		} else {
+			var PackSelect = document.getElementById("Packs");
+			function Start() {
+				if (PackSelect.selectedIndex !== 0) {
+					var Selected = PackSelect.options[PackSelect.selectedIndex].value;
+					document.getElementById("Selection").style.display = "none";
+					localStorage.LastPack = Selected;
+					const relayId = Math.floor(Math.random() * 3);
+					window.eaglercraftOpts = {
+						container: "game_frame",
+						assetsURI: `packs/${Selected}.epk`,
+						serverWorkerURI: "worker_bootstrap.js",
+						worldsFolder: "MAIN",
+						servers: [
+						],
+						relays: [
+							{ addr: "wss://relay.deev.is/", name: "lax1dude relay #1", primary: relayId == 0 },
+							{ addr: "wss://relay.lax1dude.net/", name: "lax1dude relay #2", primary: relayId == 1 },
+							{ addr: "wss://relay.shhnowisnottheti.me/", name: "ayunami relay #1", primary: relayId == 2 }
+						],
+						mainMenu: {
+							splashes: [], eaglerLogo: false
+						}
+					};
+					(function () {
+						var q = window.location.search;
+						if (typeof q === 'string' && q.startsWith("?")) {
+							q = new URLSearchParams(q);
+							var s = q.get("server");
+							if (s) window.minecraftOpts.push(s);
+						}
+					})();
+					main();
+				} else
+					alert("You need to select a pack");
+			}
+		}
+		if (localStorage.LastPack)
+			for (Pack of PackSelect.children)
+				if (Pack.value === localStorage.LastPack) {
+					Pack.selected = "selected";
+					break;
+				}
+	</script>
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="8294970c776becc063e6793a-|49" defer></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992da1de5c9c7d11',t:'MTc2MTE4NDczNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"819a6dd01c5f466797f833c74dd6d160","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+
+</html>
