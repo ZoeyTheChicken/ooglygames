@@ -8,24 +8,41 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
+    <div class="left">
       <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
-      <div class="tag">72 games • 100% ad-free</div>
+      <button id="open-altdom" class="ghost">Alternative Domains</button>
     </div>
 
     <div class="controls">
-      <input id="search" class="search" type="search" placeholder="Search games... (press / to focus)" aria-label="Search games" />
+      <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
       <select id="categoryFilter" aria-label="Filter by category">
         <option value="all">All Categories</option>
         <option value="Action">Action</option>
         <option value="Puzzle">Puzzle</option>
         <option value="Arcade">Arcade</option>
+        <option value="Idle">Idle</option>
+        <option value="Utility">Utility</option>
       </select>
-      <button id="toggleDark" class="iconbtn" aria-label="Toggle theme">🌙</button>
+
+      <div class="theme-controls">
+        <label class="small">Mode</label>
+        <select id="modeSelect" aria-label="Theme mode">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="oled">OLED</option>
+        </select>
+      </div>
+
+      <div class="accent">
+        <label class="small">Accent</label>
+        <input id="accentPicker" type="color" value="#0b6ef6" title="Pick accent color">
+      </div>
+
+      <button id="toggleDark" class="iconbtn" aria-label="Toggle theme">🌓</button>
     </div>
   </header>
 
-  <main class="shell">
+  <main class="shell" id="shell">
     <aside id="sidebar" class="sidebar" aria-label="Game list">
       <div class="sidebar-header">
         <h2>All Games</h2>
@@ -40,20 +57,26 @@
     </aside>
 
     <section class="content" id="content">
-      <div class="welcome" id="welcome">
+      <div id="welcome" class="welcome glass-card">
         <h1>Welcome to Oogly Boogly Games</h1>
-        <p>Click any title in the sidebar to open the game in a new tab (clean, fullscreen). Use search or categories to find games fast.</p>
+        <p><strong>No ads. No trackers. Just games.</strong> Click a title to open the game in a new tab. Built to run clean and fast on school devices.</p>
+        <div class="meta-row">
+          <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
+          <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
+        </div>
+        <div class="muted">Pro tip: press <kbd>/</kbd> to focus search. Use the Accent picker to customize the site vibe.</div>
       </div>
 
-      <div id="empty" class="empty" hidden>
+      <div id="empty" class="empty glass-card" hidden>
         <h2>No matches</h2>
         <p>Try a different search or category.</p>
       </div>
     </section>
   </main>
 
-  <footer class="foot">
+  <footer class="foot glass-card">
     <small>© 2025 Oogly Boogly Games — Clean, ad-free, fun!</small>
+    <a href="/alt.html" class="ghost">Alternative Domains page</a>
   </footer>
 
 <script src="scripts.js" defer></script>
