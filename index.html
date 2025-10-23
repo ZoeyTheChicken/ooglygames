@@ -1,69 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oogly Boogly — Glass UI</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Oogly Boogly Games 2.1</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body class="dark">
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="left">
+      <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
+      <button id="open-altdom" class="ghost">Alternative Domains</button>
+    </div>
 
-  <!-- TOPBAR -->
-  <div class="topbar glass-card">
-    <div class="logo">Oogly Boogly <span class="mini">Glass UI</span></div>
     <div class="controls">
-      <input type="text" id="search" class="search" placeholder="Search games..." />
-      <select id="categoryFilter">
+      <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
+      <select id="categoryFilter" aria-label="Filter by category">
         <option value="all">All Categories</option>
         <option value="Action">Action</option>
-        <option value="Arcade">Arcade</option>
         <option value="Puzzle">Puzzle</option>
+        <option value="Arcade">Arcade</option>
         <option value="Idle">Idle</option>
         <option value="Utility">Utility</option>
       </select>
-      <input type="color" id="accentPicker" title="Pick Accent Color">
-      <button id="toggleDark" class="iconbtn">🌓</button>
-      <button id="open-altdom" class="iconbtn">🌐</button>
+
+      <button id="open-settings" class="ghost">Settings ⚙️</button>
     </div>
-  </div>
+  </header>
 
-  <!-- MAIN SHELL -->
-  <div class="shell">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar glass-card">
+  <!-- Main Shell -->
+  <main class="shell" id="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Game list">
       <div class="sidebar-header">
-        <strong>Games</strong>
-        <span id="count">0 games</span>
+        <h2>All Games</h2>
+        <div class="subtitle" id="count">0 games</div>
       </div>
-      <div id="list" class="list"></div>
+      <div id="list" class="list" role="list"></div>
 
       <div class="recent-wrap">
-        <strong>Recent Plays (<span id="stat-recent">0</span>)</strong>
+        <h3>Recently played</h3>
         <div id="recent" class="recent"></div>
       </div>
-    </div>
+    </aside>
 
-    <!-- CONTENT AREA -->
-    <div class="content glass-card">
-      <div class="welcome" id="welcome">
-        <h2>Welcome to Oogly Boogly</h2>
-        <p class="muted">Hover over games to prefetch, click to play instantly. Use search and category filters to find your favorite games. Microanimations everywhere make everything smoother.</p>
+    <section class="content" id="content">
+      <div id="welcome" class="welcome glass-card">
+        <h1>Welcome to Oogly Boogly Games</h1>
+        <p><strong>No ads. No trackers. Just games.</strong> Click a title to open the game in a new tab. Built to run clean and fast on school devices.</p>
         <div class="meta-row">
-          <div class="stat"><strong id="stat-count">0</strong> total games</div>
-          <div class="stat"><strong id="stat-recent">0</strong> recent plays</div>
+          <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
+          <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
         </div>
+        <div class="muted">Pro tip: press <kbd>/</kbd> to focus search. Press <kbd>S</kbd> for Settings.</div>
       </div>
-      <div id="empty" class="empty" hidden>No games found</div>
+
+      <div id="empty" class="empty glass-card" hidden>
+        <h2>No matches</h2>
+        <p>Try a different search or category.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="foot glass-card">
+    <small>© 2025 Oogly Boogly Games - OOGA BOOGA!!!!</small>
+    <a href="/alt.html" class="ghost">Alternative Domains page</a>
+  </footer>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-content glass-card">
+      <h2>Settings</h2>
+      <div class="settings-row">
+        <label>Theme Mode</label>
+        <select id="modeSelect">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="oled">OLED</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <label>Accent Color</label>
+        <input type="color" id="accentPicker" value="#0b6ef6">
+      </div>
+      <div class="settings-row">
+        <label>Sidebar Width</label>
+        <input type="range" id="sidebarWidth" min="220" max="400" value="320"> <span id="sidebarWidthVal">320px</span>
+      </div>
+      <button id="closeSettings" class="ghost">Close</button>
     </div>
-
   </div>
 
-  <!-- FOOTER -->
-  <div class="foot glass-card">
-    &copy; 2025 Oogly Boogly — Glass UI
+  <!-- Changelog Modal -->
+  <div id="changelogModal" class="modal" hidden>
+    <div class="modal-content glass-card">
+      <h2>What's New</h2>
+      <ul id="changelogList"></ul>
+      <button id="closeChangelog" class="ghost">Got it!</button>
+    </div>
   </div>
 
-<script src="scripts.js"></script>
+<script src="scripts.js" defer></script>
 </body>
 </html>

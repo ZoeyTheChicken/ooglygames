@@ -38,7 +38,23 @@ const games = [
   { title:"ArrowMaster.io", "html-link":"/am", "obg-track-link":"", category:"Action" },
 ];
 
-/* ---- DOM refs ---- */
+/* OBG 2.1 Supercharged */
+
+const games=[
+  {title:"Minecraft 1.12.2","html-link":"game/eagler1122w/","category":"Action"},
+  {title:"Minecraft 1.5.2 (Precision Client)","html-link":"game/eagler152precisionc/","category":"Action"},
+  {title:"2048","html-link":"game/2048/","category":"Puzzle"},
+  {title:"Dino","html-link":"game/dino/","category":"Arcade","new":true},
+  {title:"Cookie Clicker","html-link":"game/index.html","category":"Idle","new":true},
+];
+
+const changelogData = [
+  "Added 2 new games: Dino & Cookie Clicker",
+  "New Settings tab with theme + accent + sidebar width",
+  "Confetti animation for new games",
+  "Changelog modal with once-per-update display"
+];
+
 const $ = s => document.querySelector(s);
 const listEl = $('#list');
 const searchEl = $('#search');
@@ -50,340 +66,84 @@ const statRecent = $('#stat-recent');
 const modeSelect = $('#modeSelect');
 const accentPicker = $('#accentPicker');
 const openAltdom = $('#open-altdom');
+const openSettings = $('#open-settings');
+const settingsModal = $('#settingsModal');
+const closeSettings = $('#closeSettings');
+const changelogModal = $('#changelogModal');
+const changelogList = $('#changelogList');
+const closeChangelog = $('#closeChangelog');
+const sidebarWidth = $('#sidebarWidth');
+const sidebarWidthVal = $('#sidebarWidthVal');
 
-/* ---- state ---- */
-let filtered = games.slice();
-let focusedIndex = -1;
-const RECENT_KEY = 'obg_recent_v2';
-const ACCENT_KEY = 'obg_accent';
-const MODE_KEY = 'obg_mode';
+let filtered=games.slice();
+let focusedIndex=-1;
+const RECENT_KEY='obg_recent_v2';
+const ACCENT_KEY='obg_accent';
+const MODE_KEY='obg_mode';
+const CHANGELOG_KEY='obg_changelog_v2';
 
-/* ---- render ---- */
+/* ---- Render List ---- */
 function renderList(items){
-  listEl.innerHTML = '';
-  const frag = document.createDocumentFragment();
-  items.forEach((g, idx) => {
-    const item = document.createElement('div');
-    item.className = 'item';
-    item.tabIndex = 0;
-    item.dataset.idx = idx;
+  listEl.innerHTML='';
+  const frag=document.createDocumentFragment();
+  items.forEach((g,idx)=>{
+    const item=document.createElement('div');
+    item.className='item';
+    if(g.new && !localStorage.getItem('obg_seen_'+g.title)) item.classList.add('confetti-new');
+    item.tabIndex=0;
+    item.dataset.idx=idx;
 
-    const left = document.createElement('div');
-    left.style.display = 'flex';
-    left.style.flexDirection = 'column';
+    const left=document.createElement('div'); left.style.display='flex'; left.style.flexDirection='column';
+    const title=document.createElement('div'); title.className='item-title'; title.textContent=g.title;
+    const meta=document.createElement('div'); meta.className='item-meta'; meta.textContent=g.category||'';
+    left.appendChild(title); left.appendChild(meta);
+    const chevron=document.createElement('div'); chevron.innerHTML='▶'; chevron.style.opacity=0.6; chevron.style.fontWeight=700;
+    item.appendChild(left); item.appendChild(chevron);
 
-    const title = document.createElement('div');
-    title.className = 'item-title';
-    title.textContent = g.title;
-
-    const meta = document.createElement('div');
-    meta.className = 'item-meta';
-    meta.textContent = g.category || '';
-
-    left.appendChild(title);
-    left.appendChild(meta);
-
-    const chevron = document.createElement('div');
-    chevron.innerHTML = '▶';
-    chevron.style.opacity = 0.6;
-    chevron.style.fontWeight = 700;
-
-    item.appendChild(left);
-    item.appendChild(chevron);
-
-    item.addEventListener('click', ()=> openGame(g));
-    item.addEventListener('keydown', (e)=> {
-      if (e.key === 'Enter') openGame(g);
-      if (e.key === 'ArrowDown') focusNext();
-      if (e.key === 'ArrowUp') focusPrev();
-    });
-
-    // micro-prefetch on hover (gentle)
-    let warmed = false;
-    item.addEventListener('pointerenter', () => {
-      if (g['obg-track-link']) navigator.sendBeacon ? navigator.sendBeacon(g['obg-track-link']) : fetch(g['obg-track-link']).catch(()=>{});
-      if (!warmed) { prefetch(g['html-link']); warmed = true; }
-    });
-
-    frag.appendChild(item);
-  });
-  listEl.appendChild(frag);
-  updateCount(items.length);
-}
-
-/* ---- open and recent ---- */
-function openGame(g){
-  if (!g || !g['html-link'] || g['html-link'] === '#') return;
-  // tracking ping
-  if (g['obg-track-link']) navigator.sendBeacon ? navigator.sendBeacon(g['obg-track-link']) : fetch(g['obg-track-link']).catch(()=>{});
-  window.open(g['html-link'], '_blank', 'noopener');
-
-  addRecent(g);
-}
-
-function addRecent(g){
-  const cur = getRecent();
-  const normalized = { title: g.title, htmlLink: g['html-link'] };
-  const existing = cur.find(x => x.htmlLink === normalized.htmlLink);
-  let next;
-  if (existing){
-    next = cur.filter(x => x.htmlLink !== normalized.htmlLink);
-    next.unshift(normalized);
-  } else {
-    next = [normalized, ...cur];
-  }
-  next = next.slice(0,8);
-  try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch(e){}
-  renderRecent();
-}
-
-function getRecent(){
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e){ return []; }
-}
-function renderRecent(){
-  recentEl.innerHTML = '';
-  const cur = getRecent();
-  statRecent.textContent = cur.length;
-  if (!cur.length){ recentEl.textContent = 'No recent plays'; return; }
-  cur.forEach(r => {
-    const b = document.createElement('button');
-    b.textContent = r.title;
-    b.addEventListener('click', ()=> window.open(r.htmlLink, '_blank', 'noopener'));
-    recentEl.appendChild(b);
-  });
-}
-
-/* ---- count ---- */
-function updateCount(n){
-  countEl.textContent = `${n} game${n===1?'':'s'}`;
-  statCount.textContent = games.length;
-}
-
-/* ---- search/filter ---- */
-let searchTimer = null;
-function applyFilters(){
-  const q = (searchEl.value || '').trim().toLowerCase();
-  const cat = catEl.value;
-  filtered = games.filter(g => {
-    if (cat !== 'all' && (g.category||'').toLowerCase() !== cat.toLowerCase()) return false;
-    if (!q) return true;
-    return (g.title||'').toLowerCase().includes(q) || (g.category||'').toLowerCase().includes(q);
-  });
-  $('#empty').hidden = filtered.length !== 0;
-  $('#welcome').hidden = filtered.length === 0;
-  renderList(filtered);
-}
-
-function debounceApply(){
-  if (searchTimer) clearTimeout(searchTimer);
-  searchTimer = setTimeout(applyFilters, 160);
-}
-searchEl.addEventListener('input', debounceApply);
-catEl.addEventListener('change', applyFilters);
-
-/* ---- keyboard shortcuts ---- */
-document.addEventListener('keydown', (e) => {
-  if (e.key === '/' && document.activeElement !== searchEl) { e.preventDefault(); searchEl.focus(); }
-  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); searchEl.focus(); }
-  if (e.key === 'ArrowDown') {
-    const first = listEl.querySelector('.item');
-    if (first) first.focus();
-  }
-});
-
-/* ---- focus helpers ---- */
-function focusNext(){
-  const items = Array.from(listEl.querySelectorAll('.item'));
-  if (!items.length) return;
-  focusedIndex = Math.min(focusedIndex + 1, items.length - 1);
-  items[focusedIndex].focus();
-}
-function focusPrev(){
-  const items = Array.from(listEl.querySelectorAll('.item'));
-  if (!items.length) return;
-  focusedIndex = Math.max(focusedIndex - 1, 0);
-  items[focusedIndex].focus();
-}
-listEl.addEventListener('focusin', e => {
-  const it = e.target.closest('.item');
-  if (!it) return;
-  focusedIndex = parseInt(it.dataset.idx || 0, 10);
-});
-
-/* ---- prefetch small HEAD ---- */
-function prefetch(url){
-  if (!url) return;
-  try {
-    const u = new URL(url, location.href);
-    // only prefetch same-origin by default (avoid cross-origin noise)
-    if (u.origin !== location.origin) return;
-    fetch(u.href, { method:'HEAD', mode:'no-cors' }).catch(()=>{});
-  } catch(e){}
-}
-
-/* ---- theme + accent persistence ---- */
-function applyAccent(color){
-  document.documentElement.style.setProperty('--accent', color);
-  // use accent as focus glow too
-  document.documentElement.style.setProperty('--accent-rgb', hexToRgb(color));
-}
-function hexToRgb(hex){
-  const c = hex.replace('#','');
-  const bigint = parseInt(c,16);
-  return `${(bigint >> 16) & 255},${(bigint >> 8) & 255},${bigint & 255}`;
-}
-
-accentPicker.addEventListener('input', (e) => {
-  applyAccent(e.target.value);
-  localStorage.setItem(ACCENT_KEY, e.target.value);
-});
-
-// mode selection
-modeSelect.addEventListener('change', e => {
-  setMode(e.target.value);
-  localStorage.setItem(MODE_KEY, e.target.value);
-});
-function setMode(m){
-  document.body.classList.remove('light','oled');
-  if (m === 'light') document.body.classList.add('light');
-  if (m === 'oled') document.body.classList.add('oled');
-  modeSelect.value = m;
-}
-
-/* quick toggle */
-$('#toggleDark').addEventListener('click', ()=> {
-  if (document.body.classList.contains('light')) setMode('dark');
-  else setMode('light');
-  try { localStorage.setItem(MODE_KEY, document.body.classList.contains('light') ? 'light' : 'dark'); } catch(e){}
-});
-
-/* restore persisted settings */
-try {
-  const savedAccent = localStorage.getItem(ACCENT_KEY);
-  if (savedAccent) { accentPicker.value = savedAccent; applyAccent(savedAccent); }
-  const savedMode = localStorage.getItem(MODE_KEY) || 'dark';
-  setMode(savedMode);
-} catch(e){}
-
-/* ---- Alternative Domains page quick open ---- */
-openAltdom.addEventListener('click', ()=> {
-  window.open('/alt.html', '_blank', 'noopener');
-});
-
-/* ---- init ---- */
-function init(){
-  // initial render
-  renderList(games.slice());
-  renderRecent();
-  updateCount(games.length);
-  // show welcome stats
-  statCount.textContent = games.length;
-}
-init();
-function applyAccent(color){
-  document.documentElement.style.setProperty('--accent', color);
-  const rgb = hexToRgb(color);
-  document.documentElement.style.setProperty('--accent-rgb', rgb);
-  // also apply subtle shadow glow
-  document.querySelectorAll('.item:focus, .recent button:hover').forEach(el => {
-    el.style.boxShadow += `, 0 0 10px rgba(${rgb},0.15)`;
-  });
-}
-// ====== DOM References ======
-const $ = s => document.querySelector(s);
-const listEl = $('#list');
-const searchEl = $('#search');
-const catEl = $('#categoryFilter');
-const countEl = $('#count');
-const recentEl = $('#recent');
-const statCount = $('#stat-count');
-const statRecent = $('#stat-recent');
-const modeSelect = $('#modeSelect');
-const accentPicker = $('#accentPicker');
-const openAltdom = $('#open-altdom');
-
-// ====== State ======
-let filtered = games.slice();
-let focusedIndex = -1;
-const RECENT_KEY = 'obg_recent_v2';
-const ACCENT_KEY = 'obg_accent';
-const MODE_KEY = 'obg_mode';
-
-// ====== Render List ======
-function renderList(items){
-  listEl.innerHTML = '';
-  const frag = document.createDocumentFragment();
-  items.forEach((g, idx) => {
-    const item = document.createElement('div');
-    item.className = 'item';
-    item.tabIndex = 0;
-    item.dataset.idx = idx;
-
-    const left = document.createElement('div');
-    left.style.display = 'flex';
-    left.style.flexDirection = 'column';
-
-    const title = document.createElement('div');
-    title.className = 'item-title';
-    title.textContent = g.title;
-
-    const meta = document.createElement('div');
-    meta.className = 'item-meta';
-    meta.textContent = g.category || '';
-
-    left.appendChild(title);
-    left.appendChild(meta);
-
-    const chevron = document.createElement('div');
-    chevron.innerHTML = '▶';
-    chevron.style.opacity = 0.6;
-    chevron.style.fontWeight = 700;
-
-    item.appendChild(left);
-    item.appendChild(chevron);
-
-    item.addEventListener('click', ()=> openGame(g));
-    item.addEventListener('keydown', (e)=> {
-      if(e.key==='Enter') openGame(g);
+    item.addEventListener('click',()=>openGame(g,item));
+    item.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter') openGame(g,item);
       if(e.key==='ArrowDown') focusNext();
       if(e.key==='ArrowUp') focusPrev();
     });
 
-    // Micro-prefetch
-    let warmed=false;
-    item.addEventListener('pointerenter', ()=> { if(!warmed){ prefetch(g['html-link']); warmed=true; } });
-
     frag.appendChild(item);
   });
   listEl.appendChild(frag);
   updateCount(items.length);
 }
 
-// ====== Open Game & Recent ======
-function openGame(g){
+/* ---- Open Game + Recent ---- */
+function openGame(g,item){
   if(!g||!g['html-link']||g['html-link']==='#') return;
   window.open(g['html-link'],'_blank','noopener');
   addRecent(g);
+
+  // mark new game as seen to prevent confetti
+  if(g.new) localStorage.setItem('obg_seen_'+g.title,'1');
+  if(item) item.classList.remove('confetti-new');
 }
+
 function addRecent(g){
-  const cur = getRecent();
-  const normalized = { title:g.title, htmlLink:g['html-link'] };
-  const existing = cur.find(x=>x.htmlLink===normalized.htmlLink);
+  const cur=getRecent();
+  const normalized={title:g.title,htmlLink:g['html-link']};
+  const existing=cur.find(x=>x.htmlLink===normalized.htmlLink);
   let next;
-  if(existing){ next = cur.filter(x=>x.htmlLink!==normalized.htmlLink); next.unshift(normalized); }
-  else next=[normalized,...cur];
-  next = next.slice(0,8);
-  try{ localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch(e){}
+  if(existing){
+    next=cur.filter(x=>x.htmlLink!==normalized.htmlLink);
+    next.unshift(normalized);
+  }else next=[normalized,...cur];
+  next=next.slice(0,8);
+  localStorage.setItem(RECENT_KEY,JSON.stringify(next));
   renderRecent();
 }
-function getRecent(){
-  try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');} catch(e){return[];}
-}
+
+function getRecent(){try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');}catch(e){return[];}}
 function renderRecent(){
   recentEl.innerHTML='';
   const cur=getRecent();
   statRecent.textContent=cur.length;
-  if(!cur.length){ recentEl.textContent='No recent plays'; return; }
+  if(!cur.length){recentEl.textContent='No recent plays';return;}
   cur.forEach(r=>{
     const b=document.createElement('button');
     b.textContent=r.title;
@@ -392,37 +152,84 @@ function renderRecent(){
   });
 }
 
-// ====== Count ======
-function updateCount(n){
-  countEl.textContent=`${n} game${n===1?'':'s'}`;
-  statCount.textContent=games.length;
-}
+/* ---- Count ---- */
+function updateCount(n){countEl.textContent=`${n} game${n===1?'':'s'}`; statCount.textContent=games.length;}
 
-// ====== Search & Filter ======
+/* ---- Search + Filter ---- */
 let searchTimer=null;
 function applyFilters(){
   const q=(searchEl.value||'').trim().toLowerCase();
   const cat=catEl.value;
-  filtered = games.filter(g=>{
+  filtered=games.filter(g=>{
     if(cat!=='all' && (g.category||'').toLowerCase()!==cat.toLowerCase()) return false;
     if(!q) return true;
-    return (g.title||'').toLowerCase().includes(q) || (g.category||'').toLowerCase().includes(q);
+    return (g.title||'').toLowerCase().includes(q);
   });
-  $('#empty').hidden = filtered.length!==0;
-  $('#welcome').hidden = filtered.length===0;
   renderList(filtered);
+  $('#empty').hidden=filtered.length>0;
 }
-function debounceApply(){ if(searchTimer) clearTimeout(searchTimer); searchTimer=setTimeout(applyFilters,160); }
-searchEl.addEventListener('input',debounceApply);
+searchEl.addEventListener('input',()=>{clearTimeout(searchTimer); searchTimer=setTimeout(applyFilters,180);});
 catEl.addEventListener('change',applyFilters);
 
-// ====== Prefetch ======
-function prefetch(url){ if(!url) return; fetch(url,{method:'HEAD',mode:'no-cors'}).catch(()=>{}); }
+/* ---- Keyboard Shortcuts ---- */
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'){searchEl.focus(); e.preventDefault();}
+  if(e.key==='s' || e.key==='S'){openModal(settingsModal);}
+});
 
-// ====== Init ======
-function init(){
-  renderList(games.slice());
-  renderRecent();
-  updateCount(games.length);
+/* ---- Modal ---- */
+function openModal(modal){modal.hidden=false;setTimeout(()=>modal.classList.add('show'),20);}
+function closeModal(modal){modal.classList.remove('show');setTimeout(()=>modal.hidden=true,250);}
+openSettings.addEventListener('click',()=>openModal(settingsModal));
+closeSettings.addEventListener('click',()=>closeModal(settingsModal));
+closeChangelog.addEventListener('click',()=>closeModal(changelogModal));
+
+/* ---- Settings Persistence ---- */
+function loadSettings(){
+  const mode=localStorage.getItem(MODE_KEY)||'dark';
+  document.body.classList.remove('light','dark','oled'); document.body.classList.add(mode);
+  modeSelect.value=mode;
+  const accent=localStorage.getItem(ACCENT_KEY)||'#0b6ef6';
+  document.documentElement.style.setProperty('--accent',accent);
+  accentPicker.value=accent;
+  const sw=localStorage.getItem('obg_sidebar_w')||'320';
+  document.documentElement.style.setProperty('--sidebar-w',sw+'px');
+  sidebarWidth.value=sw; sidebarWidthVal.textContent=sw+'px';
 }
+modeSelect.addEventListener('change',()=>{
+  const val=modeSelect.value;
+  document.body.classList.remove('dark','light','oled'); document.body.classList.add(val);
+  localStorage.setItem(MODE_KEY,val);
+});
+accentPicker.addEventListener('input',()=>{document.documentElement.style.setProperty('--accent',accentPicker.value);localStorage.setItem(ACCENT_KEY,accentPicker.value);});
+sidebarWidth.addEventListener('input',()=>{document.documentElement.style.setProperty('--sidebar-w',sidebarWidth.value+'px');sidebarWidthVal.textContent=sidebarWidth.value+'px';localStorage.setItem('obg_sidebar_w',sidebarWidth.value);});
+
+/* ---- Focus Navigation ---- */
+function focusNext(){if(focusedIndex<filtered.length-1){focusedIndex++;focusItem();}}
+function focusPrev(){if(focusedIndex>0){focusedIndex--;focusItem();}}
+function focusItem(){const items=listEl.querySelectorAll('.item');if(items[focusedIndex]) items[focusedIndex].focus();}
+
+/* ---- Changelog ---- */
+function showChangelog(){
+  const lastVer=localStorage.getItem(CHANGELOG_KEY)||'';
+  const thisVer=changelogData.join('|');
+  if(lastVer!==thisVer){
+    changelogList.innerHTML='';
+    changelogData.forEach(l=>{
+      const li=document.createElement('li'); li.textContent=l; changelogList.appendChild(li);
+    });
+    openModal(changelogModal);
+    localStorage.setItem(CHANGELOG_KEY,thisVer);
+  }
+}
+
+/* ---- Init ---- */
+function init(){
+  renderList(filtered);
+  renderRecent();
+  applyFilters();
+  loadSettings();
+  showChangelog();
+}
+
 init();
