@@ -1,88 +1,192 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Oogly Boogly Games</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OoglyUI 3.0 — Oogly Boogly Games</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="left">
-      <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
-      <button id="open-altdom" class="ghost">Alternative Domains</button>
-    </div>
+  <div id="app" class="app">
+    <header class="topbar glass">
+      <div class="brand">
+        <div class="logo">Oogly Boogly <span class="mini">Games</span></div>
+        <div class="sub">OoglyUI 3.0</div>
+      </div>
 
-    <div class="controls">
-      <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
-      <select id="categoryFilter" aria-label="Filter by category">
-        <option value="all">All Categories</option>
-        <option value="Action">Action</option>
-        <option value="Puzzle">Puzzle</option>
-        <option value="Arcade">Arcade</option>
-        <option value="Idle">Idle</option>
-        <option value="Utility">Utility</option>
-      </select>
-
-      <div class="theme-controls">
-        <label class="small">Mode</label>
-        <select id="modeSelect" aria-label="Theme mode">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-          <option value="oled">OLED</option>
+      <div class="controls">
+        <input id="search" class="search" type="search" placeholder="Search games (press /)" aria-label="Search games" />
+        <select id="categoryFilter" aria-label="Filter by category" class="select">
+          <option value="all">All</option>
+          <option value="Action">Action</option>
+          <option value="Arcade">Arcade</option>
+          <option value="Puzzle">Puzzle</option>
+          <option value="Idle">Idle</option>
+          <option value="Utility">Utility</option>
         </select>
-      </div>
 
-      <div class="accent">
-        <label class="small">Accent</label>
-        <input id="accentPicker" type="color" value="#0b6ef6" title="Pick accent color">
-      </div>
-
-      <button id="toggleDark" class="iconbtn" aria-label="Toggle theme">🌓</button>
-    </div>
-  </header>
-
-  <main class="shell" id="shell">
-    <aside id="sidebar" class="sidebar" aria-label="Game list">
-      <div class="sidebar-header">
-        <h2>All Games</h2>
-        <div class="subtitle" id="count">0 games</div>
-      </div>
-      <div id="list" class="list" role="list"></div>
-
-      <div class="recent-wrap">
-        <h3>Recently played</h3>
-        <div id="recent" class="recent"></div>
-      </div>
-    </aside>
-
-    <section class="content" id="content">
-      <div id="welcome" class="welcome glass-card">
-        <h1>Welcome to Oogly Boogly Games</h1>
-        <p><strong>No ads. No trackers. Just games.</strong> Click a title to open the game in a new tab. Built to run clean and fast on school devices.</p>
-        <p><strong>What's new on Oogly Boogly today, October 23, 2025? 5 new games, a new design and more OOGLY BOOGLY addresses.</strong></p>
-       https://ooglygames.netlify.app
-       https://ooglygames.wasmer.app
-       https://oogly.chickennet.work
-        <div class="meta-row">
-          <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
-          <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
+        <div class="pill-group">
+          <button id="switchMirrorBtn" class="pill" title="Switch Mirror (Shift+M)">Switch Mirror</button>
+          <button id="openTabsBtn" class="pill" title="Open Control Tabs (G)">Controls</button>
         </div>
-        <div class="muted">Pro tip: press <kbd>/</kbd> to focus search. Use the Accent picker to customize the site vibe.</div>
+
+        <div class="theme-inline">
+          <select id="modeSelect" class="select small" aria-label="Theme mode">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="oled">OLED</option>
+          </select>
+          <input id="accentPicker" type="color" class="color" value="#0b6ef6" title="Accent color">
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <aside class="sidebar glass" id="sidebar" aria-label="Games sidebar">
+        <div class="sidebar-head">
+          <h2>All Games</h2>
+          <div id="count" class="subtitle">0 games</div>
+        </div>
+
+        <div id="list" class="list" role="list"></div>
+
+        <div class="sidebar-foot">
+          <div class="recent-mini">Recently: <span id="recent-mini">—</span></div>
+        </div>
+      </aside>
+
+      <section class="content" id="content">
+        <div id="hero" class="hero glass">
+          <h1>Welcome to Oogly Boogly</h1>
+          <p class="lead">No ads. No trackers. Fast, clean, and school-friendly. Click a title to open the game in a new tab.</p>
+
+          <div class="status-row">
+            <div class="stat"><strong id="stat-count">0</strong><span>games</span></div>
+            <div class="stat"><strong id="stat-recent">0</strong><span>recent</span></div>
+            <div class="stat"><strong id="stat-domain">Primary</strong><span>domain</span></div>
+          </div>
+
+          <div class="mirror-list muted" id="mirror-snippet">
+            Mirrors: <button class="linkish" data-mirror="https://ooglygames.netlify.app">ooglygames.netlify.app</button> ·
+            <button class="linkish" data-mirror="https://ooglygames.wasmer.app">ooglygames.wasmer.app</button> ·
+            <button class="linkish" data-mirror="https://oogly.chickennet.work">oogly.chickennet.work</button>
+          </div>
+          <div class="help-note muted">Tip: press <kbd>/</kbd> to search • <kbd>G</kbd> to open Controls • <kbd>Shift+M</kbd> to cycle Mirrors</div>
+        </div>
+
+        <div id="empty" class="empty glass" hidden>
+          <h2>No games found</h2>
+          <p>Try clearing the search or switching category.</p>
+        </div>
+
+        <!-- content area for dynamic content if needed -->
+        <section id="dynamic-area"></section>
+      </section>
+    </main>
+
+    <!-- Floating tab panel on the right -->
+    <div id="tab-panel" class="tabs glass" aria-hidden="true" role="dialog" aria-label="Controls panel">
+      <nav class="tabs-nav" role="tablist">
+        <button class="tab active" data-tab="recent" role="tab" aria-selected="true">Recently Played</button>
+        <button class="tab" data-tab="domains" role="tab">Alternative Domains</button>
+        <button class="tab" data-tab="saves" role="tab">Game Saves</button>
+        <button class="tab" data-tab="settings" role="tab">Settings</button>
+      </nav>
+
+      <div class="tabs-body">
+        <!-- Recently -->
+        <div class="tab-panel" data-panel="recent">
+          <h3>Recently Played</h3>
+          <div id="recent-list" class="panel-list"></div>
+          <div class="muted">Click a title to open the game.</div>
+        </div>
+
+        <!-- Domains -->
+        <div class="tab-panel" data-panel="domains" hidden>
+          <h3>Alternative Domains</h3>
+          <div id="alt-list" class="panel-list">
+            <!-- items injected -->
+          </div>
+          <div class="muted">If this domain is blocked, try one of these mirrors (only list domains you control).</div>
+        </div>
+
+        <!-- Saves -->
+        <div class="tab-panel" data-panel="saves" hidden>
+          <h3>Game Saves</h3>
+          <div class="saves-grid">
+            <div class="card">
+              <h4>Local Saves</h4>
+              <div class="muted">Saves are stored in your browser. Export to back up or import to restore.</div>
+              <div class="row">
+                <button id="exportSaves" class="btn">Export All</button>
+                <button id="importSaves" class="btn secondary">Import</button>
+              </div>
+              <div class="muted small">Tip: share exported JSON between devices.</div>
+            </div>
+
+            <div class="card">
+              <h4>Quick Save / Load</h4>
+              <label>Slot name <input id="saveSlot" placeholder="slot1"></label>
+              <div class="row">
+                <button id="quickSave" class="btn">Quick Save</button>
+                <button id="quickLoad" class="btn secondary">Quick Load</button>
+              </div>
+              <div id="saveFeedback" class="muted small"></div>
+            </div>
+
+            <div class="card">
+              <h4>Cloud Save (placeholder)</h4>
+              <p class="muted">Cloud saves require a backend (Vercel + KV or Supabase). Click below to copy the starter deploy script or host later.</p>
+              <div class="row">
+                <button id="copyCloudExample" class="btn">Copy Example</button>
+                <a id="deployLink" class="btn secondary" href="https://vercel.com/new" target="_blank" rel="noopener">Deploy to Vercel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-panel" data-panel="settings" hidden>
+          <h3>Settings</h3>
+          <div class="muted">Customize your OoglyUI experience</div>
+
+          <label class="setting-row">
+            <span>Theme Mode</span>
+            <select id="modeSelect2" class="select">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="oled">OLED</option>
+            </select>
+          </label>
+
+          <label class="setting-row">
+            <span>Accent Color</span>
+            <input id="accentPicker2" type="color" value="#0b6ef6">
+          </label>
+
+          <label class="setting-row">
+            <span>Remember last mirror</span>
+            <input id="rememberMirror" type="checkbox">
+          </label>
+
+          <div style="margin-top:12px">
+            <button id="resetPrefs" class="btn secondary">Reset preferences</button>
+          </div>
+        </div>
       </div>
 
-      <div id="empty" class="empty glass-card" hidden>
-        <h2>No matches</h2>
-        <p>Try a different search or category.</p>
+      <button id="closeTabs" class="close">✕</button>
+    </div>
+
+    <footer class="foot glass">
+      <small>© 2025 Oogly Boogly Games · Powered by OoglyUI 3.0</small>
+      <div class="rightlinks">
+        <a class="ghost" href="/help.html">Report a problem</a>
+        <button id="switchMirrorTiny" class="ghost">Switch Mirror</button>
       </div>
-    </section>
-  </main>
+    </footer>
+  </div>
 
-  <footer class="foot glass-card">
-    <small>© 2025 Oogly Boogly Games - OOGA BOOGA!!!!</small>
-    <a href="/alt.html" class="ghost">Alternative Domains page</a>
-  </footer>
-
-<script src="scripts.js" defer></script>
+  <script src="scripts.js" defer></script>
 </body>
 </html>
