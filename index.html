@@ -84,50 +84,66 @@
 
 <script>
 (function() {
-  const PING_INTERVAL = 10000;
-  const SESSION_KEY = 'obg_session';
-  const SESSION_EXP_KEY = 'obg_session_exp';
-  
-  // Add CORS proxy in front of your API
   const PING_URL = 'https://corsproxy.io/?https://ooglyapi.ct.ws/api/v1/ping';
+  const PING_INTERVAL = 10000; // 10 seconds
+  const SESSION_KEY = 'obg_session_id';
   
+  // Generate session ID
   function generateSessionID() {
-    return 'sess_' + Math.random().toString(36).substr(2, 16);
+    return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
   
-  function getSession() {
-    const now = Date.now();
-    let session = localStorage.getItem(SESSION_KEY);
-    let exp = parseInt(localStorage.getItem(SESSION_EXP_KEY) || '0', 10);
-    if (!session || now > exp) {
-      session = generateSessionID();
-      exp = now + 24 * 60 * 60 * 1000;
-      localStorage.setItem(SESSION_KEY, session);
-      localStorage.setItem(SESSION_EXP_KEY, exp);
+  // Get or create session
+  function getSessionID() {
+    let sessionId = localStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = generateSessionID();
+      localStorage.setItem(SESSION_KEY, sessionId);
     }
-    return session;
+    return sessionId;
   }
   
-  async function pingAPI() {
-    const sessionID = getSession();
+  // Detect device type
+  function getDeviceType() {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) {
+      return 'mobile';
+    }
+    if (/tablet|ipad|playbook|silk/i.test(ua)) {
+      return 'tablet';
+    }
+    return 'desktop';
+  }
+  
+  // Send ping
+  async function ping() {
     const payload = {
-      session_id: sessionID,
-      timestamp: new Date().toISOString(),
-      device: navigator.userAgent
+      session_id: getSessionID(),
+      user_agent: navigator.userAgent,
+      device_type: getDeviceType()
     };
+    
     try {
-      await fetch(PING_URL, {
+      const response = await fetch(PING_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(payload)
       });
-    } catch(e) {
-      console.error('Error sending ping:', e);
+      
+      const result = await response.json();
+      console.log('✅ Ping successful:', result);
+    } catch (error) {
+      console.error('❌ Ping failed:', error);
     }
   }
   
-  pingAPI();
-  setInterval(pingAPI, PING_INTERVAL);
+  // Initial ping
+  ping();
+  
+  // Repeat every 10 seconds
+  setInterval(ping, PING_INTERVAL);
 })();
 </script>
 
