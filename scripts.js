@@ -293,7 +293,7 @@ try {
 
 /* ---- Alternative Domains page quick open ---- */
 openAltdom.addEventListener('click', ()=> {
-  window.open('/alt.html', '_blank', 'noopener');
+  window.open('/support.html', '_blank', 'noopener');
 });
 
 /* ---- init ---- */
