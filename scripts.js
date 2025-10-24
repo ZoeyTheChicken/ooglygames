@@ -77,7 +77,21 @@ const games = [
   { title:"Hollow Knight", "html-link":"game/hlkn", "obg-track-link":"", category:"Action" },
   { title:"Portal", "html-link":"game/portal", "obg-track-link":"", category:"Action" },
   { title:"Uno", "html-link":"game/uno", "obg-track-link":"", category:"Arcade" },
-
+  { title:"99 Nights in The Forest", "html-link":"game/99nitf", "obg-track-link":"", category:"Action" },
+  { title:"Blocky Puzzle", "html-link":"game/blockypuzzle", "obg-track-link":"", category:"Puzzle" },
+  { title:"Bridge Race", "html-link":"game/brace", "obg-track-link":"", category:"Action" },
+  { title:"CrazyCattle3D", "html-link":"game/cc3d", "obg-track-link":"", category:"Action" },
+  { title:"Clash Royale", "html-link":"game/clro", "obg-track-link":"", category:"Action" },
+  { title:"Grow a Garden", "html-link":"game/gag", "obg-track-link":"", category:"Action" },
+  { title:"Granny", "html-link":"game/grny", "obg-track-link":"", category:"Action" },
+  { title:"Growden.io", "html-link":"game/growio", "obg-track-link":"", category:"Action" },
+  { title:"Helix Jump", "html-link":"game/hjump", "obg-track-link":"", category:"Action" },
+  { title:"Idle Ants", "html-link":"game/idants", "obg-track-link":"", category:"Action" },
+  { title:"Obby But You're On A Bike", "html-link":"game/obyoab", "obg-track-link":"", category:"Action" },
+  { title:"Ragdoll Archers", "html-link":"game/ragarch", "obg-track-link":"", category:"Action" },
+  { title:"Retro Bowl College", "html-link":"game/rbc", "obg-track-link":"", category:"Arcade" },
+  { title:"Steal a Brainrot", "html-link":"game/sab", "obg-track-link":"", category:"Action" },
+  { title:"Undertale Yellow", "html-link":"game/utyellow", "obg-track-link":"", category:"Action" },
 ];
 
 /* ---- DOM refs ---- */
