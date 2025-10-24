@@ -82,64 +82,62 @@
     <a href="/support.html" class="ghost">Alternative Domains page</a>
   </footer>
 
-    <script>
-(function() {
-  const PING_INTERVAL = 10000; // 10 seconds
-  const SESSION_KEY = 'obg_session';
-  const SESSION_EXP_KEY = 'obg_session_exp';
-  const PING_URL = 'https://ooglyapi.ct.ws/api/v1/ping';
+<script>
+const SUPABASE_URL = 'nwfwunukvenfhjhrkjdi.supabase.co';
+const SUPABASE_KEY = 'postgresql://postgres:fhdNGrnHV!A/U53@db.nwfwunukvenfhjhrkjdi.supabase.co:5432/postgres';
 
-  // Generate a simple random session ID
+(function() {
+  const PING_INTERVAL = 10000;
+  const SESSION_KEY = 'obg_session';
+  
   function generateSessionID() {
     return 'sess_' + Math.random().toString(36).substr(2, 16);
   }
-
-  // Get existing session or create new one
+  
   function getSession() {
-    const now = Date.now();
     let session = localStorage.getItem(SESSION_KEY);
-    let exp = parseInt(localStorage.getItem(SESSION_EXP_KEY) || '0', 10);
-
-    if (!session || now > exp) {
+    if (!session) {
       session = generateSessionID();
-      exp = now + 24 * 60 * 60 * 1000; // 24 hours
       localStorage.setItem(SESSION_KEY, session);
-      localStorage.setItem(SESSION_EXP_KEY, exp);
     }
-
     return session;
   }
-
-  // Send ping to API
+  
+  function detectDevice() {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/mobile|android|iphone|phone/.test(ua)) return 'mobile';
+    if (/tablet|ipad/.test(ua)) return 'tablet';
+    return 'desktop';
+  }
+  
   async function pingAPI() {
     const sessionID = getSession();
-    const payload = {
-      session_id: sessionID,
-      timestamp: new Date().toISOString(),
-      device: navigator.userAgent
-    };
-
+    
     try {
-      await fetch(PING_URL, {
+      await fetch(`${SUPABASE_URL}/rest/v1/obg_sessions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        mode: 'cors'
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          session_id: sessionID,
+          user_agent: navigator.userAgent,
+          device_type: detectDevice(),
+          updated_at: new Date().toISOString()
+        })
       });
-      // console.log('Ping sent', payload);
     } catch(e) {
-      console.error('Error sending ping:', e);
+      console.error('Ping error:', e);
     }
   }
-
-  // Initial ping
+  
   pingAPI();
-
-  // Repeat every 10s
   setInterval(pingAPI, PING_INTERVAL);
 })();
 </script>
-
 
 <script src="scripts.js" defer></script>
 </body>
