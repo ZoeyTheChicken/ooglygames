@@ -11,7 +11,7 @@
 /* -------- games list (no thumbnails) -------- */
 const games = [
   { title:"Report an issue", "html-link":"/help.html", "obg-track-link":"", category:"Utility" },
-  { title:"______________________________", "html-link":"#", "obg-track-link":"", category:"" },
+  { title:"____________________", "html-link":"#", "obg-track-link":"", category:"" },
   { title:"Minecraft 1.12.2", "html-link":"game/eagler1122w/", "obg-track-link":"", category:"Action" },
   { title:"Minecraft 1.5.2 (Precision Client)", "html-link":"game/eagler152precisionc/", "obg-track-link":"", category:"Action" },
   { title:"Minecraft 1.8.8", "html-link":"game/eagler188w/", "obg-track-link":"", category:"Action" },
