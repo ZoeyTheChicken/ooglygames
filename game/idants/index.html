@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oogly Boogly - Idle Ants</title>
+<style>
+  /* Make iframe cover the whole screen */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+
+  #myIframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    z-index: 1;
+  }
+
+  /* Popup overlay */
+  #popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 25px 40px;
+    border-radius: 12px;
+    text-align: center;
+    z-index: 2;
+    font-size: 18px;
+    animation: fadeOut 0.5s ease 3s forwards; /* auto-hide after 3s */
+  }
+
+  @keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+  }
+</style>
+</head>
+<body>
+
+
+<iframe id="myIframe" src="https://db.duckmath.org/html/idle_ants/index.html"></iframe>
+
+</body>
+</html>
