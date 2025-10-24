@@ -22,7 +22,6 @@ const games = [
   { title:"DinoGame++", "html-link":"game/dinoplusplus/", "obg-track-link":"", category:"Arcade" },
   { title:"2048", "html-link":"game/2048/", "obg-track-link":"", category:"Puzzle" },
   { title:"ASCII Space", "html-link":"game/asciispace", "obg-track-link":"", category:"Action" },
-  { title:"Terraria (broken, fixing)", "html-link":"game/terraria", "obg-track-link":"", category:"Action" },
   { title:"Henry Stickman: Breaking the Bank", "html-link":"game/btb", "obg-track-link":"", category:"Arcade" },
   { title:"Henry Stickman: Escaping the Prison", "html-link":"game/etp", "obg-track-link":"", category:"Arcade" },
   { title:"Henry Stickman: Crossing the Pit", "html-link":"game/fctp", "obg-track-link":"", category:"Arcade" },
