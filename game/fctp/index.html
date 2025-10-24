@@ -1,40 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Oogly Boogly Emulator</title>
-  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #000;
-      overflow: hidden;
-    }
-    #game {
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oogly Boogly Games Flash EMU</title>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
-  <div id="game"></div>
+    <h1>Flash SWF Player</h1>
+    <div id="flash-container"></div>
 
-  <script>
-    async function goFull() {
-      if (document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
-      }
-    }
+    <script>
+        window.addEventListener("load", () => {
+            // Create a Ruffle player
+            const ruffle = window.RufflePlayer.newest();
+            const player = ruffle.createPlayer();
+            document.getElementById("flash-container").appendChild(player);
 
-    window.addEventListener("load", async () => {
-      await goFull(); // try to auto fullscreen immediately
-      window.RufflePlayer = window.RufflePlayer || {};
-      const ruffle = window.RufflePlayer.newest();
-      const player = ruffle.createPlayer();
-      document.getElementById("game").appendChild(player);
-      player.load("../game/hsmc/flash_crossingthepit.swf");
-    });
-  </script>
+            // Load your SWF
+            player.load("../game/hsmc/flash_crossingthepit.swf"); // Replace with your SWF file path
+        });
+    </script>
 </body>
 </html>
