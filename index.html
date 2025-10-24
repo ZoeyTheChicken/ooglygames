@@ -84,16 +84,15 @@
 
 <script>
 (function() {
-  const PING_URL = 'https://corsproxy.io/?https://ooglyapi.ct.ws/api/v1/ping';
-  const PING_INTERVAL = 10000; // 10 seconds
+  // Try WITHOUT CORS proxy - your PHP should handle it now
+  const PING_URL = 'https://ooglyapi.ct.ws/api/v1/ping';
+  const PING_INTERVAL = 10000;
   const SESSION_KEY = 'obg_session_id';
   
-  // Generate session ID
   function generateSessionID() {
     return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
   
-  // Get or create session
   function getSessionID() {
     let sessionId = localStorage.getItem(SESSION_KEY);
     if (!sessionId) {
@@ -103,7 +102,6 @@
     return sessionId;
   }
   
-  // Detect device type
   function getDeviceType() {
     const ua = navigator.userAgent.toLowerCase();
     if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) {
@@ -115,7 +113,6 @@
     return 'desktop';
   }
   
-  // Send ping
   async function ping() {
     const payload = {
       session_id: getSessionID(),
@@ -139,10 +136,7 @@
     }
   }
   
-  // Initial ping
   ping();
-  
-  // Repeat every 10 seconds
   setInterval(ping, PING_INTERVAL);
 })();
 </script>
