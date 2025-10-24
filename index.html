@@ -84,8 +84,9 @@
 
 <script>
 (function() {
-  // Try WITHOUT CORS proxy - your PHP should handle it now
-  const PING_URL = 'https://ooglyapi.ct.ws/api/v1/ping';
+  // Use cors-anywhere style proxy
+  const API_ENDPOINT = 'https://ooglyapi.ct.ws/api/v1/ping';
+  const PING_URL = 'https://corsproxy.io/?' + encodeURIComponent(API_ENDPOINT);
   const PING_INTERVAL = 10000;
   const SESSION_KEY = 'obg_session_id';
   
@@ -124,15 +125,29 @@
       const response = await fetch(PING_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Target-URL': API_ENDPOINT
         },
         body: JSON.stringify(payload)
       });
       
-      const result = await response.json();
-      console.log('✅ Ping successful:', result);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const text = await response.text();
+      console.log('📦 Raw response:', text);
+      
+      // Try to parse as JSON
+      try {
+        const result = JSON.parse(text);
+        console.log('✅ Ping successful:', result);
+      } catch (e) {
+        console.error('⚠️ Response is not JSON:', text.substring(0, 200));
+      }
+      
     } catch (error) {
-      console.error('❌ Ping failed:', error);
+      console.error('❌ Ping failed:', error.message);
     }
   }
   
