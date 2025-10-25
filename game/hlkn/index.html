@@ -49,63 +49,14 @@
 
 
 <iframe id="myIframe" src="https://db.duckmath.org/html/hollow_knight/index.html"></iframe>
-  <script>
-(function() {
-  const PING_INTERVAL = 10000; // 10 seconds
-  const SESSION_KEY = 'obg_session';
-  const SESSION_EXP_KEY = 'obg_session_exp';
-  const PING_URL = 'https://ooglyapi.ct.ws/api/v1/ping';
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-53Q9XR4QZK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  // Generate a simple random session ID
-  function generateSessionID() {
-    return 'sess_' + Math.random().toString(36).substr(2, 16);
-  }
-
-  // Get existing session or create new one
-  function getSession() {
-    const now = Date.now();
-    let session = localStorage.getItem(SESSION_KEY);
-    let exp = parseInt(localStorage.getItem(SESSION_EXP_KEY) || '0', 10);
-
-    if (!session || now > exp) {
-      session = generateSessionID();
-      exp = now + 24 * 60 * 60 * 1000; // 24 hours
-      localStorage.setItem(SESSION_KEY, session);
-      localStorage.setItem(SESSION_EXP_KEY, exp);
-    }
-
-    return session;
-  }
-
-  // Send ping to API
-  async function pingAPI() {
-    const sessionID = getSession();
-    const payload = {
-      session_id: sessionID,
-      timestamp: new Date().toISOString(),
-      device: navigator.userAgent
-    };
-
-    try {
-      await fetch(PING_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        mode: 'cors'
-      });
-      // console.log('Ping sent', payload);
-    } catch(e) {
-      console.error('Error sending ping:', e);
-    }
-  }
-
-  // Initial ping
-  pingAPI();
-
-  // Repeat every 10s
-  setInterval(pingAPI, PING_INTERVAL);
-})();
+  gtag('config', 'G-53Q9XR4QZK');
 </script>
-
 </body>
 </html>
