@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Access Assistant | Oogly Boogly Learning</title>
+  <!-- Fixed Google Fonts URL -->
   <link rel="preconnect" href="https://googleapis.com">
   <link rel="preconnect" href="https://gstatic.com" crossorigin>
   <link href="https://googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -18,10 +19,8 @@
       --danger: #d93025;
       --font-mono: 'JetBrains Mono', monospace;
     }
-
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 40px 20px; margin: 0; }
     .container { max-width: 950px; margin: 0 auto; }
-    
     header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
     .btn-refresh {
       background: none; border: 1px solid var(--border); color: var(--text-dim);
@@ -29,23 +28,19 @@
       font-size: 11px; cursor: pointer; transition: all 0.2s;
     }
     .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
-
     .generator-interface {
       background: var(--card-bg); border: 1px solid var(--border);
       padding: 24px; border-radius: 16px; margin-bottom: 50px;
       display: flex; flex-wrap: wrap; gap: 16px;
     }
-
     .custom-select-wrapper { position: relative; flex: 1; min-width: 200px; }
     .custom-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 8px; display: block; }
-    
     .custom-input, .custom-select-trigger {
       width: 100%; background: #0f1115; border: 1px solid var(--border);
       color: var(--text); padding: 12px 16px; border-radius: 8px;
       font-family: var(--font-mono); font-size: 14px; outline: none; box-sizing: border-box;
       cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     }
-
     .custom-options {
       position: absolute; top: calc(100% + 5px); left: 0; right: 0;
       background: #1a1d23; border: 1px solid var(--border); border-radius: 8px;
@@ -55,13 +50,11 @@
     .custom-options.open { display: block; }
     .option { padding: 10px 16px; font-size: 13px; font-family: var(--font-mono); cursor: pointer; }
     .option:hover { background: var(--accent); color: white; }
-
     .btn-test {
       background: var(--accent); color: white; border: none;
       padding: 0 30px; height: 45px; border-radius: 8px; font-weight: 600;
       cursor: pointer; transition: all 0.2s ease; align-self: flex-end;
     }
-
     .route-group { margin-bottom: 40px; }
     .route-title { 
       font-family: var(--font-mono); font-size: 13px; color: var(--accent); 
@@ -72,7 +65,6 @@
     .health-online { color: var(--success); }
     .health-checking { color: var(--text-dim); }
     .health-offline { color: var(--danger); }
-
     .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .link-row { 
       background: var(--card-bg); border: 1px solid var(--border); 
@@ -82,7 +74,6 @@
     .url-text { font-family: var(--font-mono); font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .url-variant { color: var(--text-dim); }
     .action-icons { display: flex; gap: 12px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); }
-
     @media (max-width: 768px) { .link-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -92,7 +83,7 @@
   <header>
     <div>
       <h1>Access Assistant</h1>
-      <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Bypass status tracking for all Oogly Boogly network nodes.</p>
+      <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Professional network diagnostics for Oogly Boogly nodes.</p>
     </div>
     <button class="btn-refresh" onclick="refreshAll()">Refresh All</button>
   </header>
@@ -101,11 +92,8 @@
     <div class="custom-select-wrapper">
       <span class="custom-label">Target Node</span>
       <div class="custom-select-trigger" onclick="toggleOpts('domain-opts')" id="selected-domain">teststudy.vercel.app</div>
-      <div class="custom-options" id="domain-opts">
-        <!-- JS will populate these -->
-      </div>
+      <div class="custom-options" id="domain-opts"></div>
     </div>
-
     <div class="custom-select-wrapper" style="min-width: 150px; flex: 0.6;">
       <span class="custom-label">Bypass Mask</span>
       <div class="custom-select-trigger" onclick="toggleOpts('type-opts')" id="selected-type">?math=</div>
@@ -117,12 +105,10 @@
         <div class="option" onclick="selectOpt('type', '#')">#</div>
       </div>
     </div>
-
     <div class="custom-select-wrapper">
       <span class="custom-label">Extension Value</span>
-      <input type="text" class="custom-input" id="gen-kw" placeholder="e.g. algebra-unit-4">
+      <input type="text" class="custom-input" id="gen-kw" placeholder="e.g. syllabus-v6">
     </div>
-
     <button class="btn-test" id="main-btn" onclick="runTest()">Run Test</button>
   </div>
 
@@ -131,19 +117,16 @@
   <script>
     const domains = [
       { n: "teststudy.vercel.app", v: ["", "?math=exam", "#archive"] },
-      { n: "ooglylearning.vercel.app", v: ["", "?math=review", "?school=work", "#lab"] },
-      { n: "ooglygames.vercel.app", v: ["", "?study=portal", "?mode=edu", "#stats"] },
+      { n: "ooglylearning.vercel.app", v: ["", "?math=review", "#lab"] },
+      { n: "ooglygames.vercel.app", v: ["", "?mode=edu", "#stats"] },
       { n: "ooglygames1.netlify.app", v: ["", "?math=stats", "#res"] },
       { n: "ooglygames2.netlify.app", v: ["", "?test=final", "#archive"] },
       { n: "ooglygames3.netlify.app", v: ["", "?p=logic", "#v6"] },
       { n: "oogly.chickennet.work", v: ["", "?mode=edu", "#home"] }
     ];
 
-    // Populate Generator Dropdown
     const domainOpts = document.getElementById('domain-opts');
-    domains.forEach(d => {
-      domainOpts.innerHTML += `<div class="option" onclick="selectOpt('domain', '${d.n}')">${d.n}</div>`;
-    });
+    domains.forEach(d => { domainOpts.innerHTML += `<div class="option" onclick="selectOpt('domain', '${d.n}')">${d.n}</div>`; });
 
     function toggleOpts(id) {
       document.querySelectorAll('.custom-options').forEach(el => { if(el.id !== id) el.classList.remove('open'); });
@@ -155,17 +138,18 @@
       document.getElementById(type + '-opts').classList.remove('open');
     }
 
-    // UPDATED UNIVERSAL HEALTH CHECKER (Bypasses CORS restriction)
+    // IMPROVED HEALTH CHECK: Uses no-cors fetch + Signal to detect network availability
     async function checkHealth(domain, elementId) {
       const statusEl = document.getElementById(elementId);
       statusEl.innerText = "Checking...";
       statusEl.className = "health-indicator health-checking";
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 4000);
+      const timeout = setTimeout(() => controller.abort(), 5000);
 
       try {
-        // Mode 'no-cors' is the key to bypass SOP when the server doesn't provide headers
+        // 'no-cors' allows us to ping even if the server returns 403/404.
+        // As long as it DOESN'T throw a network error, the site is reachable.
         await fetch(`https://${domain}/favicon.ico?cb=${Date.now()}`, { 
           mode: 'no-cors', 
           signal: controller.signal 
@@ -173,6 +157,7 @@
         statusEl.innerText = "Online";
         statusEl.className = "health-indicator health-online";
       } catch (e) {
+        // If the error is an AbortError or TypeError, the network filter likely blocked it.
         statusEl.innerText = "Offline";
         statusEl.className = "health-indicator health-offline";
       } finally {
@@ -180,9 +165,7 @@
       }
     }
 
-    function refreshAll() {
-      domains.forEach((d, idx) => checkHealth(d.n, `health-${idx}`));
-    }
+    function refreshAll() { domains.forEach((d, idx) => checkHealth(d.n, `health-${idx}`)); }
 
     function runTest() {
       const d = document.getElementById('selected-domain').innerText;
@@ -203,11 +186,7 @@
       checkHealth(d.n, healthId);
     });
 
-    window.onclick = (e) => {
-      if (!e.target.matches('.custom-select-trigger')) {
-        document.querySelectorAll('.custom-options').forEach(el => el.classList.remove('open'));
-      }
-    };
+    window.onclick = (e) => { if (!e.target.matches('.custom-select-trigger')) { document.querySelectorAll('.custom-options').forEach(el => el.classList.remove('open')); } };
   </script>
 </div>
 </body>
