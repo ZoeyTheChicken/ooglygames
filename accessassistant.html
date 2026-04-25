@@ -14,6 +14,7 @@
       --text: #f0f3f8;
       --text-dim: #6c7890;
       --accent: #3b82f6; 
+      --success: #1e8e3e;
       --font-main: 'Inter', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -24,7 +25,6 @@
     h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
     p.subtitle { color: var(--text-dim); margin-top: 5px; font-size: 14px; }
 
-    /* CUSTOM GENERATOR UI */
     .generator-interface {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -79,18 +79,31 @@
       color: white; border: none;
       padding: 0 30px; height: 45px;
       border-radius: 8px; font-weight: 600;
-      cursor: pointer; transition: transform 0.1s, opacity 0.2s;
+      cursor: pointer; transition: all 0.2s ease;
       align-self: flex-end;
     }
-    .btn-test:active { transform: scale(0.98); }
 
     .route-group { margin-bottom: 40px; }
     .route-title { font-family: var(--font-mono); font-size: 13px; color: var(--accent); margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
     .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .link-row { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 6px; text-decoration: none; display: flex; justify-content: space-between; align-items: center; }
+    
+    .link-row { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      padding: 10px 14px; 
+      border-radius: 6px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      cursor: pointer;
+      transition: border 0.2s;
+    }
     .link-row:hover { border-color: var(--text-dim); }
-    .url-text { font-family: var(--font-mono); font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .url-text { font-family: var(--font-mono); font-size: 11px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .url-variant { color: var(--text-dim); }
+    .action-icons { display: flex; gap: 12px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); }
+    .action-icons span:hover { color: var(--accent); }
+
     @media (max-width: 768px) { .link-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -103,7 +116,6 @@
   </header>
 
   <div class="generator-interface">
-    <!-- Domain Dropdown -->
     <div class="custom-select-wrapper">
       <span class="custom-label">Target Domain</span>
       <div class="custom-select-trigger" onclick="toggleOpts('domain-opts')" id="selected-domain">ooglylearning.vercel.app</div>
@@ -117,7 +129,6 @@
       </div>
     </div>
 
-    <!-- Type Dropdown (Updated with new Variations) -->
     <div class="custom-select-wrapper" style="min-width: 150px; flex: 0.6;">
       <span class="custom-label">Bypass Mask</span>
       <div class="custom-select-trigger" onclick="toggleOpts('type-opts')" id="selected-type">?math=</div>
@@ -138,13 +149,12 @@
       </div>
     </div>
 
-    <!-- Keyword Textbox -->
     <div class="custom-select-wrapper">
       <span class="custom-label">Extension Value</span>
       <input type="text" class="custom-input" id="gen-kw" placeholder="e.g. calculus-review">
     </div>
 
-    <button class="btn-test" onclick="runTest()">Run Test</button>
+    <button class="btn-test" id="main-btn" onclick="runTest()">Run Test</button>
   </div>
 
   <div id="route-container"></div>
@@ -162,11 +172,25 @@
       document.getElementById(type + '-opts').classList.remove('open');
     }
 
+    function copyText(text, elementId) {
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById(elementId);
+      const originalText = btn.innerText;
+      btn.innerText = "Copied!";
+      btn.style.background = "var(--success)";
+      setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.background = "var(--accent)";
+      }, 1500);
+    }
+
     function runTest() {
       const d = document.getElementById('selected-domain').innerText;
       const t = document.getElementById('selected-type').innerText;
       const k = document.getElementById('gen-kw').value || 'curriculum';
-      window.open(`https://${d}${t}${k}`, '_blank');
+      const url = `https://${d}${t}${k}`;
+      copyText(url, 'main-btn');
+      window.open(url, '_blank');
     }
 
     window.onclick = (e) => {
@@ -177,14 +201,23 @@
 
     const domains = [
       { n: "ooglylearning.vercel.app", v: ["", "?math=review", "?literacy=test", "?school=assignment", "?test=quiz", "?study=portal", "?mode=edu", "#resources", "#lab", "#stats"] },
-      { n: "ooglygames1.netlify.app", v: ["", "?math=stats", "?literacy=read", "?school=work", "?test=final", "?study=session", "?mode=class", "#archive", "#v6", "#res"] }
+      { n: "ooglygames1.netlify.app", v: ["", "?math=stats", "?literacy=read", "?school=work", "?test=final", "?study=session", "?mode=class", "#archive", "#v6", "#res"] },
+      { n: "oogly.chickennet.work", v: ["", "?mode=edu", "?p=physics", "?q=algebra", "?v=stu", "#lab", "#data", "#stats", "#home", "#res"] }
     ];
 
     const container = document.getElementById('route-container');
-    domains.forEach(d => {
+    domains.forEach((d, dIdx) => {
       let html = `<div class="route-group"><div class="route-title">${d.n}</div><div class="link-grid">`;
-      d.v.forEach(v => {
-        html += `<a class="link-row" href="https://${d.n}${v}"><span class="url-text">${d.n}<span class="url-variant">${v}</span></span><span style="font-size:10px; color:var(--text-dim)">→</span></a>`;
+      d.v.forEach((v, vIdx) => {
+        const fullUrl = `https://${d.n}${v}`;
+        html += `
+          <div class="link-row" onclick="window.open('${fullUrl}', '_blank')">
+            <span class="url-text">${d.n}<span class="url-variant">${v}</span></span>
+            <div class="action-icons">
+              <span onclick="event.stopPropagation(); navigator.clipboard.writeText('${fullUrl}'); alert('Copied to clipboard!');">copy</span>
+              <span>open →</span>
+            </div>
+          </div>`;
       });
       container.innerHTML += html + `</div></div>`;
     });
