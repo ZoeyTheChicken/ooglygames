@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oogly.chat</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  background: #0e0e0e;
+}
+
+#myIframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  z-index: 1;
+}
+
+/* Covers the Replit pill in the bottom-right corner */
+#replit-hider {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 220px;
+  height: 80px;
+  background: #0e0e0e;
+  z-index: 999;
+  pointer-events: all; /* blocks clicks reaching the Replit pill in the iframe */
+}
+</style>
+</head>
+<body>
+
+<iframe id="myIframe" src="https://oogly-chat--ooglychat.replit.app"></iframe>
+
+<!-- Covers the Replit pill badge in the bottom-right -->
+<div id="replit-hider"></div>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-53Q9XR4QZK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-53Q9XR4QZK');
+</script>
+
+</body>
+</html>

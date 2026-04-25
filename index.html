@@ -8,6 +8,7 @@
 <link rel="icon" id="siteIcon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes" />
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
 
@@ -46,12 +47,12 @@ header {
 #search::placeholder { color: var(--muted); }
 #search:focus { border-color: var(--accent); }
 .header-btns { display: flex; gap: 6px; margin-left: auto; }
-.hbtn {
+.xbtn, .hbtn {
   background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
   font-family: var(--font-mono); font-size: 11px; padding: 5px 10px; border-radius: var(--radius);
   cursor: pointer; transition: all .12s; white-space: nowrap;
 }
-.hbtn:hover { border-color: var(--accent); color: var(--accent); }
+.xbtn, .hbtn:hover { border-color: var(--accent); color: var(--accent); }
 .hbtn.active { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),.08); }
 
 /* ── LAYOUT ── */
@@ -213,9 +214,10 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 <!-- HEADER -->
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v6</span>
+  <span class="badge">v6.2</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearch(this.value)" autocomplete="off"/>
   <div class="header-btns">
+    <button class="xbtn" id="chatBtn" onclick="openChat()">OOGLY CHAT</button>
     <button class="hbtn" id="cloakBtn" onclick="toggleCloak()">🎭 Cloak</button>
     <button class="hbtn" onclick="openModal('newsModal')">📰 News</button>
     <button class="hbtn" onclick="openModal('settingsModal')">⚙ Settings</button>
@@ -245,7 +247,7 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
       <div class="modal-title">📚 About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 6.0</div>
+    <div class="about-version">Oogly Boogly Learning · Version 6.2</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to make assignments even more fun by being able to: change the accent color, background, etc.</p>
   </div>
@@ -306,6 +308,11 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report issue...", link:"/help", category:"Utility" },
+  { title:"Minecraft 1.20 (EagleyMC)", link:"assignment/eagley120", category:"Action" },
+  { title:"Rocket League 2D", link:"assignment/rocketleague2d", category:"Action" },
+  { title:"Minecraft 1.12.2 (Pixel Client)", link:"assignment/pixelc1122", category:"Action" },
+  { title:"Minecraft 1.8.8 (Resent Client V5)", link:"assignment/resentmcv5188w", category:"Action" },
+  { title:"Minecraft 1.12.2 (Tuff Client)", link:"assignment/tuff1122w", category:"Action" },
   { title:"Hobo", link:"assignment/hobomath", category:"Action" },
   { title:"Alpine Linux Emulator", link:"/assignment/alpineconsole", category:"Utility" },
   { title:"Alpine Linux Desktop Emulator", link:"/assignment/alpinelinuxwgui/", category:"Utility" },
@@ -423,12 +430,25 @@ const assignments = [
 ];
 
 const newsData = [
+      {
+    date: "2026-04-25",
+    title: "oogly.chat is now available.",
+    body: "You can now chat with others on Oogly Boogly Learning!"
+  },
+    {
+    date: "2026-04-25",
+    title: "Oogly Boogly Learning adds new assignments!",
+    body: "Oogly Boogly Learning has added new 5 new assignments to play, ad-free!"
+  },
   {
     date: "2026-04-24",
     title: "Oogly Boogly Learning is released!",
     body: "Oogly Boogly Learning is now live, with 100s of assignments you can easily do online, and for free! Anytime!"
   },
 ];
+function openChat() {
+  window.location.href = window.location.origin + '/chat';
+}
 
 // ──────────────────────────────────────────────
 // DEFAULTS & CONFIG
