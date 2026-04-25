@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Access Assistant | Oogly Boogly Learning</title>
-  <!-- Fixed Google Fonts URL -->
   <link rel="preconnect" href="https://googleapis.com">
   <link rel="preconnect" href="https://gstatic.com" crossorigin>
   <link href="https://googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -83,9 +82,9 @@
   <header>
     <div>
       <h1>Access Assistant</h1>
-      <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Professional network diagnostics for Oogly Boogly nodes.</p>
+      <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Automatic diagnostic node monitoring active.</p>
     </div>
-    <button class="btn-refresh" onclick="refreshAll()">Refresh All</button>
+    <button class="btn-refresh" onclick="refreshAll()">Force Reload</button>
   </header>
 
   <div class="generator-interface">
@@ -138,18 +137,16 @@
       document.getElementById(type + '-opts').classList.remove('open');
     }
 
-    // IMPROVED HEALTH CHECK: Uses no-cors fetch + Signal to detect network availability
     async function checkHealth(domain, elementId) {
       const statusEl = document.getElementById(elementId);
       statusEl.innerText = "Checking...";
       statusEl.className = "health-indicator health-checking";
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
+      const timeout = setTimeout(() => controller.abort(), 6000);
 
       try {
-        // 'no-cors' allows us to ping even if the server returns 403/404.
-        // As long as it DOESN'T throw a network error, the site is reachable.
+        // no-cors is essential. If the server responds at all (even 403), it's "Online".
         await fetch(`https://${domain}/favicon.ico?cb=${Date.now()}`, { 
           mode: 'no-cors', 
           signal: controller.signal 
@@ -157,7 +154,6 @@
         statusEl.innerText = "Online";
         statusEl.className = "health-indicator health-online";
       } catch (e) {
-        // If the error is an AbortError or TypeError, the network filter likely blocked it.
         statusEl.innerText = "Offline";
         statusEl.className = "health-indicator health-offline";
       } finally {
@@ -174,6 +170,7 @@
       window.open(`https://${d}${t}${k}`, '_blank');
     }
 
+    // GENERATE LIST AND AUTO-CHECK ON LOAD
     const container = document.getElementById('route-container');
     domains.forEach((d, idx) => {
       const healthId = `health-${idx}`;
@@ -183,6 +180,8 @@
         html += `<div class="link-row" onclick="window.open('${fullUrl}', '_blank')"><span class="url-text">${d.n}<span class="url-variant">${v}</span></span><div class="action-icons"><span onclick="event.stopPropagation(); navigator.clipboard.writeText('${fullUrl}'); alert('Copied!');">copy</span><span>open →</span></div></div>`;
       });
       container.innerHTML += html + `</div></div>`;
+      
+      // Auto-trigger health check for this specific domain immediately
       checkHealth(d.n, healthId);
     });
 
