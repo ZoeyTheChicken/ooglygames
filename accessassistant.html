@@ -21,10 +21,11 @@
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 40px 20px; margin: 0; }
     .container { max-width: 950px; margin: 0 auto; }
     header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
-    .btn-refresh {
-      background: none; border: 1px solid var(--border); color: var(--text-dim);
-      padding: 8px 16px; border-radius: 6px; font-family: var(--font-mono);
-      font-size: 11px; cursor: pointer; transition: all 0.2s;
+.btn-refresh { border-color: var(--accent); color: var(--accent); }
+    .generator-interface {
+      background: var(--card-bg); border: 1px solid var(--border);
+      padding: 24px; border-radius: 16px; margin-bottom: 50px;
+      display: flex; flex-wrap: wrap; gap: 16px;
     }
     .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
     .generator-interface {
@@ -84,7 +85,7 @@
       <h1>Access Assistant</h1>
       <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Automatic diagnostic node monitoring active.</p>
     </div>
-    <button class="btn-refresh" onclick="refreshAll()">Force Reload</button>
+    <button class="btn-refresh" onclick="refreshAll()">Check for Blocks</button>
   </header>
 
   <div class="generator-interface">
