@@ -22,7 +22,14 @@
     body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 40px 20px; margin: 0; }
     .container { max-width: 950px; margin: 0 auto; }
     
-    /* CUSTOM GENERATOR UI */
+    header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+    .btn-refresh {
+      background: none; border: 1px solid var(--border); color: var(--text-dim);
+      padding: 8px 16px; border-radius: 6px; font-family: var(--font-mono);
+      font-size: 11px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+
     .generator-interface {
       background: var(--card-bg); border: 1px solid var(--border);
       padding: 24px; border-radius: 16px; margin-bottom: 50px;
@@ -55,7 +62,6 @@
       cursor: pointer; transition: all 0.2s ease; align-self: flex-end;
     }
 
-    /* ROUTE LISTS & HEALTH */
     .route-group { margin-bottom: 40px; }
     .route-title { 
       font-family: var(--font-mono); font-size: 13px; color: var(--accent); 
@@ -84,8 +90,11 @@
 
 <div class="container">
   <header>
-    <h1>Access Assistant</h1>
-    <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Real-time status tracking for all Oogly Boogly network nodes.</p>
+    <div>
+      <h1>Access Assistant</h1>
+      <p style="color:var(--text-dim); font-size:14px; margin-top:5px;">Bypass status tracking for all Oogly Boogly network nodes.</p>
+    </div>
+    <button class="btn-refresh" onclick="refreshAll()">Refresh All</button>
   </header>
 
   <div class="generator-interface">
@@ -93,13 +102,7 @@
       <span class="custom-label">Target Node</span>
       <div class="custom-select-trigger" onclick="toggleOpts('domain-opts')" id="selected-domain">teststudy.vercel.app</div>
       <div class="custom-options" id="domain-opts">
-        <div class="option" onclick="selectOpt('domain', 'teststudy.vercel.app')">teststudy.vercel.app</div>
-        <div class="option" onclick="selectOpt('domain', 'ooglylearning.vercel.app')">ooglylearning.vercel.app</div>
-        <div class="option" onclick="selectOpt('domain', 'ooglygames1.netlify.app')">ooglygames1.netlify.app</div>
-        <div class="option" onclick="selectOpt('domain', 'ooglygames2.netlify.app')">ooglygames2.netlify.app</div>
-        <div class="option" onclick="selectOpt('domain', 'ooglygames3.netlify.app')">ooglygames3.netlify.app</div>
-        <div class="option" onclick="selectOpt('domain', 'ooglygames.vercel.app')">ooglygames.vercel.app</div>
-        <div class="option" onclick="selectOpt('domain', 'oogly.chickennet.work')">oogly.chickennet.work</div>
+        <!-- JS will populate these -->
       </div>
     </div>
 
@@ -126,52 +129,6 @@
   <div id="route-container"></div>
 
   <script>
-    function toggleOpts(id) {
-      document.querySelectorAll('.custom-options').forEach(el => { if(el.id !== id) el.classList.remove('open'); });
-      document.getElementById(id).classList.toggle('open');
-    }
-
-    function selectOpt(type, val) {
-      document.getElementById('selected-' + type).innerText = val;
-      document.getElementById(type + '-opts').classList.remove('open');
-    }
-
-    // UPDATED HEALTH CHECKER (Image-based bypass)
-    function checkHealth(domain, elementId) {
-      const statusEl = document.getElementById(elementId);
-      const img = new Image();
-      
-      // Attempt to load the favicon as a representative file
-      img.src = `https://${domain}/favicon.ico?t=${new Date().getTime()}`;
-      
-      img.onload = () => {
-        statusEl.innerText = "Online";
-        statusEl.className = "health-indicator health-online";
-      };
-      
-      img.onerror = () => {
-        // If the favicon is missing but the domain isn't blocked, it may still fail.
-        // However, if the site is BLOCKED, it will always fail.
-        statusEl.innerText = "Offline";
-        statusEl.className = "health-indicator health-offline";
-      };
-
-      // Timeout safety
-      setTimeout(() => {
-        if (statusEl.innerText === "Checking...") {
-          statusEl.innerText = "Offline";
-          statusEl.className = "health-indicator health-offline";
-        }
-      }, 5000);
-    }
-
-    function runTest() {
-      const d = document.getElementById('selected-domain').innerText;
-      const t = document.getElementById('selected-type').innerText;
-      const k = document.getElementById('gen-kw').value || 'curriculum';
-      window.open(`https://${d}${t}${k}`, '_blank');
-    }
-
     const domains = [
       { n: "teststudy.vercel.app", v: ["", "?math=exam", "#archive"] },
       { n: "ooglylearning.vercel.app", v: ["", "?math=review", "?school=work", "#lab"] },
@@ -182,27 +139,65 @@
       { n: "oogly.chickennet.work", v: ["", "?mode=edu", "#home"] }
     ];
 
+    // Populate Generator Dropdown
+    const domainOpts = document.getElementById('domain-opts');
+    domains.forEach(d => {
+      domainOpts.innerHTML += `<div class="option" onclick="selectOpt('domain', '${d.n}')">${d.n}</div>`;
+    });
+
+    function toggleOpts(id) {
+      document.querySelectorAll('.custom-options').forEach(el => { if(el.id !== id) el.classList.remove('open'); });
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function selectOpt(type, val) {
+      document.getElementById('selected-' + type).innerText = val;
+      document.getElementById(type + '-opts').classList.remove('open');
+    }
+
+    // UPDATED UNIVERSAL HEALTH CHECKER (Bypasses CORS restriction)
+    async function checkHealth(domain, elementId) {
+      const statusEl = document.getElementById(elementId);
+      statusEl.innerText = "Checking...";
+      statusEl.className = "health-indicator health-checking";
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
+
+      try {
+        // Mode 'no-cors' is the key to bypass SOP when the server doesn't provide headers
+        await fetch(`https://${domain}/favicon.ico?cb=${Date.now()}`, { 
+          mode: 'no-cors', 
+          signal: controller.signal 
+        });
+        statusEl.innerText = "Online";
+        statusEl.className = "health-indicator health-online";
+      } catch (e) {
+        statusEl.innerText = "Offline";
+        statusEl.className = "health-indicator health-offline";
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function refreshAll() {
+      domains.forEach((d, idx) => checkHealth(d.n, `health-${idx}`));
+    }
+
+    function runTest() {
+      const d = document.getElementById('selected-domain').innerText;
+      const t = document.getElementById('selected-type').innerText;
+      const k = document.getElementById('gen-kw').value || 'curriculum';
+      window.open(`https://${d}${t}${k}`, '_blank');
+    }
+
     const container = document.getElementById('route-container');
     domains.forEach((d, idx) => {
       const healthId = `health-${idx}`;
-      let html = `
-        <div class="route-group">
-          <div class="route-title">
-            <span>${d.n}</span>
-            <span id="${healthId}" class="health-indicator health-checking">Checking...</span>
-          </div>
-          <div class="link-grid">`;
-      
+      let html = `<div class="route-group"><div class="route-title"><span>${d.n}</span><span id="${healthId}" class="health-indicator health-checking">Checking...</span></div><div class="link-grid">`;
       d.v.forEach(v => {
         const fullUrl = `https://${d.n}${v}`;
-        html += `
-          <div class="link-row" onclick="window.open('${fullUrl}', '_blank')">
-            <span class="url-text">${d.n}<span class="url-variant">${v}</span></span>
-            <div class="action-icons">
-              <span onclick="event.stopPropagation(); navigator.clipboard.writeText('${fullUrl}'); alert('Copied!');">copy</span>
-              <span>open →</span>
-            </div>
-          </div>`;
+        html += `<div class="link-row" onclick="window.open('${fullUrl}', '_blank')"><span class="url-text">${d.n}<span class="url-variant">${v}</span></span><div class="action-icons"><span onclick="event.stopPropagation(); navigator.clipboard.writeText('${fullUrl}'); alert('Copied!');">copy</span><span>open →</span></div></div>`;
       });
       container.innerHTML += html + `</div></div>`;
       checkHealth(d.n, healthId);
