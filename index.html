@@ -217,6 +217,7 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
   <span class="badge">v6.2</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearch(this.value)" autocomplete="off"/>
   <div class="header-btns">
+    <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
     <button class="xbtn" id="chatBtn" onclick="openChat()">OOGLY CHAT</button>
     <button class="hbtn" id="cloakBtn" onclick="toggleCloak()">🎭 Cloak</button>
     <button class="hbtn" onclick="openModal('newsModal')">📰 News</button>
@@ -448,6 +449,9 @@ const newsData = [
 ];
 function openChat() {
   window.location.href = window.location.origin + '/chat';
+}
+function openUnblocker() {
+  window.location.href = window.location.origin + '/accessassistant';
 }
 
 // ──────────────────────────────────────────────
