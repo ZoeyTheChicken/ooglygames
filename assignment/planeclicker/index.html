@@ -1,0 +1,895 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
+
+:root {
+  --sky: #1a2f4a;
+  --sky2: #0d1f33;
+  --panel: #0f1e2e;
+  --panel2: #162535;
+  --border: #2a4a6a;
+  --accent: #4af0a0;
+  --accent2: #f0c040;
+  --accent3: #f06040;
+  --text: #c8e8f8;
+  --textd: #6a9ab8;
+  --pixel: 2px;
+}
+
+body { background: transparent; font-family: 'Press Start 2P', monospace; }
+
+#game {
+  width: 100%;
+  min-height: 560px;
+  background: var(--sky);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* PIXEL SKY BG */
+#sky-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #0d1f33 0%, #1a3a5c 50%, #1a2f4a 100%);
+  z-index: 0;
+}
+
+.star { position: absolute; background: #fff; z-index: 1; }
+.cloud-pixel { position: absolute; z-index: 2; }
+
+/* HEADER */
+#header {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 6px;
+  background: var(--panel2);
+  border-bottom: 3px solid var(--border);
+  box-shadow: 0 3px 0 #0a1520;
+}
+
+#game-title {
+  font-size: 10px;
+  color: var(--accent2);
+  text-shadow: 2px 2px 0 #7a5000, -1px -1px 0 #7a5000;
+  letter-spacing: 1px;
+}
+
+#stats {
+  display: flex; gap: 16px;
+}
+
+.stat-box {
+  text-align: right;
+}
+
+.stat-label {
+  font-size: 6px;
+  color: var(--textd);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.stat-val {
+  font-size: 9px;
+  color: var(--accent);
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+}
+
+/* MAIN AREA */
+#main {
+  display: flex;
+  flex: 1;
+  position: relative;
+  z-index: 5;
+}
+
+/* CLICK ZONE */
+#click-zone {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  gap: 10px;
+  position: relative;
+}
+
+#plane-btn {
+  width: 140px; height: 140px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.08s;
+  padding: 0;
+}
+#plane-btn:active { transform: scale(0.9) translateY(4px); }
+
+#plane-btn canvas {
+  width: 140px; height: 140px;
+}
+
+.click-ripple {
+  position: absolute;
+  width: 10px; height: 10px;
+  border: 2px solid var(--accent2);
+  pointer-events: none;
+  animation: ripple 0.5s ease-out forwards;
+  z-index: 20;
+}
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+.float-text {
+  position: absolute;
+  font-size: 8px;
+  color: var(--accent2);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  pointer-events: none;
+  animation: floatUp 0.9s ease-out forwards;
+  z-index: 30;
+  text-shadow: 1px 1px 0 #7a5000;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-60px); opacity: 0; }
+}
+
+#plane-name-tag {
+  font-size: 7px;
+  color: var(--accent2);
+  text-align: center;
+  line-height: 1.6;
+}
+#plane-era-tag {
+  font-size: 6px;
+  color: var(--textd);
+  text-align: center;
+  margin-top: 2px;
+}
+
+#cps-display {
+  font-size: 7px;
+  color: var(--textd);
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* UPGRADE PANEL */
+#upgrades-panel {
+  flex: 1;
+  background: var(--panel);
+  border-left: 3px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#upgrades-title {
+  font-size: 7px;
+  color: var(--textd);
+  padding: 8px 10px 6px;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: 1px;
+}
+
+#upgrades-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#upgrades-list::-webkit-scrollbar { width: 6px; }
+#upgrades-list::-webkit-scrollbar-track { background: var(--sky2); }
+#upgrades-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+.upgrade-card {
+  display: flex;
+  gap: 8px;
+  padding: 7px 8px;
+  background: var(--panel2);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.1s, background 0.1s;
+  position: relative;
+  overflow: hidden;
+}
+.upgrade-card:hover:not(.locked) { border-color: var(--accent); }
+.upgrade-card.locked { opacity: 0.45; cursor: not-allowed; }
+.upgrade-card.affordable { border-color: var(--accent2); }
+.upgrade-card.affordable::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent2);
+}
+
+.upgrade-img {
+  width: 48px; height: 48px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sky2);
+  border: 2px solid var(--border);
+}
+.upgrade-img canvas { width: 44px; height: 44px; }
+
+.upgrade-info { flex: 1; min-width: 0; }
+
+.upgrade-name {
+  font-size: 7px;
+  color: var(--text);
+  display: block;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.upgrade-era {
+  font-size: 5px;
+  color: var(--textd);
+  display: block;
+  margin-bottom: 4px;
+}
+.upgrade-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.upgrade-cost {
+  font-size: 6px;
+  color: var(--accent2);
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+}
+.upgrade-owned {
+  font-size: 5px;
+  color: var(--textd);
+}
+.upgrade-boost {
+  font-size: 5px;
+  color: var(--accent);
+}
+
+/* STATUS BAR */
+#status-bar {
+  position: relative; z-index: 10;
+  padding: 5px 14px;
+  background: var(--sky2);
+  border-top: 2px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#status-msg { font-size: 6px; color: var(--textd); }
+#rank-display { font-size: 6px; color: var(--accent); }
+
+/* MILESTONE TOAST */
+#toast {
+  position: absolute;
+  bottom: 40px; left: 50%; transform: translateX(-50%);
+  background: var(--panel);
+  border: 3px solid var(--accent2);
+  padding: 10px 16px;
+  font-size: 7px;
+  color: var(--accent2);
+  z-index: 100;
+  text-align: center;
+  display: none;
+  animation: toastIn 0.2s steps(3) forwards;
+  box-shadow: 4px 4px 0 #0a1520;
+  max-width: 220px;
+  line-height: 2;
+}
+@keyframes toastIn {
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+</style>
+
+<div id="game">
+  <div id="sky-bg"></div>
+
+  <div id="header">
+    <div id="game-title">PLANE CLICKER / MILITARY EDITION</div>
+    <div id="stats">
+      <div class="stat-box">
+        <span class="stat-label">SORTIES</span>
+        <span class="stat-val" id="total-clicks">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">CREDITS</span>
+        <span class="stat-val" id="credits-display">0</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">FLEET</span>
+        <span class="stat-val" id="total-planes">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="click-zone">
+      <div id="plane-name-tag">FOKKER Dr.I</div>
+      <div id="plane-era-tag">WW1 ERA · 1917</div>
+      <button id="plane-btn" title="Click to fly!">
+        <canvas id="main-plane-canvas" width="140" height="140"></canvas>
+      </button>
+      <div id="cps-display">+1 per click<br><span id="passive-display" style="color:var(--accent)">0 /sec</span></div>
+    </div>
+    <div id="upgrades-panel">
+      <div id="upgrades-title">// HANGAR - BUY AIRCRAFT</div>
+      <div id="upgrades-list"></div>
+    </div>
+  </div>
+
+  <div id="status-bar">
+    <div id="status-msg">Click your plane to earn credits. Buy upgrades to build your fleet!</div>
+    <div id="rank-display" id="rank-display">RANK: CADET</div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+const PLANES = [
+  {
+    id: 'fokker',
+    name: 'Fokker Dr.I',
+    era: 'WW1 · 1917',
+    baseCost: 10,
+    cps: 0.1,
+    clickBonus: 1,
+    color: '#c87830',
+    wingColor: '#a85828',
+    bodyColor: '#d08838',
+    cockpitColor: '#4af0a0',
+    shape: 'triplane',
+    unlockAt: 0,
+  },
+  {
+    id: 'spad',
+    name: 'SPAD S.XIII',
+    era: 'WW1 · 1918',
+    baseCost: 80,
+    cps: 0.5,
+    clickBonus: 2,
+    color: '#4060c0',
+    wingColor: '#304898',
+    bodyColor: '#4870d0',
+    cockpitColor: '#80c0ff',
+    shape: 'biplane',
+    unlockAt: 0,
+  },
+  {
+    id: 'p51',
+    name: 'P-51 Mustang',
+    era: 'WW2 · 1944',
+    baseCost: 500,
+    cps: 3,
+    clickBonus: 8,
+    color: '#708090',
+    wingColor: '#586070',
+    bodyColor: '#809098',
+    cockpitColor: '#a0d0f0',
+    shape: 'fighter',
+    unlockAt: 200,
+  },
+  {
+    id: 'spitfire',
+    name: 'Supermarine Spitfire',
+    era: 'WW2 · 1940',
+    baseCost: 800,
+    cps: 5,
+    clickBonus: 12,
+    color: '#608060',
+    wingColor: '#486048',
+    bodyColor: '#709070',
+    cockpitColor: '#90d8a0',
+    shape: 'ellipwing',
+    unlockAt: 300,
+  },
+  {
+    id: 'f86',
+    name: 'F-86 Sabre',
+    era: 'Korea · 1949',
+    baseCost: 3000,
+    cps: 15,
+    clickBonus: 30,
+    color: '#a0a8b8',
+    wingColor: '#7880a0',
+    bodyColor: '#b0b8c8',
+    cockpitColor: '#c0e0ff',
+    shape: 'sabre',
+    unlockAt: 1500,
+  },
+  {
+    id: 'mig21',
+    name: 'MiG-21',
+    era: 'Cold War · 1959',
+    baseCost: 10000,
+    cps: 40,
+    clickBonus: 80,
+    color: '#c0b040',
+    wingColor: '#908028',
+    bodyColor: '#d0c050',
+    cockpitColor: '#ffe060',
+    shape: 'delta',
+    unlockAt: 5000,
+  },
+  {
+    id: 'f14',
+    name: 'F-14 Tomcat',
+    era: 'Cold War · 1972',
+    baseCost: 35000,
+    cps: 120,
+    clickBonus: 200,
+    color: '#888090',
+    wingColor: '#605860',
+    bodyColor: '#908898',
+    cockpitColor: '#b0d0ff',
+    shape: 'swingwing',
+    unlockAt: 15000,
+  },
+  {
+    id: 'f16',
+    name: 'F-16 Falcon',
+    era: '4th Gen · 1978',
+    baseCost: 100000,
+    cps: 350,
+    clickBonus: 500,
+    color: '#7090c0',
+    wingColor: '#507098',
+    bodyColor: '#80a0d0',
+    cockpitColor: '#80c8ff',
+    shape: 'f16',
+    unlockAt: 40000,
+  },
+  {
+    id: 'eurofighter',
+    name: 'Eurofighter',
+    era: '4th Gen · 1994',
+    baseCost: 400000,
+    cps: 1000,
+    clickBonus: 1500,
+    color: '#50a080',
+    wingColor: '#308060',
+    bodyColor: '#60b090',
+    cockpitColor: '#80ffe0',
+    shape: 'canard',
+    unlockAt: 120000,
+  },
+  {
+    id: 'f22',
+    name: 'F-22 Raptor',
+    era: '5th Gen · 2005',
+    baseCost: 1500000,
+    cps: 4000,
+    clickBonus: 6000,
+    color: '#6070a0',
+    wingColor: '#405080',
+    bodyColor: '#7080b0',
+    cockpitColor: '#90c0ff',
+    shape: 'stealth',
+    unlockAt: 500000,
+  },
+  {
+    id: 'f35',
+    name: 'F-35 Lightning II',
+    era: '5th Gen · 2015',
+    baseCost: 6000000,
+    cps: 15000,
+    clickBonus: 25000,
+    color: '#506080',
+    wingColor: '#304060',
+    bodyColor: '#607090',
+    cockpitColor: '#a0d0ff',
+    shape: 'f35',
+    unlockAt: 2000000,
+  },
+];
+
+const RANKS = [
+  [0, 'CADET'], [100, 'PILOT'], [1000, 'ACE'], [10000, 'SQUADRON LDR'],
+  [100000, 'WING CDR'], [1000000, 'AIR MARSHAL'], [10000000, 'GRAND ACE'],
+];
+
+let credits = 0;
+let totalEver = 0;
+let clickCount = 0;
+let owned = {};
+let passiveCPS = 0;
+let clickPower = 1;
+let currentMainPlane = PLANES[0];
+let lastToast = '';
+
+PLANES.forEach(p => { owned[p.id] = 0; });
+
+function fmt(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return Math.floor(n).toString();
+}
+
+// ---- PIXEL ART PLANE DRAWERS ----
+function drawPlane(ctx, plane, w, h, scale) {
+  scale = scale || 1;
+  ctx.save();
+  ctx.clearRect(0, 0, w, h);
+  const cx = w/2, cy = h/2;
+  const s = scale;
+  const bc = plane.bodyColor || plane.color;
+  const wc = plane.wingColor;
+  const cc = plane.cockpitColor;
+  const ic = '#202830';
+
+  ctx.imageSmoothingEnabled = false;
+
+  function rect(x, y, rw, rh, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(Math.round(cx+x*s), Math.round(cy+y*s), Math.round(rw*s), Math.round(rh*s));
+  }
+
+  const shapes = {
+    triplane: () => {
+      rect(-3,-18,6,6,wc); rect(-12,-18,9,3,wc); rect(3,-18,9,3,wc);
+      rect(-3,-10,6,6,wc); rect(-14,-10,11,3,wc); rect(3,-10,11,3,wc);
+      rect(-3,-2,6,6,wc); rect(-16,-2,13,3,wc); rect(3,-2,13,3,wc);
+      rect(-3,-22,6,30,bc);
+      rect(-2,-20,4,4,cc);
+      rect(-1,8,2,5,bc); rect(-4,11,8,2,bc);
+      rect(-6,-5,3,3,ic); rect(4,-5,3,3,ic);
+    },
+    biplane: () => {
+      rect(-3,-15,6,6,wc); rect(-15,-15,12,3,wc); rect(3,-15,12,3,wc);
+      rect(-3,-3,6,6,wc); rect(-16,-3,13,3,wc); rect(3,-3,13,3,wc);
+      rect(-3,-20,6,28,bc);
+      rect(-2,-18,4,5,cc);
+      rect(-1,8,2,5,bc); rect(-4,11,8,2,bc);
+      rect(-14,-12,2,9,ic); rect(12,-12,2,9,ic);
+    },
+    fighter: () => {
+      rect(-14,-2,28,3,wc); rect(-10,-5,20,3,wc);
+      rect(-3,-20,6,30,bc);
+      rect(-2,-18,4,6,cc);
+      rect(-1,10,2,5,bc); rect(-5,13,10,2,bc);
+      rect(-6,-4,3,2,ic); rect(3,-4,3,2,ic);
+    },
+    ellipwing: () => {
+      rect(-18,-4,36,4,wc); rect(-14,-8,28,4,wc); rect(-8,-10,16,2,wc);
+      rect(-3,-20,6,30,bc);
+      rect(-2,-18,4,6,cc);
+      rect(-1,10,2,4,bc); rect(-4,12,8,2,bc);
+    },
+    sabre: () => {
+      rect(-16,-2,32,3,wc); rect(-12,1,24,2,wc);
+      rect(-3,-20,6,28,bc);
+      rect(-2,-17,4,5,cc);
+      rect(2,-22,4,6,wc); rect(2,-22,2,3,wc);
+      rect(-1,8,2,5,bc); rect(-4,11,8,2,bc);
+      rect(-2,2,1,4,ic);
+    },
+    delta: () => {
+      rect(-18,0,36,3,wc); rect(-12,-5,24,5,wc); rect(-6,-10,12,5,wc);
+      rect(-3,-22,6,26,bc);
+      rect(-2,-20,4,5,cc);
+      rect(2,-25,3,7,wc);
+      rect(-1,4,2,5,bc); rect(-4,7,8,2,bc);
+    },
+    swingwing: () => {
+      rect(-20,-4,40,4,wc); rect(-14,-8,28,4,wc);
+      rect(-3,-24,6,32,bc);
+      rect(-2,-22,4,7,cc);
+      rect(2,-28,4,8,wc);
+      rect(-1,8,2,5,bc); rect(-5,11,10,2,bc);
+    },
+    f16: () => {
+      rect(-16,-3,32,4,wc); rect(-10,-7,20,4,wc);
+      rect(-3,-22,6,30,bc);
+      rect(-2,-20,4,6,cc);
+      rect(2,-25,3,7,wc);
+      rect(-4,5,3,3,wc); rect(2,5,3,3,wc);
+      rect(-1,8,2,5,bc); rect(-4,11,8,2,bc);
+    },
+    canard: () => {
+      rect(-18,-2,36,4,wc); rect(-10,-6,20,4,wc);
+      rect(-10,-18,6,4,wc); rect(4,-18,6,4,wc);
+      rect(-3,-22,6,28,bc);
+      rect(-2,-20,4,6,cc);
+      rect(2,-26,3,7,wc);
+      rect(-1,6,2,4,bc); rect(-4,8,8,2,bc);
+    },
+    stealth: () => {
+      rect(-20,2,40,2,wc); rect(-16,-3,32,5,wc); rect(-10,-8,20,5,wc); rect(-4,-12,8,4,wc);
+      rect(-3,-20,6,24,bc);
+      rect(-2,-18,4,5,cc);
+      rect(2,-22,4,6,wc);
+      rect(-1,4,2,4,bc); rect(-4,6,8,2,bc);
+    },
+    f35: () => {
+      rect(-18,0,36,3,wc); rect(-14,-4,28,4,wc); rect(-8,-8,16,4,wc);
+      rect(-3,-22,6,26,bc);
+      rect(-2,-20,4,6,cc);
+      rect(2,-24,3,6,wc);
+      rect(-4,4,3,3,wc); rect(2,4,3,3,wc);
+      rect(-1,4,2,5,bc); rect(-4,7,8,2,bc);
+    },
+  };
+
+  if (shapes[plane.shape]) shapes[plane.shape]();
+
+  rect(-6,-24,4,4,bc); rect(2,-24,4,4,bc);
+  for(let i=-1;i<=0;i++){
+    ctx.fillStyle = '#ffffff33';
+    ctx.fillRect(Math.round(cx+i*s), Math.round(cy-18*s), Math.round(1*s), Math.round(4*s));
+  }
+
+  ctx.restore();
+}
+
+// ---- BUILD SKY ----
+const skyBg = document.getElementById('sky-bg');
+for(let i=0;i<30;i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  const size = Math.random() < 0.2 ? 3 : 2;
+  star.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*55}%;left:${Math.random()*100}%;opacity:${0.4+Math.random()*0.6}`;
+  skyBg.appendChild(star);
+}
+
+// Pixel clouds
+function makeCloud(x, y, w) {
+  const c = document.createElement('canvas');
+  c.className = 'cloud-pixel';
+  c.width = w; c.height = 24;
+  c.style.cssText = `left:${x}px;top:${y}px;opacity:0.18;width:${w}px;height:24px;`;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  const cols = ['#b8d8f8','#d0e8ff','#a0c8f0'];
+  const pattern = [
+    [0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+    [1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+  ];
+  const bw = Math.floor(w/16);
+  pattern.forEach((row,ry)=>{
+    row.forEach((cell,rx)=>{
+      if(!cell) return;
+      const col = cols[Math.floor((rx+ry)%3)];
+      ctx.fillStyle = col;
+      ctx.fillRect(rx*bw, ry*5, bw, 5);
+    });
+  });
+  skyBg.appendChild(c);
+}
+makeCloud(10, 30, 128);
+makeCloud(200, 15, 96);
+makeCloud(450, 50, 160);
+makeCloud(320, 80, 80);
+
+// ---- MAIN PLANE CANVAS ----
+const mainCanvas = document.getElementById('main-plane-canvas');
+const mainCtx = mainCanvas.getContext('2d');
+mainCtx.imageSmoothingEnabled = false;
+
+function redrawMain() {
+  drawPlane(mainCtx, currentMainPlane, 140, 140, 2.8);
+}
+redrawMain();
+
+// ---- BUILD UPGRADE LIST ----
+function buildUpgradeList() {
+  const list = document.getElementById('upgrades-list');
+  list.innerHTML = '';
+  PLANES.forEach(plane => {
+    const card = document.createElement('div');
+    card.className = 'upgrade-card';
+    card.id = 'card-' + plane.id;
+
+    const imgDiv = document.createElement('div');
+    imgDiv.className = 'upgrade-img';
+    const miniCanvas = document.createElement('canvas');
+    miniCanvas.width = 44; miniCanvas.height = 44;
+    const mCtx = miniCanvas.getContext('2d');
+    mCtx.imageSmoothingEnabled = false;
+    drawPlane(mCtx, plane, 44, 44, 0.88);
+    imgDiv.appendChild(miniCanvas);
+
+    const cost = getNextCost(plane);
+    const info = document.createElement('div');
+    info.className = 'upgrade-info';
+    info.innerHTML = `
+      <span class="upgrade-name">${plane.name}</span>
+      <span class="upgrade-era">${plane.era}</span>
+      <div class="upgrade-stats">
+        <div>
+          <div class="upgrade-cost">â¬¡ ${fmt(cost)}</div>
+          <div class="upgrade-boost" style="font-size:5px;margin-top:2px;">+${plane.cps}/s Â· +${plane.clickBonus}/click</div>
+        </div>
+        <div class="upgrade-owned" id="owned-${plane.id}">x${owned[plane.id]}</div>
+      </div>
+    `;
+
+    card.appendChild(imgDiv);
+    card.appendChild(info);
+    card.addEventListener('click', () => buyPlane(plane));
+    list.appendChild(card);
+  });
+  updateUpgradeCards();
+}
+
+function getNextCost(plane) {
+  return Math.floor(plane.baseCost * Math.pow(1.15, owned[plane.id]));
+}
+
+function updateUpgradeCards() {
+  PLANES.forEach(plane => {
+    const card = document.getElementById('card-' + plane.id);
+    if (!card) return;
+    const cost = getNextCost(plane);
+    const locked = totalEver < plane.unlockAt;
+    card.className = 'upgrade-card' + (locked ? ' locked' : credits >= cost ? ' affordable' : '');
+    const ownedEl = document.getElementById('owned-' + plane.id);
+    if(ownedEl) ownedEl.textContent = 'x' + owned[plane.id];
+    const costEl = card.querySelector('.upgrade-cost');
+    if(costEl) costEl.textContent = 'â¬¡ ' + fmt(cost);
+  });
+}
+
+function buyPlane(plane) {
+  const cost = getNextCost(plane);
+  if (totalEver < plane.unlockAt) return;
+  if (credits < cost) {
+    showToast('NOT ENOUGH\nCREDITS!');
+    return;
+  }
+  credits -= cost;
+  owned[plane.id]++;
+  recalcStats();
+  updateDisplay();
+  updateUpgradeCards();
+  checkMainPlane();
+
+  if (owned[plane.id] === 1) showToast(`${plane.name}\nADDED TO FLEET!`);
+}
+
+function recalcStats() {
+  passiveCPS = 0;
+  clickPower = 1;
+  PLANES.forEach(p => {
+    passiveCPS += p.cps * owned[p.id];
+    clickPower += p.clickBonus * owned[p.id];
+  });
+}
+
+function checkMainPlane() {
+  let best = PLANES[0];
+  for(let i = PLANES.length-1; i >= 0; i--) {
+    if(owned[PLANES[i].id] > 0) { best = PLANES[i]; break; }
+  }
+  if(best.id !== currentMainPlane.id) {
+    currentMainPlane = best;
+    document.getElementById('plane-name-tag').textContent = best.name;
+    document.getElementById('plane-era-tag').textContent = best.era;
+    redrawMain();
+  }
+}
+
+function updateDisplay() {
+  document.getElementById('credits-display').textContent = fmt(credits);
+  document.getElementById('total-clicks').textContent = fmt(clickCount);
+  const total = PLANES.reduce((s,p) => s + owned[p.id], 0);
+  document.getElementById('total-planes').textContent = total;
+  document.getElementById('passive-display').textContent = fmt(passiveCPS) + '/sec';
+  document.getElementById('cps-display').firstChild.textContent = '+' + fmt(clickPower) + ' per click';
+
+  const rank = RANKS.filter(r => totalEver >= r[0]).pop()[1];
+  document.getElementById('rank-display').textContent = 'RANK: ' + rank;
+}
+
+// ---- CLICK HANDLER ----
+const planeBtn = document.getElementById('plane-btn');
+planeBtn.addEventListener('click', (e) => {
+  credits += clickPower;
+  totalEver += clickPower;
+  clickCount++;
+  updateDisplay();
+  updateUpgradeCards();
+  spawnFloatText('+' + fmt(clickPower), e);
+  spawnRipple(e);
+
+  planeBtn.style.transform = 'scale(0.92) rotate(-2deg)';
+  setTimeout(() => { planeBtn.style.transform = ''; }, 80);
+});
+
+function spawnFloatText(text, e) {
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.textContent = text;
+  const rect = planeBtn.getBoundingClientRect();
+  const gameRect = document.getElementById('game').getBoundingClientRect();
+  el.style.left = (rect.left - gameRect.left + 40 + Math.random()*40) + 'px';
+  el.style.top = (rect.top - gameRect.top + 20) + 'px';
+  document.getElementById('game').appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+function spawnRipple(e) {
+  const el = document.createElement('div');
+  el.className = 'click-ripple';
+  const rect = planeBtn.getBoundingClientRect();
+  const gameRect = document.getElementById('game').getBoundingClientRect();
+  el.style.left = (rect.left - gameRect.left + rect.width/2 - 5) + 'px';
+  el.style.top = (rect.top - gameRect.top + rect.height/2 - 5) + 'px';
+  document.getElementById('game').appendChild(el);
+  setTimeout(() => el.remove(), 500);
+}
+
+function showToast(msg) {
+  if(msg === lastToast) return;
+  lastToast = msg;
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.animation = 'none';
+  void t.offsetWidth;
+  t.style.animation = '';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.style.display = 'none'; lastToast = ''; }, 2200);
+}
+
+// ---- PASSIVE INCOME ----
+let lastTick = Date.now();
+function gameTick() {
+  const now = Date.now();
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+  if(passiveCPS > 0) {
+    const earned = passiveCPS * dt;
+    credits += earned;
+    totalEver += earned;
+    updateDisplay();
+    updateUpgradeCards();
+  }
+  requestAnimationFrame(gameTick);
+}
+
+// ---- INIT ----
+buildUpgradeList();
+recalcStats();
+updateDisplay();
+requestAnimationFrame(gameTick);
+
+// Milestone messages
+let lastMilestone = 0;
+const MILESTONES = [
+  [50, 'ðŸ”¥ YOUR FIRST 50\nCREDITS!'],
+  [500, 'âœˆ SQUADRON\nFORMING!'],
+  [5000, 'âš¡ JETS INCOMING!'],
+  [50000, 'ðŸš€ COLD WAR ACE!'],
+  [500000, 'ðŸ’¥ 4TH GEN\nUNLOCKED!'],
+  [5000000, 'ðŸ›¡ STEALTH\nTECH ONLINE!'],
+];
+setInterval(() => {
+  MILESTONES.forEach(([n, msg]) => {
+    if(totalEver >= n && lastMilestone < n) {
+      lastMilestone = n;
+      showToast(msg);
+    }
+  });
+  updateUpgradeCards();
+}, 500);
+</script>
