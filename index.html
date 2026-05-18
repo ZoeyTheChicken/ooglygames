@@ -214,7 +214,7 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 <!-- HEADER -->
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v6.3</span>
+  <span class="badge">v6.5</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearch(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
@@ -248,7 +248,7 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
       <div class="modal-title">📚 About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 6.4</div>
+    <div class="about-version">Oogly Boogly Learning · Version 6.5</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to make assignments even more fun by being able to: change the accent color, background, etc.</p>
   </div>
@@ -309,6 +309,17 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report issue...", link:"/help.html", category:"Utility" },
+  { title:"Papa's Wingeria", link:"assignment/pw", category:"Action" },
+  { title:"Papa's Cheeseria", link:"assignment/pc", category:"Action" },
+  { title:"Papa's Sushiria", link:"assignment/psushi", category:"Action" },
+  { title:"Papa's Pastaria", link:"assignment/ppa", category:"Action" },
+  { title:"Papa's Burgeria", link:"assignment/pbu", category:"Action" },
+  { title:"Papa's Pizzeria", link:"assignment/papapizzeria", category:"Action" },
+  { title:"Papa's Bakeria", link:"assignment/pb", category:"Action" },
+  { title:"Papa's Scooperia", link:"assignment/ps", category:"Action" },
+  { title:"Papa's Donuteria", link:"assignment/pd", category:"Action" },
+  { title:"Papa's Tacomia", link:"assignment/pt", category:"Action" },
+  { title:"Papa's Freezeria", link:"assignment/pf", category:"Action" },  
   { title:"Brainrot Heist", link:"assignment/brainrotheist", category:"Action" },
   { title:"Plane Clicker", link:"assignment/planeclicker", category:"Arcade" },
   { title:"Stickman GTA", link:"assignment/stickmangta", category:"Action" },
@@ -437,6 +448,11 @@ const assignments = [
 ];
 
 const newsData = [
+          {
+    date: "2026-05-18",
+    title: "Add lots of Papa's games!",
+    body: "Plane Clicker now has updated aircraft, new upgrades, power ups, and more!"
+  },
         {
     date: "2026-04-28",
     title: "Updated Plane Clicker!",
