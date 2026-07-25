@@ -7,7 +7,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Oogly Boogly Learning</title>
+<title>Home - Classroom</title>
 <link rel="icon" id="siteIcon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
@@ -603,11 +603,11 @@ async function launchGame(link, title) {
     html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
     html = html.replace(
       /(<head[^>]*>)/i,
-      `$1\n<base href="${gameBase}"/>\n<title>${escHtml(cloakTitle)}</title>\n<link rel="icon" href="${GC_ICON}"/>`
+      `$1\n<base href="${gameBase}"/>\n<title>Home - Classroom</title>\n<link rel="icon" href="${GC_ICON}"/>`
     );
     // If no <head> tag existed, prepend manually
     if (!/<head/i.test(html)) {
-      html = `<head><base href="${gameBase}"/><title>${escHtml(cloakTitle)}</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
+      html = `<head><base href="${gameBase}"/><title>Home - Classroom</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
     }
 
     gameTab.document.open();
@@ -623,7 +623,7 @@ async function launchGame(link, title) {
     gameTab.document.open();
     gameTab.document.write(`<!DOCTYPE html><html>
 <head>
-  <title>${escHtml(cloakTitle)}</title>
+  <title>Home - Classroom</title>
   <link rel="icon" href="${GC_ICON}"/>
   <style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style>
 </head>
@@ -638,7 +638,7 @@ function writeLoading(tab, title, cloakTitle) {
   tab.document.open();
   tab.document.write(`<!DOCTYPE html><html>
 <head>
-  <title>${escHtml(cloakTitle)}</title>
+  <title>Home - Classroom</title>
   <link rel="icon" href="${GC_ICON}"/>
   <style>
     body{background:#0e0e0e;color:#444;font-family:monospace;font-size:13px;

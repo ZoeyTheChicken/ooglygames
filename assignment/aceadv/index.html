@@ -1,61 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Classroom</title>
-<style>
-  /* Make iframe cover the whole screen */
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: sans-serif;
-  }
-
-  #myIframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    z-index: 1;
-  }
-
-  /* Popup overlay */
-  #popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 25px 40px;
-    border-radius: 12px;
-    text-align: center;
-    z-index: 2;
-    font-size: 18px;
-    animation: fadeOut 0.5s ease 3s forwards; /* auto-hide after 3s */
-  }
-
-  @keyframes fadeOut {
-    to { opacity: 0; visibility: hidden; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Classroom</title>
+    
+    <!-- Default CSS (includes Tailwind) -->
+    <link rel="stylesheet" href="default.min.css">
 </head>
-<body>
+<body class="m-0 p-0 bg-black dark:bg-black overflow-hidden h-screen w-screen font-sans">
+    <!-- EmulatorJS Container -->
+    <div id="emulatorjs-container" class="w-full h-full flex items-center justify-center" data-rom-system="gba" data-rom-file="/uploads/games/roms/gba/game_ace-combat-advance_1756527358478.zip">
+        <div id="emulatorjs-game" class="w-full h-full max-w-full max-h-full"></div>
+    </div>
+    
+    <!-- Game data for EmulatorJS -->
+    <script>
+        // Set game data globally for ROM ad system
+        window.gameData = {
+            id: 169,
+            title: 'Ace Combat Advance',
+            type: 'rom',
+            romSystem: 'gba',
+            romFile: '/uploads/games/roms/gba/game_ace-combat-advance_1756527358478.zip',
+            thumbnailUrl: 'game_ace-combat-advance_1756527357857_standard.webp'
+        };
+    </script>
 
-<iframe id="myIframe" src="">https://oneplex.eu/players/rom/169</iframe>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-53Q9XR4QZK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-53Q9XR4QZK');
-</script>
+    <!-- jQuery -->
+    <script src="jquery.min.js"></script>
+    
+    <!-- Emulator Dark Mode & Communication -->
+    <script src="players.rom.min.js"></script>
+    
+    <!-- ROM Ad System -->
+    <script src="ads.rom.min.js"></script>
 </body>
 </html>

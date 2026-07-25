@@ -3,113 +3,91 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Google Classroom</title>
+<title>Home - Classroom</title>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" id="siteIcon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="mobile-web-app-capable" content="yes" />
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
-
 :root {
-  --bg: rgba(14,14,14,0.85);
-  --surface: rgba(22,22,22,0.65);
-  --surface2: rgba(30,30,30,0.55);
-  --border: rgba(255,255,255,0.12);
-  --text: #e8e8e8;
-  --muted: #a0a0a0;
-  --accent: #4ade80;
-  --accent-rgb: 74,222,128;
-  --card-hover: rgba(28,28,28,0.7);
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface2: #191919;
+  --surface3: #1e1e1e;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.55);
+  --muted2: rgba(255,255,255,0.35);
+  --accent: #ffffff;
+  --accent-rgb: 255,255,255;
   --radius: 8px;
-  --font-main: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --blur-amount: 12px;
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+  --density: 11px;
+  --card-scale: 1;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body { 
-  background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
-  color: var(--text); 
-  font-family: var(--font-main); 
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
   min-height: 100vh;
-  position: relative;
 }
 
-/* Glass backdrop overlay */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDMiLz48L3N2Zz4=');
-  pointer-events: none;
-  opacity: 0.1;
-  z-index: 0;
-}
-
-/* ── HEADER ── */
 header {
   position: sticky; top: 0; z-index: 100;
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 0 16px; display: flex; align-items: center; gap: 10px; height: 52px;
 }
 
-.logo { font-size: 15px; font-weight: 800; color: var(--accent); white-space: nowrap; cursor: pointer; user-select: none; }
-.logo span { color: var(--text); }
+.logo { font-size: 15px; font-weight: 500; letter-spacing: -0.3px; color: var(--text); white-space: nowrap; cursor: pointer; user-select: none; }
+.logo span { color: var(--muted); font-weight: 400; }
 
-.badge { 
-  font-family: var(--font-mono); font-size: 10px; 
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(4px);
-  color: var(--muted); padding: 2px 6px; border-radius: 4px; flex-shrink: 0; 
+.badge {
+  font-family: var(--font-mono); font-size: 10px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--muted); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
 }
 
 #search {
-  flex: 1; max-width: 300px; 
-  background: rgba(30,30,30,0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--border);
+  flex: 1; max-width: 300px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
   border-radius: var(--radius); color: var(--text); font-family: var(--font-main); font-size: 13px;
-  padding: 6px 12px; outline: none; transition: all .15s;
+  padding: 6px 12px; outline: none; transition: border-color .15s;
 }
-#search::placeholder { color: var(--muted); }
-#search:focus { border-color: var(--accent); background: rgba(30,30,30,0.8); }
+#search::placeholder { color: var(--muted2); }
+#search:focus { border-color: var(--muted); }
 
 .header-btns { display: flex; gap: 6px; margin-left: auto; }
 
 .xbtn, .hbtn {
-  background: rgba(30,30,30,0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--border); color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border2); color: var(--muted);
   font-family: var(--font-mono); font-size: 11px; padding: 5px 10px; border-radius: var(--radius);
   cursor: pointer; transition: all .12s; white-space: nowrap;
 }
-.xbtn, .hbtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.1); }
-.hbtn.active { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),.15); }
+.xbtn:hover, .hbtn:hover { border-color: var(--muted); color: var(--text); }
+.hbtn.active { border-color: var(--text); color: var(--text); background: var(--surface3); }
 
-/* ── LAYOUT ── */
 .layout { display: flex; min-height: calc(100vh - 52px); }
 
-/* ── SIDEBAR ── */
 aside {
-  width: 155px; min-width: 155px; 
-  background: rgba(22,22,22,0.6);
-  backdrop-filter: blur(8px);
-  border-right: 1px solid var(--border); 
+  width: 155px; min-width: 155px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
   padding: 12px 0;
   position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto;
 }
 
 .sidebar-label {
-  font-family: var(--font-mono); font-size: 9px; color: var(--muted);
+  font-family: var(--font-mono); font-size: 9px; color: var(--muted2);
   text-transform: uppercase; letter-spacing: 1px; padding: 4px 14px 6px;
 }
 
@@ -120,37 +98,25 @@ aside {
   padding: 7px 14px; cursor: pointer; transition: all .12s;
   border-left: 2px solid transparent;
 }
-.cat-btn:hover { 
-  color: var(--text); 
-  background: rgba(30,30,30,0.5);
-  backdrop-filter: blur(4px);
-}
-.cat-btn.active { 
-  color: var(--accent); 
-  border-left-color: var(--accent); 
-  background: rgba(30,30,30,0.5);
-  backdrop-filter: blur(4px);
-}
-.cat-count { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+.cat-btn:hover { color: var(--text); background: var(--surface2); }
+.cat-btn.active { color: var(--text); border-left-color: var(--text); background: var(--surface2); }
+.cat-count { font-family: var(--font-mono); font-size: 10px; color: var(--muted2); }
 
-/* ── MAIN ── */
 main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 
-/* NEWS STRIP */
 .news-strip {
-  background: rgba(22,22,22,0.5);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px;
-  cursor: pointer;
+  cursor: pointer; transition: border-color .15s;
 }
-.news-strip:hover { border-color: var(--accent); background: rgba(22,22,22,0.7); }
+.news-strip:hover { border-color: var(--border2); }
 
 .news-tag {
-  font-family: var(--font-mono); font-size: 9px; color: var(--accent);
-  background: rgba(var(--accent-rgb),.15); 
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(var(--accent-rgb),.3);
+  font-family: var(--font-mono); font-size: 9px; color: var(--text);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
   padding: 2px 6px; border-radius: 4px; white-space: nowrap; margin-top: 2px; flex-shrink: 0;
 }
 
@@ -158,181 +124,185 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 .news-entry { margin-bottom: 4px; }
 .news-entry:last-child { margin-bottom: 0; }
 
-.news-date { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-right: 6px; }
+.news-date { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-right: 6px; }
 .news-text { font-size: 12px; color: var(--text); }
 
-/* SECTION HEADER */
 .section-header {
   display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
   border-bottom: 1px solid var(--border); padding-bottom: 10px;
 }
-.section-title { font-size: 14px; font-weight: 700; }
+.section-title { font-size: 14px; font-weight: 500; }
 .section-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 
-/* GAME GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(145px * var(--card-scale)), 1fr));
   gap: 7px;
 }
 
 .card {
-  background: rgba(22,22,22,0.55);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 11px 10px; cursor: pointer; transition: all .2s ease; position: relative; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--density) 10px; cursor: pointer; transition: all .15s ease; position: relative; overflow: hidden;
   user-select: none;
+  content-visibility: auto;
+  contain-intrinsic-size: 68px;
 }
-.card:hover { 
-  background: rgba(28,28,28,0.75);
-  backdrop-filter: blur(12px);
-  border-color: var(--accent); 
-  transform: translateY(-2px); 
+.card:hover {
+  background: var(--surface2);
+  border-color: var(--border2);
+  transform: translateY(-1px);
 }
 .card:hover .card-arrow { opacity: 1; }
 .card:active { transform: translateY(0); }
+.card.is-hidden { display: none; }
 
-.card-title { font-size: 12px; font-weight: 700; margin-bottom: 5px; line-height: 1.3; padding-right: 14px; }
+.card-title { font-size: 12px; font-weight: 500; margin-bottom: 5px; line-height: 1.3; padding-right: 14px; }
 
-.card-cat { 
-  font-family: var(--font-mono); font-size: 9px; color: var(--muted); 
-  text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: 5px; 
+.card-cat {
+  font-family: var(--font-mono); font-size: 9px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: 5px;
 }
-.cat-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-.card-arrow { position: absolute; right: 8px; top: 10px; color: var(--accent); font-size: 11px; opacity: 0; transition: opacity .12s; }
+.cat-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
+.card-arrow { position: absolute; right: 8px; top: 10px; color: var(--muted); font-size: 11px; opacity: 0; transition: opacity .12s; }
 
-/* ── MODALS ── */
 .modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200;
+  position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; transition: opacity .15s;
+  padding: 20px;
 }
 .modal-bg.open { opacity: 1; pointer-events: all; }
 
 .modal {
-  background: rgba(22,22,22,0.9);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 22px; width: 430px; max-width: 95vw; max-height: 88vh; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border2); border-radius: var(--radius);
+  padding: 26px; width: 460px; max-width: 100%; max-height: 88vh; overflow-y: auto;
   transform: translateY(8px); transition: transform .15s;
 }
 .modal-bg.open .modal { transform: translateY(0); }
 
-.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.modal-title { font-size: 15px; font-weight: 800; color: var(--accent); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.modal-title { font-size: 16px; font-weight: 500; letter-spacing: -0.2px; color: var(--text); }
 
-.modal-close { 
-  background: rgba(30,30,30,0.5);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--border);
-  color: var(--muted); font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; 
+.modal-close {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--muted); font-size: 16px; cursor: pointer; line-height: 1; padding: 4px 8px; border-radius: 4px;
 }
-.modal-close:hover { color: var(--text); background: rgba(30,30,30,0.8); }
+.modal-close:hover { color: var(--text); background: var(--surface3); }
 
-/* ABOUT */
-.about-version { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
-.about-p { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
-.about-credits { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); line-height: 1.7; }
+.about-version { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+.about-p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
 
-/* NEWS MODAL */
 .news-item { border-bottom: 1px solid var(--border); padding: 13px 0; }
 .news-item:last-child { border-bottom: none; }
-.news-item-date { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-bottom: 4px; }
-.news-item-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.news-item-date { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.news-item-title { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
 .news-item-body { font-size: 12px; color: var(--muted); line-height: 1.55; }
 
-/* SETTINGS */
-.setting-row { margin-bottom: 18px; }
-.setting-label { font-size: 12px; font-weight: 700; margin-bottom: 4px; display: block; }
-.setting-sub { font-size: 11px; color: var(--muted); margin-bottom: 8px; display: block; }
-
-.setting-input {
-  width: 100%; 
-  background: rgba(30,30,30,0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius); color: var(--text); font-family: var(--font-mono);
-  font-size: 12px; padding: 7px 10px; outline: none; transition: all .12s;
-}
-.setting-input:focus { border-color: var(--accent); background: rgba(30,30,30,0.8); }
+.setting-row { margin-bottom: 20px; }
+.setting-label { font-size: 12px; font-weight: 500; margin-bottom: 4px; display: block; }
+.setting-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; display: block; line-height: 1.5; }
 
 .color-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 8px; }
 
 .color-swatch {
-  width: 28px; height: 28px; border-radius: 4px; border: 2px solid transparent;
+  width: 26px; height: 26px; border-radius: 4px; border: 2px solid transparent;
   cursor: pointer; transition: border-color .12s; flex-shrink: 0;
 }
-.color-swatch:hover { border-color: rgba(255,255,255,.5); }
+.color-swatch:hover { border-color: rgba(255,255,255,.4); }
 .color-swatch.selected { border-color: #fff; }
 
 .color-input-wrap { display: flex; align-items: center; gap: 8px; }
 
-.color-picker { 
-  width: 34px; height: 28px; border: 1px solid var(--border); 
-  border-radius: 4px; padding: 2px; background: rgba(30,30,30,0.6);
-  backdrop-filter: blur(4px);
-  cursor: pointer; flex-shrink: 0; 
+.color-picker {
+  width: 34px; height: 28px; border: 1px solid var(--border2);
+  border-radius: 4px; padding: 2px; background: var(--surface2);
+  cursor: pointer; flex-shrink: 0;
 }
 
+.seg-row { display: flex; gap: 6px; }
+.seg-btn {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border2); color: var(--muted);
+  font-family: var(--font-main); font-size: 12px; padding: 7px 8px; border-radius: var(--radius);
+  cursor: pointer; transition: all .12s;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn.active { color: var(--text); border-color: var(--text); background: var(--surface3); }
+
+.range-row { display: flex; align-items: center; gap: 10px; }
+.range-row input[type="range"] {
+  flex: 1; accent-color: var(--text); height: 4px;
+}
+.range-val { font-family: var(--font-mono); font-size: 11px; color: var(--muted); min-width: 32px; text-align: right; }
+
 .save-btn {
-  width: 100%; background: var(--accent); color: #000; font-family: var(--font-main);
-  font-weight: 700; font-size: 13px; border: none; border-radius: var(--radius);
+  width: 100%; background: var(--text); color: #000; font-family: var(--font-main);
+  font-weight: 500; font-size: 13px; border: none; border-radius: var(--radius);
   padding: 9px; cursor: pointer; margin-top: 6px; transition: opacity .12s;
 }
 .save-btn:hover { opacity: .85; }
 
-.reset-btn {
-  width: 100%; background: rgba(30,30,30,0.5);
-  backdrop-filter: blur(4px);
+.reset-btn, .ghost-btn {
+  width: 100%; background: var(--surface2);
   color: var(--muted); font-family: var(--font-mono);
-  font-size: 11px; border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 11px; border: 1px solid var(--border2); border-radius: var(--radius);
   padding: 7px; cursor: pointer; margin-top: 6px; transition: all .12s;
 }
-.reset-btn:hover { border-color: var(--muted); color: var(--text); background: rgba(30,30,30,0.7); }
+.reset-btn:hover, .ghost-btn:hover { border-color: var(--muted); color: var(--text); }
 
-.setting-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.setting-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 
-/* TOAST */
+.save-actions { display: flex; gap: 8px; }
+.save-actions .save-btn, .save-actions .ghost-btn { margin-top: 0; }
+
+.save-status { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.6; min-height: 16px; }
+.save-warn {
+  font-size: 11px; color: var(--muted); line-height: 1.6; background: var(--surface2);
+  border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; margin-top: 12px;
+}
+
 .toast {
   position: fixed; bottom: 18px; right: 18px; z-index: 999;
-  background: rgba(30,30,30,0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface3);
+  border: 1px solid var(--border2); border-radius: var(--radius);
   padding: 9px 14px; font-size: 12px; font-family: var(--font-mono); color: var(--text);
   opacity: 0; transform: translateY(6px); transition: all .18s; pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-/* NO RESULTS */
 .no-results { color: var(--muted); font-size: 13px; text-align: center; padding: 48px; grid-column: 1/-1; }
 
-/* SCROLLBAR */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
 
-/* Glass animation for modals */
-@keyframes glassFadeIn {
-  from { opacity: 0; backdrop-filter: blur(0px); }
-  to { opacity: 1; backdrop-filter: blur(20px); }
+input[type="file"] { display: none; }
+
+@media (max-width: 480px) {
+  .modal { padding: 20px; }
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v7.0</span>
-  <input id="search" type="text" placeholder="Search assignments..." oninput="onSearch(this.value)" autocomplete="off"/>
+  <span class="badge">v8.0</span>
+  <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
-    <button class="xbtn" id="chatBtn" onclick="openChat()">OOGLY CHAT</button>
-    <button class="hbtn" id="cloakBtn" onclick="toggleCloak()">🎭 Cloak</button>
-    <button class="hbtn" onclick="openModal('newsModal')">📰 News</button>
-    <button class="hbtn" onclick="openModal('settingsModal')">⚙ Settings</button>
-    <button class="hbtn" onclick="openModal('aboutModal')">? About</button>
+    <button class="xbtn" id="chatBtn2" onclick="openChat()">OOGLY CHAT</button>
+    <button class="hbtn" id="cloakBtn" onclick="toggleCloak()">Cloak</button>
+    <button class="hbtn" onclick="openModal('saveModal')">Game Save</button>
+    <button class="hbtn" onclick="openModal('newsModal')">News</button>
+    <button class="hbtn" onclick="openModal('settingsModal')">Settings</button>
+    <button class="hbtn" onclick="openModal('aboutModal')">About</button>
   </div>
 </header>
 
@@ -358,9 +328,9 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 7.0</div>
+    <div class="about-version">Oogly Boogly Learning · Version 8.0</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
-    <p class="about-p">Use the <strong>Settings</strong> menu to make assignments even more fun with a customizable interface.</p>
+    <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and <strong>Game Save</strong> to back up your progress to a single file.</p>
   </div>
 </div>
 
@@ -368,7 +338,7 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 <div class="modal-bg" id="newsModal">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title">📰 News & Updates</div>
+      <div class="modal-title">News & Updates</div>
       <button class="modal-close" onclick="closeModal('newsModal')">✕</button>
     </div>
     <div id="newsList"></div>
@@ -379,35 +349,101 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 <div class="modal-bg" id="settingsModal">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title">⚙ Customize</div>
+      <div class="modal-title">Customize</div>
       <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
     </div>
 
     <div class="setting-row">
       <label class="setting-label">Accent Color</label>
-      <span class="setting-sub">Color used for highlights, active states, and buttons</span>
+      <span class="setting-sub">Used for active states, highlights, and buttons</span>
       <div class="color-row" id="swatchRow"></div>
       <div class="color-input-wrap">
         <input type="color" class="color-picker" id="colorPicker" oninput="previewAccent(this.value)"/>
-        <span style="font-size:11px;color:var(--muted);">Custom (pick any color)</span>
+        <span style="font-size:11px;color:var(--muted);">Custom color</span>
       </div>
     </div>
 
     <div class="setting-row">
       <label class="setting-label">Background</label>
-      <span class="setting-sub">How dark (or not) you want it</span>
+      <span class="setting-sub">Base page background color</span>
       <div class="color-input-wrap">
         <input type="color" class="color-picker" id="bgPicker" oninput="previewBg(this.value)"/>
         <span style="font-size:11px;color:var(--muted);">Background color</span>
       </div>
     </div>
 
-    <hr class="setting-divider"/>
+    <div class="setting-row">
+      <label class="setting-label">Corner Roundness</label>
+      <span class="setting-sub">How sharp or soft cards and buttons look</span>
+      <div class="seg-row" id="radiusRow">
+        <button class="seg-btn" data-val="2">Sharp</button>
+        <button class="seg-btn" data-val="8">Default</button>
+        <button class="seg-btn" data-val="16">Soft</button>
+        <button class="seg-btn" data-val="24">Round</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">Card Density</label>
+      <span class="setting-sub">Spacing inside each assignment card</span>
+      <div class="range-row">
+        <input type="range" id="densityRange" min="7" max="18" step="1" oninput="previewDensity(this.value)"/>
+        <span class="range-val" id="densityVal">11px</span>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">Card Size</label>
+      <span class="setting-sub">Minimum width of each assignment tile</span>
+      <div class="range-row">
+        <input type="range" id="scaleRange" min="0.8" max="1.4" step="0.05" oninput="previewScale(this.value)"/>
+        <span class="range-val" id="scaleVal">100%</span>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">Typeface</label>
+      <span class="setting-sub">Font used across the interface</span>
+      <div class="seg-row" id="fontRow">
+        <button class="seg-btn" data-val="system">System</button>
+        <button class="seg-btn" data-val="mono">Mono</button>
+        <button class="seg-btn" data-val="serif">Serif</button>
+      </div>
+    </div>
 
     <hr class="setting-divider"/>
 
     <button class="save-btn" onclick="saveSettings()">Save & Apply</button>
     <button class="reset-btn" onclick="resetSettings()">Reset to Defaults</button>
+  </div>
+</div>
+
+<!-- GAME SAVE MODAL -->
+<div class="modal-bg" id="saveModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Game Save</div>
+      <button class="modal-close" onclick="closeModal('saveModal')">✕</button>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">Export progress</label>
+      <span class="setting-sub">Bundles this site's local storage, IndexedDB databases, cookies, and shared storage into one .OBLSAVE file you can keep or move between browsers.</span>
+      <button class="save-btn" onclick="exportSave()">Download .OBLSAVE</button>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">Restore progress</label>
+      <span class="setting-sub">Loads a previously exported .OBLSAVE file back into this browser. This overwrites current save data for matching games.</span>
+      <button class="ghost-btn" onclick="document.getElementById('saveFileInput').click()">Choose .OBLSAVE File</button>
+      <input type="file" id="saveFileInput" accept=".oblsave,.json,application/json" onchange="importSave(event)"/>
+    </div>
+
+    <div class="save-status" id="saveStatus"></div>
+
+    <div class="save-warn">
+      WARNING! This feature is currently in early development and will not work for all games on this website, you have been warned. If you intend to keep your save data for those games, it is currently not possible for certain games.
+    </div>
   </div>
 </div>
 
@@ -418,168 +454,202 @@ main { flex: 1; padding: 16px; overflow-y: auto; min-width: 0; }
 // DATA
 // ──────────────────────────────────────────────
 const assignments = [
-  { title:"Report issue...", link:"/help.html", category:"Utility" },
-  { title:"Oogly AI", "link":"https://ooglyai.lovable.app", category:"Utility" },
-  { title:"Papa's Wingeria", link:"assignment/pw", category:"Action" },
-  { title:"Papa's Cheeseria", link:"assignment/pc", category:"Action" },
-  { title:"Papa's Sushiria", link:"assignment/psushi", category:"Action" },
-  { title:"Papa's Pastaria", link:"assignment/ppa", category:"Action" },
-  { title:"Papa's Burgeria", link:"assignment/pbu", category:"Action" },
-  { title:"Papa's Pizzeria", link:"assignment/papapizzeria", category:"Action" },
-  { title:"Papa's Bakeria", link:"assignment/pb", category:"Action" },
-  { title:"Papa's Scooperia", link:"assignment/ps", category:"Action" },
-  { title:"Papa's Donuteria", link:"assignment/pd", category:"Action" },
-  { title:"Papa's Tacomia", link:"assignment/pt", category:"Action" },
-  { title:"Papa's Freezeria", link:"assignment/pf", category:"Action" },  
-  { title:"Brainrot Heist", link:"assignment/brainrotheist", category:"Action" },
-  { title:"Plane Clicker", link:"assignment/planeclicker", category:"Arcade" },
-  { title:"Stickman GTA", link:"assignment/stickmangta", category:"Action" },
-  { title:"Ducky Clicker", link:"assignment/duckyclicker", category:"Arcade" },
-  { title:"Fortnite", link:"assignment/fortnite", category:"Action" },
-  { title:"Stack Fire Ball", link:"assignment/stackfireball", category:"Action" },
-  { title:"Minecraft 1.20 (EagleyMC)", link:"assignment/eagley120", category:"Action" },
-  { title:"Rocket League 2D", link:"assignment/rocketleague2d", category:"Action" },
-  { title:"Minecraft 1.12.2 (Pixel Client)", link:"assignment/pixelc1122", category:"Action" },
-  { title:"Minecraft 1.8.8 (Resent Client V5)", link:"assignment/resentmcv5188w", category:"Action" },
-  { title:"Minecraft 1.12.2 (Tuff Client)", link:"assignment/tuff1122w", category:"Action" },
-  { title:"Hobo", link:"assignment/hobomath", category:"Action" },
+  { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"2048", link:"assignment/2048/", category:"Puzzle" },
+  { title:"99 Nights in Forest", link:"assignment/99nitf", category:"Action" },
+  { title:"Ace Combat Advanced", link:"assignment/aceadv", category:"Action" },
   { title:"Alpine Linux Emulator", link:"/assignment/alpineconsole", category:"Utility" },
   { title:"Alpine Linux Desktop Emulator", link:"/assignment/alpinelinuxwgui/", category:"Utility" },
-  { title:"Fedora Linux Emulator", link:"/assignment/linuxfedora33.html", category:"Utility" },
-  { title:"FreeDOS Emulator", link:"/assignment/freedos/freedos", category:"Utility" },
-  { title:"Spacallax", link:"/assignment/spacallax", category:"Action" },
-  { title:"Race King", link:"assignment/raceking", category:"Action" },
-  { title:"FNAF Pizzeria Sim", link:"assignment/fnafps", category:"Action" },
-  { title:"Windows 95 Emu", link:"assignment/win95", category:"Utility" },
-  { title:"Geometry Dash World", link:"assignment/gdworld", category:"Puzzle" },
-  { title:"Paper Minecraft", link:"assignment/papermc", category:"Arcade" },
-  { title:"Geometry Dash", link:"assignment/regulargd", category:"Puzzle" },
-  { title:"Pokemon Ruby", link:"assignment/ruby2", category:"Arcade" },
-  { title:"Pokemon Sapphire", link:"assignment/sapp", category:"Arcade" },
-  { title:"Spiral Roll", link:"assignment/sroll", category:"Arcade" },
-  { title:"Brick War", link:"assignment/bwar", category:"Action" },
-  { title:"Pokemon Mystery Dungeon Red", link:"assignment/mysred", category:"Arcade" },
-  { title:"Pokemon Leaf Green", link:"assignment/pgreen", category:"Arcade" },
-  { title:"Sonic Advance", link:"assignment/sonicadv", category:"Arcade" },
-  { title:"Sonic Advance 2", link:"assignment/sonicadv2", category:"Arcade" },
-  { title:"Sonic Advance 3", link:"assignment/sonicadv3", category:"Arcade" },
-  { title:"Sonic Battle", link:"assignment/sbattle", category:"Action" },
-  { title:"Super Mario Advance", link:"assignment/marioadv", category:"Arcade" },
-  { title:"Super Mario Advance 2", link:"assignment/marioadv2", category:"Arcade" },
-  { title:"Super Mario Advance 3", link:"assignment/marioadv3", category:"Arcade" },
-  { title:"Super Mario Advance 4", link:"assignment/marioadv4", category:"Arcade" },
-  { title:"Wario Land 4", link:"assignment/wl4", category:"Arcade" },
-  { title:"Wario Ware Inc.", link:"assignment/ww", category:"Arcade" },
-  { title:"Zelda: Link to the Past", link:"assignment/zpt", category:"Action" },
-  { title:"Zelda: Minish Cap", link:"assignment/zmh", category:"Action" },
-  { title:"Kirby: Nightmare", link:"assignment/knd", category:"Action" },
-  { title:"Kirby: Amazing Mirror", link:"assignment/tam", category:"Action" },
-  { title:"F-Zero: Max Velocity", link:"assignment/fzm", category:"Action" },
-  { title:"F-Zero: GP Legend", link:"assignment/fzg", category:"Action" },
-  { title:"Minecraft 1.12.2", link:"assignment/eagler1122w/", category:"Action" },
-  { title:"Minecraft 1.8.8", link:"assignment/eagler188w/", category:"Action" },
-  { title:"Minecraft 1.5.2 (Precision)", link:"assignment/eagler152precisionc/", category:"Action" },
-  { title:"Click Test", link:"assignment/clicks", category:"Action" },
-  { title:"Minecraft 1.5.2", link:"assignment/eagler152/", category:"Action" },
-  { title:"Minecraft Classic", link:"assignment/mcclassic/", category:"Action" },
-  { title:"Snow Rider 3D", link:"assignment/snowrider/", category:"Arcade" },
-  { title:"Asteroids", link:"assignment/asteroids/", category:"Arcade" },
-  { title:"Dino", link:"assignment/dino/", category:"Arcade" },
-  { title:"Dino++", link:"assignment/dinoplusplus/", category:"Arcade" },
-  { title:"2048", link:"assignment/2048/", category:"Puzzle" },
+  { title:"Animal Crossing", link:"assignment/animalc", category:"Action" },
   { title:"ASCII Space", link:"assignment/asciispace", category:"Action" },
-  { title:"Henry Stickman: Breaking Bank", link:"assignment/btb", category:"Arcade" },
-  { title:"Henry Stickman: Escaping Prison", link:"assignment/etp", category:"Arcade" },
-  { title:"Henry Stickman: Crossing the Pit", link:"assignment/fctp", category:"Arcade" },
-  { title:"Henry Stickman: Fleeing Complex", link:"assignment/ftc", category:"Arcade" },
-  { title:"Henry Stickman: Infiltrating Airship", link:"assignment/ita", category:"Arcade" },
-  { title:"Henry Stickman: Stealing Diamond", link:"assignment/stealingthediamond", category:"Arcade" },
-  { title:"Cookie Clicker", link:"assignment/index.html", category:"Idle" },
-  { title:"Drift Boss", link:"assignment/driftboss", category:"Arcade" },
-  { title:"Snake.io", link:"assignment/snakeio", category:"Arcade" },
-  { title:"Drift Hunters", link:"assignment/drifthunters", category:"Arcade" },
-  { title:"Race Survival Arena King", link:"/rsak", category:"Action" },
-  { title:"Deadly Descent", link:"/dd", category:"Action" },
-  { title:"ArrowMaster.io", link:"/am", category:"Action" },
+  { title:"Asteroids", link:"assignment/asteroids/", category:"Arcade" },
   { title:"Bit Planes", link:"assignment/bitp", category:"Action" },
+  { title:"Block Blast", link:"assignment/blockblast", category:"Puzzle" },
+  { title:"Blocky Puzzle", link:"assignment/blockypuzzle", category:"Puzzle" },
+  { title:"Bridge Race", link:"assignment/brace", category:"Action" },
+  { title:"Henry Stickman: Breaking Bank", link:"assignment/btb", category:"Arcade" },
   { title:"Bloons TD", link:"assignment/btd", category:"Puzzle" },
   { title:"Bloons TD 2", link:"assignment/btd2", category:"Puzzle" },
   { title:"Bloons TD 3", link:"assignment/btd3", category:"Puzzle" },
   { title:"Bloons TD 5", link:"assignment/btd5", category:"Puzzle" },
+  { title:"Brick War", link:"assignment/bwar", category:"Action" },
   { title:"Capybara Clicker", link:"assignment/capyclicker", category:"Idle" },
+  { title:"CrazyCattle3D", link:"assignment/cc3d", category:"Action" },
+  { title:"Click Test", link:"assignment/clicks", category:"Action" },
+  { title:"Clash Royale", link:"assignment/clro", category:"Action" },
+  { title:"Classic Tetris", link:"assignment/cst", category:"Puzzle" },
+  { title:"Cubes 2048", link:"assignment/cubes2048", category:"Puzzle" },
+  { title:"Crazy Shark", link:"assignment/czshark", category:"Action" },
+  { title:"The Sims 2", link:"assignment/dbz", category:"Action" },
   { title:"Deltarune", link:"assignment/deltar", category:"Action" },
-  { title:"Doom", link:"assignment/doom", category:"Action" },
-  { title:"Fighter Pilot", link:"assignment/fighterpilot", category:"Action" },
-  { title:"Flappy Bird", link:"assignment/flapb", category:"Arcade" },
-  { title:"Geometry Freezenova", link:"assignment/gdfreezen", category:"Action" },
-  { title:"Infinite Craft", link:"assignment/infcraft", category:"Puzzle" },
-  { title:"Jetpack Joyride", link:"assignment/jpjyr", category:"Action" },
-  { title:"Mini Golf", link:"assignment/minig", category:"Arcade" },
-  { title:"OvO", link:"assignment/ovo", category:"Arcade" },
-  { title:"OvO 2", link:"assignment/ovo2", category:"Arcade" },
-  { title:"OvO Dimensions", link:"assignment/ovod", category:"Arcade" },
-  { title:"Pokemon Emerald", link:"assignment/pokeem", category:"Action" },
-  { title:"Pokemon Red", link:"assignment/pokemonr", category:"Action" },
-  { title:"Plants vs Zombies", link:"assignment/pvz", category:"Action" },
-  { title:"Super Mario 64", link:"assignment/sm64", category:"Arcade" },
-  { title:"Subway Surfers", link:"assignment/subsurf", category:"Action" },
-  { title:"Super Mario Bros", link:"assignment/supermariobros", category:"Action" },
-  { title:"Temple Run 2", link:"assignment/tr2", category:"Arcade" },
-  { title:"Undertale", link:"assignment/underta", category:"Action" },
-  { title:"Vex 8", link:"assignment/vx8", category:"Action" },
-  { title:"Animal Crossing", link:"assignment/animalc", category:"Action" },
-  { title:"Baldi's Basics", link:"assignment/bb", category:"Action" },
+  { title:"Dino", link:"assignment/dino/", category:"Arcade" },
+  { title:"Dinosaur Game 3D", link:"assignment/dino3d", category:"Arcade" },
+  { title:"Dino++", link:"assignment/dinoplusplus/", category:"Arcade" },
+  { title:"Donkey Kong Country", link:"assignment/dkcountry", category:"Arcade" },
   { title:"Duck Life 2", link:"assignment/dl2", category:"Action" },
   { title:"Duck Life 3", link:"assignment/dl3", category:"Action" },
-  { title:"Duck Life 4", link:"assignment/dl4", category:"Action" },
   { title:"Doge Miner", link:"assignment/dm", category:"Idle" },
+  { title:"Drift Boss", link:"assignment/driftboss", category:"Arcade" },
+  { title:"Drift Hunters", link:"assignment/drifthunters", category:"Arcade" },
+  { title:"Ducky Clicker", link:"assignment/duckyclicker", category:"Arcade" },
+  { title:"Minecraft 1.12.2", link:"assignment/eagler1122w/", category:"Action" },
+  { title:"Minecraft 1.5.2", link:"assignment/eagler152/", category:"Action" },
+  { title:"Minecraft 1.8.8", link:"assignment/eagler188w/", category:"Action" },
+  { title:"Minecraft 1.20 (EagleyMC)", link:"assignment/eagley120", category:"Action" },
+  { title:"Eggy Car", link:"assignment/ecar", category:"Arcade" },
+  { title:"Henry Stickman: Escaping Prison", link:"assignment/etp", category:"Arcade" },
+  { title:"Henry Stickman: Crossing the Pit", link:"assignment/fctp", category:"Arcade" },
+  { title:"Final Fantasy VI Advance", link:"assignment/ff6", category:"Action" },
+  { title:"Fighter Pilot", link:"assignment/fighterpilot", category:"Action" },
+  { title:"Fish Eat 2", link:"assignment/fisheat2", category:"Arcade" },
+  { title:"Flappy Bird", link:"assignment/flapb", category:"Arcade" },
   { title:"FNAF 1", link:"assignment/fnaf1", category:"Action" },
   { title:"FNAF 2", link:"assignment/fnaf2", category:"Action" },
   { title:"FNAF 3", link:"assignment/fnaf3", category:"Action" },
   { title:"FNAF 4", link:"assignment/fnaf4", category:"Action" },
   { title:"FNAF: Sister Location", link:"assignment/fnaf5", category:"Action" },
-  { title:"Hollow Knight", link:"assignment/hlkn", category:"Action" },
-  { title:"Portal", link:"assignment/portal", category:"Action" },
-  { title:"Uno", link:"assignment/uno", category:"Arcade" },
-  { title:"99 Nights in Forest", link:"assignment/99nitf", category:"Action" },
-  { title:"Blocky Puzzle", link:"assignment/blockypuzzle", category:"Puzzle" },
-  { title:"Bridge Race", link:"assignment/brace", category:"Action" },
-  { title:"CrazyCattle3D", link:"assignment/cc3d", category:"Action" },
-  { title:"Clash Royale", link:"assignment/clro", category:"Action" },
+  { title:"FNAF Pizzeria Sim", link:"assignment/fnafps", category:"Action" },
+  { title:"Fortnite", link:"assignment/fortnite", category:"Action" },
+  { title:"FreeDOS Emulator", link:"/assignment/freedos/freedos", category:"Utility" },
+  { title:"Henry Stickman: Fleeing Complex", link:"assignment/ftc", category:"Arcade" },
+  { title:"F-Zero: GP Legend", link:"assignment/fzg", category:"Action" },
+  { title:"F-Zero: Max Velocity", link:"assignment/fzm", category:"Action" },
   { title:"Grow a Garden", link:"assignment/gag", category:"Action" },
+  { title:"Geometry Freezenova", link:"assignment/gdfreezen", category:"Action" },
+  { title:"Geometry Dash Lite", link:"assignment/gdl", category:"Puzzle" },
+  { title:"Geometry Dash Meltdown", link:"assignment/gdm", category:"Puzzle" },
+  { title:"Geometry Dash Sub Zero", link:"assignment/gdsz", category:"Puzzle" },
+  { title:"Geometry Dash World (Alt)", link:"assignment/gdw", category:"Puzzle" },
+  { title:"Geometry Dash World", link:"assignment/gdworld", category:"Puzzle" },
   { title:"Granny", link:"assignment/grny", category:"Action" },
   { title:"Growden.io", link:"assignment/growio", category:"Action" },
   { title:"Helix Jump", link:"assignment/hjump", category:"Action" },
-  { title:"Idle Ants", link:"assignment/idants", category:"Action" },
-  { title:"Obby But You're On A Bike", link:"assignment/obyoab", category:"Action" },
+  { title:"Hollow Knight", link:"assignment/hlkn", category:"Action" },
+  { title:"Hobo", link:"assignment/hobomath", category:"Action" },
+  { title:"Henry Stickman: Infiltrating Airship", link:"assignment/ita", category:"Arcade" },
+  { title:"Kirby 64: The Crystal Shards", link:"assignment/k64tcs", category:"Action" },
+  { title:"Mario Kart 64", link:"assignment/kart", category:"Action" },
+  { title:"Kirby Adventure", link:"assignment/kirbyadv", category:"Action" },
+  { title:"Kirby's Dreamland", link:"assignment/kirbydl", category:"Action" },
+  { title:"Kirby's Dreamland 2", link:"assignment/kirbydl2", category:"Action" },
+  { title:"Kirby Super Star", link:"assignment/kirbyss", category:"Action" },
+  { title:"Kirby: Nightmare", link:"assignment/knd", category:"Action" },
+  { title:"Super Mario Advance", link:"assignment/marioadv", category:"Arcade" },
+  { title:"Super Mario Advance 2", link:"assignment/marioadv2", category:"Arcade" },
+  { title:"Super Mario Advance 3", link:"assignment/marioadv3", category:"Arcade" },
+  { title:"Super Mario Advance 4", link:"assignment/marioadv4", category:"Arcade" },
+  { title:"Mini Golf", link:"assignment/minig", category:"Arcade" },
+  { title:"OvO", link:"assignment/ovo", category:"Arcade" },
+  { title:"OvO 2", link:"assignment/ovo2", category:"Arcade" },
+  { title:"OvO Dimensions", link:"assignment/ovod", category:"Arcade" },
+  { title:"Paper.io", link:"assignment/paper", category:"Arcade" },
+  { title:"Paper Minecraft", link:"assignment/papermc", category:"Arcade" },
+  { title:"Papa's Bakeria", link:"assignment/pb", category:"Action" },
+  { title:"Papa's Burgeria", link:"assignment/pbu", category:"Action" },
+  { title:"Papa's Cheeseria", link:"assignment/pc", category:"Action" },
+  { title:"Papa's Donuteria", link:"assignment/pd", category:"Action" },
+  { title:"Papa's Freezeria", link:"assignment/pf", category:"Action" },
+  { title:"Pokemon Leaf Green", link:"assignment/pgreen", category:"Arcade" },
+  { title:"Minecraft 1.12.2 (Pixel Client)", link:"assignment/pixelc1122", category:"Action" },
+  { title:"Plane Clicker", link:"assignment/planeclicker", category:"Arcade" },
+  { title:"People Playground", link:"assignment/playg", category:"Action" },
+  { title:"Pokemon Dark Violet", link:"assignment/poke-dv", category:"Arcade" },
+  { title:"Pokemon Platinum", link:"assignment/poke-pt", category:"Arcade" },
+  { title:"Pokemon X & Y", link:"assignment/poke-xy", category:"Arcade" },
+  { title:"Pokemon Blue", link:"assignment/pokeb", category:"Arcade" },
+  { title:"Pokemon Crystal", link:"assignment/pokec", category:"Arcade" },
+  { title:"Pokemon Diamond", link:"assignment/poked", category:"Arcade" },
+  { title:"Pokemon Emerald", link:"assignment/pokeem", category:"Action" },
+  { title:"Pokemon Gold", link:"assignment/pokeg", category:"Arcade" },
+  { title:"Pokemon Black", link:"assignment/pokemon-black", category:"Arcade" },
+  { title:"Pokemon Red", link:"assignment/pokemonr", category:"Action" },
+  { title:"Pokemon Silver", link:"assignment/pokes", category:"Arcade" },
+  { title:"Pokemon Unbound", link:"assignment/pokeu", category:"Arcade" },
+  { title:"Pokemon Yellow", link:"assignment/pokey", category:"Arcade" },
+  { title:"Portal", link:"assignment/portal", category:"Action" },
+  { title:"Papa's Pastaria", link:"assignment/ppa", category:"Action" },
+  { title:"Papa's Scooperia", link:"assignment/ps", category:"Action" },
+  { title:"Papa's Sushiria", link:"assignment/psushi", category:"Action" },
+  { title:"Papa's Tacomia", link:"assignment/pt", category:"Action" },
+  { title:"Plants vs Zombies", link:"assignment/pvz", category:"Action" },
+  { title:"Papa's Wingeria", link:"assignment/pw", category:"Action" },
+  { title:"Race King", link:"assignment/raceking", category:"Action" },
   { title:"Ragdoll Archers", link:"assignment/ragarch", category:"Action" },
   { title:"Retro Bowl College", link:"assignment/rbc", category:"Arcade" },
-  { title:"Steal a Brainrot", link:"assignment/sab", category:"Action" },
-  { title:"Undertale Yellow", link:"assignment/utyellow", category:"Action" }
+  { title:"RC Flight Simulator for TIC-80", link:"assignment/rcfs", category:"Arcade" },
+  { title:"Geometry Dash", link:"assignment/regulargd", category:"Puzzle" },
+  { title:"Minecraft 1.8.8 (Resent Client V5)", link:"assignment/resentmcv5188w", category:"Action" },
+  { title:"Rocket League 2D", link:"assignment/rocketleague2d", category:"Action" },
+  { title:"Pokemon Ruby", link:"assignment/ruby2", category:"Arcade" },
+  { title:"Pokemon Sapphire", link:"assignment/sapp", category:"Arcade" },
+  { title:"Sonic Battle", link:"assignment/sbattle", category:"Action" },
+  { title:"The Simpsons Game", link:"assignment/simpsons", category:"Action" },
+  { title:"Super Mario 64", link:"assignment/sm64", category:"Arcade" },
+  { title:"Super Mario Bros 2", link:"assignment/smb2", category:"Action" },
+  { title:"Super Mario Bros 3", link:"assignment/smb3", category:"Action" },
+  { title:"Super Mario World", link:"assignment/smw", category:"Action" },
+  { title:"Snake.io", link:"assignment/snakeio", category:"Arcade" },
+  { title:"Snow Rider 3D", link:"assignment/snowrider/", category:"Arcade" },
+  { title:"Sonic Advance", link:"assignment/sonicadv", category:"Arcade" },
+  { title:"Sonic Advance 2", link:"assignment/sonicadv2", category:"Arcade" },
+  { title:"Sonic Advance 3", link:"assignment/sonicadv3", category:"Arcade" },
+  { title:"Spacallax", link:"/assignment/spacallax", category:"Action" },
+  { title:"Space Waves", link:"assignment/spwaves", category:"Arcade" },
+  { title:"Spiral Roll", link:"assignment/sroll", category:"Arcade" },
+  { title:"Stack Fire Ball", link:"assignment/stackfireball", category:"Action" },
+  { title:"Henry Stickman: Stealing Diamond", link:"assignment/stealingthediamond", category:"Arcade" },
+  { title:"Stickman GTA", link:"assignment/stickmangta", category:"Action" },
+  { title:"Subway Surfers", link:"assignment/subsurf", category:"Action" },
+  { title:"Super Mario Bros", link:"assignment/supermariobros", category:"Action" },
+  { title:"Survivor.io", link:"assignment/svio", category:"Action" },
+  { title:"Kirby: Amazing Mirror", link:"assignment/tam", category:"Action" },
+  { title:"Tank Game", link:"assignment/tankgame", category:"Action" },
+  { title:"Terraria", link:"assignment/terraria", category:"Action" },
+  { title:"Temple Run 2", link:"assignment/tr2", category:"Arcade" },
+  { title:"Minecraft 1.12.2 (Tuff Client)", link:"assignment/tuff1122w", category:"Action" },
+  { title:"Undertale", link:"assignment/underta", category:"Action" },
+  { title:"Uno", link:"assignment/uno", category:"Arcade" },
+  { title:"Undertale Yellow", link:"assignment/utyellow", category:"Action" },
+  { title:"Vex 8", link:"assignment/vx8", category:"Action" },
+  { title:"Windows 95 Emu", link:"assignment/win95", category:"Utility" },
+  { title:"Windows XP Emulator", link:"assignment/winxp", category:"Utility" },
+  { title:"Wario Land 4", link:"assignment/wl4", category:"Arcade" },
+  { title:"Wario Ware Inc.", link:"assignment/ww", category:"Arcade" },
+  { title:"Zelda: Minish Cap", link:"assignment/zmh", category:"Action" },
+  { title:"Zelda: Link to the Past", link:"assignment/zpt", category:"Action" },
+  { title:"Deadly Descent", link:"/dd", category:"Action" },
+  { title:"Race Survival Arena King", link:"/rsak", category:"Action" },
+  { title:"ArrowMaster.io", link:"/am", category:"Action" },
+  { title:"Cookie Clicker", link:"assignment/index.html", category:"Idle" }
 ];
 
 const newsData = [
-          {
+  {
+    date: "2026-07-25",
+    title: "Fully updated interface with numerous new assignments, fixes, and a global game save system*! *BETA - Not all games are supported.",
+    body: "v8.0 brings a redesigned interface, deeper customization options, dozens of new assignments, and a new Game Save tool that backs up your progress to a single .OBLSAVE file."
+  },
+  {
     date: "2026-05-18",
     title: "Add lots of Papa's games- i mean assignments!",
     body: "We have added several new assignments from the Papa's Series!"
   },
-        {
+  {
     date: "2026-04-28",
     title: "Updated Plane Clicker!",
     body: "Plane Clicker now has updated aircraft, new upgrades, power ups, and more!"
   },
-        {
+  {
     date: "2026-04-27",
     title: "Added 7 new assignments & fix some old ones.",
     body: "Try them out now!"
   },
-      {
+  {
     date: "2026-04-25",
     title: "oogly.chat is now available.",
     body: "You can now chat with others on Oogly Boogly Learning!"
   },
-    {
+  {
     date: "2026-04-25",
     title: "Oogly Boogly Learning adds new assignments!",
     body: "Oogly Boogly Learning has added new 5 new assignments to play, ad-free!"
@@ -590,6 +660,7 @@ const newsData = [
     body: "Oogly Boogly Learning is now live, with 100s of assignments you can easily do online, and for free! Anytime!"
   },
 ];
+
 function openChat() {
   window.location.href = window.location.origin + '/chat';
 }
@@ -601,30 +672,52 @@ function openUnblocker() {
 // DEFAULTS & CONFIG
 // ──────────────────────────────────────────────
 const DEFAULTS = {
-  accent: '#4ade80',
-  bg: '#0e0e0e',
+  accent: '#ffffff',
+  bg: '#0a0a0a',
+  radius: 8,
+  density: 11,
+  cardScale: 1,
+  font: 'system',
   cloakTitle: 'Google Classroom',
   gameCloakTitle: 'Google Classroom',
   cloaked: false
 };
 
 const ACCENT_PRESETS = [
-  '#4ade80','#60a5fa','#f87171','#fbbf24','#a78bfa',
-  '#fb923c','#e879f9','#22d3ee','#f472b6','#e2e8f0'
+  '#ffffff','#4ade80','#60a5fa','#f87171','#fbbf24',
+  '#a78bfa','#fb923c','#e879f9','#22d3ee','#f472b6'
 ];
 
-// Category dot colors
-const CAT_COLORS = {
-  Action:  '#f87171',
-  Arcade:  '#60a5fa',
-  Puzzle:  '#fbbf24',
-  Idle:    '#a78bfa',
-  Utility: '#34d399'
+const FONT_STACKS = {
+  system: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  mono: "'SF Mono', 'JetBrains Mono', Menlo, monospace",
+  serif: "Georgia, 'Times New Roman', serif"
 };
+
+const CAT_COLORS = {}; // dots now inherit --muted via CSS, kept for future per-category theming
 
 let cfg = { ...DEFAULTS };
 let currentCat = 'All';
 let searchQ = '';
+
+// ──────────────────────────────────────────────
+// PERFORMANCE LAYER (unchanged from v7 speed pass)
+// ──────────────────────────────────────────────
+const searchIndex = assignments.map(a => ({
+  data: a,
+  hay: (a.title + ' ' + a.category).toLowerCase()
+}));
+
+const catIndex = new Map();
+catIndex.set('All', assignments.map((_, i) => i));
+assignments.forEach((a, i) => {
+  if (!catIndex.has(a.category)) catIndex.set(a.category, []);
+  catIndex.get(a.category).push(i);
+});
+const allCats = [...catIndex.keys()].filter(c => c !== 'All').sort();
+
+let cardNodes = [];
+let searchDebounceTimer = null;
 
 // ──────────────────────────────────────────────
 // INIT
@@ -633,7 +726,8 @@ function init() {
   loadConfig();
   applyConfig(false);
   buildSidebar();
-  renderGrid();
+  buildGridOnce();
+  applyFilters();
   renderNews();
   populateSettingsUI();
   if (cfg.cloaked) applySiteCloak();
@@ -644,7 +738,7 @@ function init() {
 // ──────────────────────────────────────────────
 function loadConfig() {
   try {
-    const saved = JSON.parse(localStorage.getItem('obl_v6_config') || '{}');
+    const saved = JSON.parse(localStorage.getItem('obl_v8_config') || '{}');
     cfg = { ...DEFAULTS, ...saved };
   } catch(e) {
     cfg = { ...DEFAULTS };
@@ -652,7 +746,7 @@ function loadConfig() {
 }
 
 function saveConfig() {
-  localStorage.setItem('obl_v6_config', JSON.stringify(cfg));
+  localStorage.setItem('obl_v8_config', JSON.stringify(cfg));
 }
 
 // ──────────────────────────────────────────────
@@ -661,20 +755,23 @@ function saveConfig() {
 function applyConfig(save = true) {
   const r = document.documentElement;
 
-  // Accent
   r.style.setProperty('--accent', cfg.accent);
   const hex = cfg.accent.replace('#','');
   const bi = parseInt(hex, 16);
   r.style.setProperty('--accent-rgb', `${(bi>>16)&255},${(bi>>8)&255},${bi&255}`);
 
-  // Background — derive surface shades
   r.style.setProperty('--bg', cfg.bg);
-  r.style.setProperty('--surface', lighten(cfg.bg, 8));
-  r.style.setProperty('--surface2', lighten(cfg.bg, 16));
-  r.style.setProperty('--border', lighten(cfg.bg, 26));
-  r.style.setProperty('--card-hover', lighten(cfg.bg, 14));
+  r.style.setProperty('--surface', lighten(cfg.bg, 10));
+  r.style.setProperty('--surface2', lighten(cfg.bg, 15));
+  r.style.setProperty('--surface3', lighten(cfg.bg, 20));
+  r.style.setProperty('--border', lighten(cfg.bg, 16));
+  r.style.setProperty('--border2', lighten(cfg.bg, 26));
 
-  // Cloak button
+  r.style.setProperty('--radius', cfg.radius + 'px');
+  r.style.setProperty('--density', cfg.density + 'px');
+  r.style.setProperty('--card-scale', cfg.cardScale);
+  r.style.setProperty('--font-main', FONT_STACKS[cfg.font] || FONT_STACKS.system);
+
   const cb = document.getElementById('cloakBtn');
   if (cb) cb.classList.toggle('active', cfg.cloaked);
 
@@ -713,38 +810,33 @@ function toggleCloak() {
   document.getElementById('cloakBtn').classList.toggle('active', cfg.cloaked);
   if (cfg.cloaked) applySiteCloak();
   else removeSiteCloak();
-  toast(cfg.cloaked ? '🎭 Tab cloaked' : '👁 Cloak removed');
+  toast(cfg.cloaked ? 'Tab cloaked' : 'Cloak removed');
 }
 
 // ──────────────────────────────────────────────
 // GAME LAUNCH — fetch HTML → inject into about:blank
 // ──────────────────────────────────────────────
 async function launchGame(link, title) {
-  // Open blank tab immediately (must be in click handler for popup to be allowed)
   const gameTab = window.open('about:blank', '_blank');
   if (!gameTab) {
-    toast('❌ Popup blocked — enable popups for this site');
+    toast('Popup blocked — enable popups for this site');
     return;
   }
 
   const cloakTitle = cfg.gameCloakTitle || 'Google Classroom';
 
-  // Resolve absolute URL
   let absUrl;
   if (link.startsWith('http://') || link.startsWith('https://')) {
     absUrl = link;
   } else if (link.startsWith('/')) {
     absUrl = window.location.origin + link;
   } else {
-    // relative — resolve against current page's directory
     const base = window.location.href.replace(/\/[^/]*$/, '/');
     absUrl = base + link;
   }
 
-  // Determine base URL for asset resolution (the folder the game file lives in)
   const gameBase = absUrl.endsWith('/') ? absUrl : absUrl.substring(0, absUrl.lastIndexOf('/') + 1);
 
-  // Show a loading screen in the tab
   writeLoading(gameTab, title, cloakTitle);
 
   try {
@@ -752,32 +844,27 @@ async function launchGame(link, title) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     let html = await res.text();
 
-    // Inject <base> tag + cloaked title + GC icon right after <head>
-    // Remove any existing <title> first, then inject ours
     html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
     html = html.replace(
       /(<head[^>]*>)/i,
-      `$1\n<base href="${gameBase}"/>\n<title>${escHtml(cloakTitle)}</title>\n<link rel="icon" href="${GC_ICON}"/>`
+      `$1\n<base href="${gameBase}"/>\n<title>Home - Classroom</title>\n<link rel="icon" href="${GC_ICON}"/>`
     );
-    // If no <head> tag existed, prepend manually
     if (!/<head/i.test(html)) {
-      html = `<head><base href="${gameBase}"/><title>${escHtml(cloakTitle)}</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
+      html = `<head><base href="${gameBase}"/><title>Home - Classroom</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
     }
 
     gameTab.document.open();
     gameTab.document.write(html);
     gameTab.document.close();
 
-    // Re-assert title after write (browsers can reset it)
     setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch(e){} }, 300);
     setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch(e){} }, 1200);
 
   } catch(err) {
-    // Fallback: full-screen iframe in about:blank (works when fetch fails for any reason)
     gameTab.document.open();
     gameTab.document.write(`<!DOCTYPE html><html>
 <head>
-  <title>${escHtml(cloakTitle)}</title>
+  <title>Home - Classroom</title>
   <link rel="icon" href="${GC_ICON}"/>
   <style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style>
 </head>
@@ -792,12 +879,12 @@ function writeLoading(tab, title, cloakTitle) {
   tab.document.open();
   tab.document.write(`<!DOCTYPE html><html>
 <head>
-  <title>${escHtml(cloakTitle)}</title>
+  <title>Home - Classroom</title>
   <link rel="icon" href="${GC_ICON}"/>
   <style>
-    body{background:#0e0e0e;color:#444;font-family:monospace;font-size:13px;
+    body{background:#0a0a0a;color:#555;font-family:monospace;font-size:13px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;gap:10px;}
-    .spinner{width:20px;height:20px;border:2px solid #222;border-top-color:#4ade80;border-radius:50%;animation:spin .7s linear infinite;}
+    .spinner{width:20px;height:20px;border:2px solid #1e1e1e;border-top-color:#ffffff;border-radius:50%;animation:spin .7s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
@@ -816,48 +903,103 @@ function escHtml(s) {
 // SIDEBAR
 // ──────────────────────────────────────────────
 function buildSidebar() {
-  const allCats = [...new Set(assignments.map(a => a.category))].sort();
-  const counts = {};
-  assignments.forEach(a => { counts[a.category] = (counts[a.category]||0)+1; });
-
   const aside = document.getElementById('sidebar');
-  aside.innerHTML = '<div class="sidebar-label">Categories</div>' +
-    ['All', ...allCats].map(c => {
-      const n = c === 'All' ? assignments.length : (counts[c]||0);
-      return `<button class="cat-btn${c===currentCat?' active':''}" onclick="filterCat('${c}')">${c}<span class="cat-count">${n}</span></button>`;
-    }).join('');
+  const frag = document.createDocumentFragment();
+
+  const label = document.createElement('div');
+  label.className = 'sidebar-label';
+  label.textContent = 'Categories';
+  frag.appendChild(label);
+
+  ['All', ...allCats].forEach(c => {
+    const n = catIndex.get(c).length;
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (c === currentCat ? ' active' : '');
+    btn.dataset.cat = c;
+    btn.onclick = () => filterCat(c);
+    btn.innerHTML = `${escHtml(c)}<span class="cat-count">${n}</span>`;
+    frag.appendChild(btn);
+  });
+
+  aside.innerHTML = '';
+  aside.appendChild(frag);
 }
 
 // ──────────────────────────────────────────────
-// GAME GRID
+// GAME GRID (built once, filtered via class toggling — see v7 notes)
 // ──────────────────────────────────────────────
-function renderGrid() {
-  const q = searchQ.toLowerCase();
-  const filtered = assignments.filter(a => {
-    const inCat = currentCat === 'All' || a.category === currentCat;
-    const inSearch = !q || a.title.toLowerCase().includes(q) || a.category.toLowerCase().includes(q);
-    return inCat && inSearch;
+function buildGridOnce() {
+  const grid = document.getElementById('gameGrid');
+  const frag = document.createDocumentFragment();
+
+  cardNodes = assignments.map((a, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.cat = a.category;
+    card.dataset.idx = i;
+    card.addEventListener('click', () => launchGame(a.link, a.title));
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'card-title';
+    titleEl.textContent = a.title;
+
+    const catEl = document.createElement('div');
+    catEl.className = 'card-cat';
+    const dotEl = document.createElement('span');
+    dotEl.className = 'cat-dot';
+    catEl.appendChild(dotEl);
+    catEl.appendChild(document.createTextNode(a.category));
+
+    const arrowEl = document.createElement('span');
+    arrowEl.className = 'card-arrow';
+    arrowEl.textContent = '→';
+
+    card.appendChild(titleEl);
+    card.appendChild(catEl);
+    card.appendChild(arrowEl);
+
+    frag.appendChild(card);
+    return card;
   });
 
-  document.getElementById('sectionTitle').textContent = currentCat === 'All' ? 'All Assignments' : currentCat;
-  document.getElementById('sectionCount').textContent = `${filtered.length} assignment${filtered.length!==1?'s':''}`;
+  grid.innerHTML = '';
+  grid.appendChild(frag);
 
+  const noRes = document.createElement('div');
+  noRes.className = 'no-results';
+  noRes.textContent = 'No assignments found.';
+  noRes.style.display = 'none';
+  grid.appendChild(noRes);
+  grid._noResultsEl = noRes;
+}
+
+function applyFilters() {
   const grid = document.getElementById('gameGrid');
-  if (filtered.length === 0) {
-    grid.innerHTML = '<div class="no-results">No assignments found.</div>';
-    return;
+  const q = searchQ;
+  const hasQuery = q.length > 0;
+
+  const catIndices = catIndex.get(currentCat) || [];
+  const catSet = currentCat === 'All' ? null : new Set(catIndices);
+
+  let visibleCount = 0;
+
+  for (let i = 0; i < assignments.length; i++) {
+    const inCat = currentCat === 'All' || catSet.has(i);
+    const inSearch = !hasQuery || searchIndex[i].hay.includes(q);
+    const visible = inCat && inSearch;
+    const node = cardNodes[i];
+    if (visible) {
+      if (node.classList.contains('is-hidden')) node.classList.remove('is-hidden');
+      visibleCount++;
+    } else {
+      if (!node.classList.contains('is-hidden')) node.classList.add('is-hidden');
+    }
   }
 
-  grid.innerHTML = filtered.map(a => {
-    const dot = CAT_COLORS[a.category] || '#666';
-    const safeLink = a.link.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    const safeTitle = a.title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return `<div class="card" data-cat="${a.category}" onclick="launchGame('${safeLink}','${safeTitle}')">
-  <div class="card-title">${escHtml(a.title)}</div>
-  <div class="card-cat"><span class="cat-dot" style="background:${dot}"></span>${a.category}</div>
-  <span class="card-arrow">↗</span>
-</div>`;
-  }).join('');
+  document.getElementById('sectionTitle').textContent = currentCat === 'All' ? 'All Assignments' : currentCat;
+  document.getElementById('sectionCount').textContent = `${visibleCount} assignment${visibleCount!==1?'s':''}`;
+
+  if (grid._noResultsEl) grid._noResultsEl.style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
 // ──────────────────────────────────────────────
@@ -882,14 +1024,17 @@ function renderNews() {
 function filterCat(cat) {
   currentCat = cat;
   document.querySelectorAll('.cat-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.trim().startsWith(cat));
+    b.classList.toggle('active', b.dataset.cat === cat);
   });
-  renderGrid();
+  applyFilters();
 }
 
-function onSearch(q) {
-  searchQ = q;
-  renderGrid();
+function onSearchInput(v) {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    searchQ = v.toLowerCase();
+    applyFilters();
+  }, 100);
 }
 
 // ──────────────────────────────────────────────
@@ -908,13 +1053,30 @@ document.addEventListener('keydown', e => {
 // SETTINGS UI
 // ──────────────────────────────────────────────
 function populateSettingsUI() {
-  // Swatches
   const row = document.getElementById('swatchRow');
   row.innerHTML = ACCENT_PRESETS.map(c =>
     `<div class="color-swatch${cfg.accent===c?' selected':''}" style="background:${c}" onclick="selectSwatch('${c}')" data-color="${c}" title="${c}"></div>`
   ).join('');
   document.getElementById('colorPicker').value = cfg.accent;
   document.getElementById('bgPicker').value = cfg.bg;
+
+  document.querySelectorAll('#radiusRow .seg-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.val) === cfg.radius);
+    b.onclick = () => { cfg.radius = parseInt(b.dataset.val); applyConfig(false); populateSettingsUI(); };
+  });
+
+  document.querySelectorAll('#fontRow .seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === cfg.font);
+    b.onclick = () => { cfg.font = b.dataset.val; applyConfig(false); populateSettingsUI(); };
+  });
+
+  const densityRange = document.getElementById('densityRange');
+  densityRange.value = cfg.density;
+  document.getElementById('densityVal').textContent = cfg.density + 'px';
+
+  const scaleRange = document.getElementById('scaleRange');
+  scaleRange.value = cfg.cardScale;
+  document.getElementById('scaleVal').textContent = Math.round(cfg.cardScale * 100) + '%';
 }
 
 function selectSwatch(color) {
@@ -935,13 +1097,27 @@ function previewBg(val) {
   applyConfig(false);
 }
 
+function previewDensity(val) {
+  cfg.density = parseInt(val);
+  document.getElementById('densityVal').textContent = val + 'px';
+  applyConfig(false);
+}
+
+function previewScale(val) {
+  cfg.cardScale = parseFloat(val);
+  document.getElementById('scaleVal').textContent = Math.round(val * 100) + '%';
+  applyConfig(false);
+}
+
 function saveSettings() {
   cfg.accent = document.getElementById('colorPicker').value;
   cfg.bg = document.getElementById('bgPicker').value;
+  cfg.density = parseInt(document.getElementById('densityRange').value);
+  cfg.cardScale = parseFloat(document.getElementById('scaleRange').value);
   applyConfig(true);
   if (cfg.cloaked) applySiteCloak();
   closeModal('settingsModal');
-  toast('✅ Settings saved');
+  toast('Settings saved');
 }
 
 function resetSettings() {
@@ -950,7 +1126,297 @@ function resetSettings() {
   applyConfig(false);
   populateSettingsUI();
   removeSiteCloak();
-  toast('↩ Reset to defaults');
+  toast('Reset to defaults');
+}
+
+// ──────────────────────────────────────────────
+// GAME SAVE SYSTEM — .OBLSAVE export / import
+//
+// Captures everything this page's own JS can legally reach:
+//   - localStorage (this origin)
+//   - sessionStorage (this origin)  [included for completeness]
+//   - cookies visible to this document (this origin, non-HttpOnly only —
+//     HttpOnly cookies are invisible to JS by design and cannot be read)
+//   - every IndexedDB database on this origin, including all object stores
+//   - the experimental "Shared Storage" API, if the browser exposes one
+//     under window.sharedStorage (most browsers do not yet implement this
+//     as a readable API; included defensively, will simply be empty if
+//     unavailable)
+//
+// IMPORTANT LIMITATION: browsers isolate storage per-origin. If any game
+// is hosted on a different domain than this site (not merely a different
+// path), this page's JavaScript is sandboxed away from that domain's
+// storage entirely — there is no client-side workaround. Games served
+// from this same domain (any /assignment/... path, or root-level paths
+// like /rsak, /dd, /am) ARE covered, since they share this page's origin.
+// ──────────────────────────────────────────────
+
+async function collectAllIndexedDB() {
+  const result = {};
+  if (!('indexedDB' in window)) return result;
+
+  let dbList = [];
+  try {
+    if (indexedDB.databases) {
+      dbList = await indexedDB.databases();
+    }
+  } catch(e) { /* databases() not supported in this browser */ }
+
+  for (const dbInfo of dbList) {
+    const name = dbInfo.name;
+    if (!name) continue;
+    try {
+      const dbData = await dumpIndexedDB(name);
+      result[name] = dbData;
+    } catch(e) {
+      result[name] = { error: String(e) };
+    }
+  }
+  return result;
+}
+
+function dumpIndexedDB(dbName) {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(dbName);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      const storeNames = Array.from(db.objectStoreNames);
+      if (storeNames.length === 0) {
+        db.close();
+        resolve({ version: db.version, stores: {} });
+        return;
+      }
+      const tx = db.transaction(storeNames, 'readonly');
+      const stores = {};
+      let remaining = storeNames.length;
+
+      storeNames.forEach(storeName => {
+        const store = tx.objectStore(storeName);
+        const keyPath = store.keyPath;
+        const autoIncrement = store.autoIncrement;
+        const entries = [];
+        const cursorReq = store.openCursor();
+        cursorReq.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            entries.push({ key: cursor.key, value: cursor.value });
+            cursor.continue();
+          } else {
+            stores[storeName] = { keyPath, autoIncrement, entries };
+            remaining--;
+            if (remaining === 0) {
+              db.close();
+              resolve({ version: db.version, stores });
+            }
+          }
+        };
+        cursorReq.onerror = () => {
+          stores[storeName] = { error: String(cursorReq.error) };
+          remaining--;
+          if (remaining === 0) {
+            db.close();
+            resolve({ version: db.version, stores });
+          }
+        };
+      });
+    };
+  });
+}
+
+async function restoreAllIndexedDB(dumpObj) {
+  if (!('indexedDB' in window) || !dumpObj) return;
+  for (const dbName of Object.keys(dumpObj)) {
+    const dbDump = dumpObj[dbName];
+    if (!dbDump || dbDump.error) continue;
+    await restoreIndexedDB(dbName, dbDump);
+  }
+}
+
+function restoreIndexedDB(dbName, dbDump) {
+  return new Promise((resolve) => {
+    const storeNames = Object.keys(dbDump.stores || {});
+    const openReq = indexedDB.open(dbName, dbDump.version || 1);
+
+    openReq.onupgradeneeded = () => {
+      const db = openReq.result;
+      storeNames.forEach(storeName => {
+        if (!db.objectStoreNames.contains(storeName)) {
+          const meta = dbDump.stores[storeName];
+          const opts = {};
+          if (meta.keyPath) opts.keyPath = meta.keyPath;
+          if (meta.autoIncrement) opts.autoIncrement = true;
+          db.createObjectStore(storeName, opts);
+        }
+      });
+    };
+
+    openReq.onsuccess = () => {
+      const db = openReq.result;
+      const existingStores = storeNames.filter(s => db.objectStoreNames.contains(s));
+      if (existingStores.length === 0) { db.close(); resolve(); return; }
+
+      const tx = db.transaction(existingStores, 'readwrite');
+      existingStores.forEach(storeName => {
+        const store = tx.objectStore(storeName);
+        const entries = dbDump.stores[storeName].entries || [];
+        entries.forEach(entry => {
+          try {
+            if (store.keyPath) {
+              store.put(entry.value);
+            } else {
+              store.put(entry.value, entry.key);
+            }
+          } catch(e) { /* skip entries that fail to restore */ }
+        });
+      });
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); resolve(); };
+    };
+
+    openReq.onerror = () => resolve();
+  });
+}
+
+function collectLocalStorage() {
+  const out = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    out[k] = localStorage.getItem(k);
+  }
+  return out;
+}
+
+function collectSessionStorage() {
+  const out = {};
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const k = sessionStorage.key(i);
+    out[k] = sessionStorage.getItem(k);
+  }
+  return out;
+}
+
+function collectCookies() {
+  // Only non-HttpOnly cookies are visible to document.cookie by browser design.
+  if (!document.cookie) return {};
+  const out = {};
+  document.cookie.split(';').forEach(pair => {
+    const idx = pair.indexOf('=');
+    if (idx === -1) return;
+    const k = pair.slice(0, idx).trim();
+    const v = pair.slice(idx + 1).trim();
+    if (k) out[k] = decodeURIComponent(v);
+  });
+  return out;
+}
+
+async function collectSharedStorage() {
+  // Experimental API, not yet broadly implemented as readable by page JS.
+  // Included defensively for forward compatibility.
+  try {
+    if ('sharedStorage' in window && window.sharedStorage.entries) {
+      const out = {};
+      for await (const [k, v] of window.sharedStorage.entries()) {
+        out[k] = v;
+      }
+      return out;
+    }
+  } catch(e) { /* not available in this browser */ }
+  return {};
+}
+
+async function exportSave() {
+  setSaveStatus('Gathering save data…');
+  try {
+    const payload = {
+      format: 'OBLSAVE',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      origin: window.location.origin,
+      localStorage: collectLocalStorage(),
+      sessionStorage: collectSessionStorage(),
+      cookies: collectCookies(),
+      indexedDB: await collectAllIndexedDB(),
+      sharedStorage: await collectSharedStorage()
+    };
+
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `oogly-boogly-save-${stamp}.oblsave`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    setSaveStatus('Save file downloaded.');
+    toast('Game save exported');
+  } catch(err) {
+    setSaveStatus('Export failed: ' + err.message);
+    toast('Export failed');
+  }
+}
+
+async function importSave(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  setSaveStatus('Reading file…');
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (data.format !== 'OBLSAVE') {
+      setSaveStatus('This does not look like a valid .OBLSAVE file.');
+      toast('Invalid save file');
+      event.target.value = '';
+      return;
+    }
+
+    if (data.localStorage) {
+      Object.keys(data.localStorage).forEach(k => {
+        try { localStorage.setItem(k, data.localStorage[k]); } catch(e){}
+      });
+    }
+
+    if (data.sessionStorage) {
+      Object.keys(data.sessionStorage).forEach(k => {
+        try { sessionStorage.setItem(k, data.sessionStorage[k]); } catch(e){}
+      });
+    }
+
+    if (data.cookies) {
+      Object.keys(data.cookies).forEach(k => {
+        try { document.cookie = `${k}=${encodeURIComponent(data.cookies[k])}; path=/; max-age=31536000`; } catch(e){}
+      });
+    }
+
+    if (data.indexedDB) {
+      setSaveStatus('Restoring saved game databases…');
+      await restoreAllIndexedDB(data.indexedDB);
+    }
+
+    if (data.sharedStorage && 'sharedStorage' in window && window.sharedStorage.set) {
+      for (const k of Object.keys(data.sharedStorage)) {
+        try { await window.sharedStorage.set(k, data.sharedStorage[k]); } catch(e){}
+      }
+    }
+
+    const when = data.exportedAt ? new Date(data.exportedAt).toLocaleString() : 'unknown date';
+    setSaveStatus(`Restored save from ${when}. Reopen your games to see your progress.`);
+    toast('Game save restored');
+  } catch(err) {
+    setSaveStatus('Import failed: ' + err.message);
+    toast('Import failed');
+  }
+  event.target.value = '';
+}
+
+function setSaveStatus(msg) {
+  const el = document.getElementById('saveStatus');
+  if (el) el.textContent = msg;
 }
 
 // ──────────────────────────────────────────────

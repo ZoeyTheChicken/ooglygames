@@ -1,62 +1,957 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Classroom</title>
-<style>
-  /* Make iframe cover the whole screen */
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: sans-serif;
-  }
-
-  #myIframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    z-index: 1;
-  }
-
-  /* Popup overlay */
-  #popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 25px 40px;
-    border-radius: 12px;
-    text-align: center;
-    z-index: 2;
-    font-size: 18px;
-    animation: fadeOut 0.5s ease 3s forwards; /* auto-hide after 3s */
-  }
-
-  @keyframes fadeOut {
-    to { opacity: 0; visibility: hidden; }
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Classroom</title>
+  
+  
+<style type="text/css">
+	body {
+	  overflow: hidden;
+	}
 </style>
+
+	<link rel="canonical" href="ducky-clicker.html" />
+	
+	<script src="game.js"></script>
+
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="js"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-GXS04HS5MX');
+	</script>
+	
+
+	<script src="promo.js" async></script>
+	<script type="text/javascript" async>
+		!function(e, t) {
+			var a = e.createElement("script"),
+				m = e.getElementsByTagName("script")[0];
+
+			a.async = 1;
+			a.src = t;
+
+			a.onload = function() {
+				console.log("Dynamic script loaded wg");
+				if (typeof window.syncPromoManager === "function") window.syncPromoManager(false);
+				window.wgLoaded = 1;
+			};
+
+			a.onerror = function() {
+				console.error("Failed to load wg");
+				if (typeof window.syncPromoManager === "function") window.syncPromoManager(true);
+				window.wgLoaded = 2;
+			};
+
+			m.parentNode.insertBefore(a, m);
+		}(document, "https://universal.wgplayer.com/tag/?lh=" + window.location.hostname + "&wp=" + window.location.pathname + "&ws=" + window.location.search);
+	</script>
+	
+
+	<script>
+	
+	function SubmitLeaderboardScore(newScore)
+	{
+		
+	}
+	
+	function GetLeaderboardEntries()
+	{
+		
+	}
+	
+	function InitApi(_appId) 
+    {
+		var dateNow = new Date();
+		var secondsSinceEpoch = Math.round(dateNow.getTime() / 1000);
+		
+		console.log('InitApi');
+		
+		window.callTime = secondsSinceEpoch - 181;
+    }
+	
+	function InitExternEval(_appId) 
+    {
+		console.log("InitExternEval");
+		
+		ExternEval();
+    }
+    
+    function ExternEval() 
+    {
+		console.log("ExternEval");
+		
+		var dateNow = new Date();
+		var secondsSinceEpoch = Math.round(dateNow.getTime() / 1000);
+		
+		if (window.callTime != undefined && 
+			secondsSinceEpoch - window.callTime > 180)
+		{
+			console.log('ExternEval 2');
+			
+			window.callTime = secondsSinceEpoch;
+			
+			if (typeof preroll !== 'undefined')
+			{
+				if (window[preroll.config.loaderObjectName] != undefined)
+				{
+					gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onOpen');
+				
+					try {
+						window[preroll.config.loaderObjectName].refetchAd(ExternEvalResumeGame);
+					}
+					catch(err) {
+						console.log(err.message);
+						gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+					}
+				}
+			}
+		}
+		
+    }
+	
+	function ExternEvalResumeGame()
+	{
+		console.log("ExternEvalResumeGame");
+	
+		gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+	}
+	
+	function PreloadRewarded() 
+	{
+		console.log("PreloadRewarded");
+	
+		if (window.rewardedCallbacks == undefined)
+		{
+			window.rewardedCallbacks = true;
+			
+			try {
+				window[window.preroll.config.loaderObjectName].registerRewardCallbacks({
+					onReady:RewardedReady, 
+					onSuccess:RewardedSuccess, 
+					onFail:RewardedFail,
+					onClose:RewardedClose
+				});
+			}
+			catch(err) {
+				console.log(err.message);
+			}
+		}
+	}
+		
+	function ShowRewarded() 
+	{
+		console.log("ShowRewarded");
+	
+		if (typeof preroll !== 'undefined')
+		{
+			if (window.rewardedCallbacks == undefined)
+			{
+				PreloadRewarded();
+			}
+		
+			if (window[preroll.config.loaderObjectName] != undefined)
+			{
+				gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onOpen');
+			
+				try {
+					window[preroll.config.loaderObjectName].showRewardAd();
+				}
+				catch(err) {
+					console.log(err.message);
+					gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+				}
+			}
+		}
+	
+	}
+	
+	function RewardedReady()
+	{
+		console.log("RewardedReady");
+		
+		if (window.rewardedCount == undefined)
+		{
+			window.rewardedCount = 1;
+			window.gameInstance.SendMessage('FreezeNovaAPI', 'RewardedReady');
+		}
+		else{
+			window.rewardedCount = window.rewardedCount + 1;
+			//setTimeout(function(){ window.gameInstance.SendMessage('FreezeNovaAPI', 'RewardedReady'); }, 30000);
+			window.gameInstance.SendMessage('FreezeNovaAPI', 'RewardedReady');
+		}
+		
+	}
+	
+	function RewardedSuccess()
+	{
+		console.log("RewardedSuccess");
+		gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'RewardedOnRewarded');
+		//gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+	}
+	
+	function RewardedFail()
+	{
+		console.log("RewardedFail");
+		gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'RewardedOnFail');
+		//gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+	}
+	
+	function RewardedClose()
+	{
+		console.log("RewardedClose");
+		gameInstance.SendMessage('FreezeNovaAPI', 'AdMessage', 'onClose');
+	}
+	
+	InitApi(0);
+	
+	
+	</script>
+
+  
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; overflow:hidden; }
+    body {
+      background: radial-gradient(ellipse at top, #1e2547 0%, #0a0e1f 70%);
+      color: #eee;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #bgcanvas { position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; }
+
+    .app { position:relative; z-index:1; display:flex; flex-direction:column; height:100vh; }
+
+    /* --- Top bar --- */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; background:rgba(10,10,22,0.85);
+      border-bottom:1px solid rgba(251,191,36,0.2);
+      flex-wrap: wrap; gap:10px;
+    }
+    .topbar .user { display:flex; align-items:center; gap:10px; }
+    .topbar .user img { width:36px; height:36px; border-radius:50%; border:2px solid #fbbf24; }
+    .topbar .user .n { font-weight:700; color:#fbbf24; font-size:15px; }
+    .topbar .user .s { font-size:11px; color:#888; }
+    .topbar .right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-left:auto; }
+
+    .chip {
+      font-size:12px; padding:6px 12px; border-radius:8px;
+      background:rgba(15,52,96,0.5); border:1px solid rgba(59,130,246,0.35);
+      color:#e2e8f0; font-weight:700; display:flex; align-items:center; gap:6px;
+    }
+    .chip .lbl { font-size:10px; color:#888; font-weight:400; text-transform:uppercase; }
+    .chip-dab { color:#93c5fd; border-color:rgba(59,130,246,0.4); }
+
+    .btn {
+      background: rgba(15,52,96,0.5); color:#e2e8f0; border:1px solid rgba(59,130,246,0.35);
+      padding:7px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-size:12px;
+      transition: all 0.12s;
+    }
+    .btn:hover { border-color:#fbbf24; color:#fbbf24; }
+    .btn.primary {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b); color:#1a1a2e;
+      border: none; font-weight:800; padding:8px 16px;
+    }
+    .btn.primary:hover { filter: brightness(1.1); color:#1a1a2e; }
+    .btn.danger { border-color: rgba(239,68,68,0.4); color:#f87171; }
+    .btn.danger:hover { border-color:#ef4444; background:rgba(239,68,68,0.12); color:#ef4444; }
+    .btn.ascend {
+      background: linear-gradient(135deg,#a855f7,#ec4899); color:#fff; border:none;
+      font-weight:800;
+    }
+    .btn.ascend:hover:not(:disabled) { filter: brightness(1.15); color:#fff; }
+    .btn.ascend:disabled {
+      background: rgba(168,85,247,0.22); color:#a78bfa;
+      opacity:0.55; cursor:not-allowed;
+    }
+
+
+    /* --- Layout --- */
+    .main {
+      flex:1; display:flex;
+      gap:10px; padding:10px; overflow:hidden;
+    }
+    .panel {
+      background: rgba(10,10,22,0.82); border:1px solid rgba(251,191,36,0.18);
+      border-radius:14px; padding:14px; overflow-y:auto;
+      position:relative;
+    }
+    .panel.stats-panel     { flex: 0 0 300px; }
+    .panel.clicker-panel   { flex: 1 1 auto; min-width: 340px; }
+    .panel.buildings-panel { flex: 0 0 380px; display: flex; flex-direction: column; overflow: hidden; }
+    .panel.buildings-panel > h3 { flex: 0 0 auto; margin: 0 0 10px; }
+    .panel.buildings-panel > #buildings {
+      flex: 3 1 0; overflow-y: auto; min-height: 0;
+    }
+    .panel.buildings-panel > #upgrades-section {
+      flex: 1 1 0; overflow-y: auto; min-height: 0;
+      padding-top: 6px;
+    }
+    .panel.buildings-panel > #upgrades-section h3 { margin: 0 0 8px; }
+    /* Vertical resizer between Buildings and Upgrades */
+    .v-resizer {
+      flex: 0 0 6px; cursor: row-resize;
+      background: rgba(251,191,36,0.15);
+      margin: 6px 0; border-radius: 4px;
+      transition: background 0.15s, transform 0.15s;
+      position: relative; z-index: 2;
+    }
+    .v-resizer::before { content:''; position:absolute; inset:-6px 0; }
+    .v-resizer:hover  { background: rgba(251,191,36,0.55); transform: scaleY(1.4); }
+    .v-resizer.active { background: #fbbf24; transform: scaleY(1.6); }
+
+    @media (max-width: 1600px) {
+      .panel.buildings-panel { flex: 0 0 340px; }
+    }
+    @media (max-width: 1400px) {
+      .panel.stats-panel { flex: 0 0 260px; }
+      .panel.clicker-panel { min-width: 300px; }
+      .panel.buildings-panel { flex: 0 0 300px; }
+    }
+    @media (max-width: 1200px) {
+      .panel.stats-panel { flex: 0 0 220px; }
+      .panel.clicker-panel { min-width: 260px; }
+      .panel.buildings-panel { flex: 0 0 260px; }
+    }
+    @media (max-width: 1000px) {
+      .panel.stats-panel { flex: 0 0 180px; }
+      .panel.clicker-panel { min-width: 220px; }
+      .panel.buildings-panel { flex: 0 0 220px; }
+    }
+    @media (max-width: 800px) {
+      .panel.stats-panel { flex: 0 0 150px; }
+      .panel.clicker-panel { min-width: 180px; }
+      .panel.buildings-panel { flex: 0 0 180px; }
+      .bldg { max-width: 150px; }
+    }
+
+    /* Drag-to-resize handle between panels */
+    .resizer {
+      flex: 0 0 8px;
+      cursor: col-resize;
+      background: rgba(251,191,36,0.15);
+      margin: 20px 0; border-radius: 4px;
+      transition: background 0.15s, transform 0.15s;
+      position: relative; z-index: 2;
+    }
+    .resizer::before {
+      /* widen the clickable area without moving the visible bar */
+      content: ''; position: absolute; inset: 0 -6px;
+    }
+    .resizer:hover  { background: rgba(251,191,36,0.55); transform: scaleX(1.4); }
+    .resizer.active { background: #fbbf24; transform: scaleX(1.6); }
+    /* Custom game-styled scrollbars used throughout the UI */
+    .panel, .modal-body {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(251,191,36,0.35) transparent;
+    }
+    .panel::-webkit-scrollbar,
+    .modal-body::-webkit-scrollbar { width:8px; height:8px; }
+    .panel::-webkit-scrollbar-track,
+    .modal-body::-webkit-scrollbar-track { background: transparent; }
+    .panel::-webkit-scrollbar-thumb,
+    .modal-body::-webkit-scrollbar-thumb {
+      background: rgba(251,191,36,0.3);
+      border-radius: 4px;
+    }
+    .panel::-webkit-scrollbar-thumb:hover,
+    .modal-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(251,191,36,0.55);
+    }
+    .panel h3 {
+      color:#fbbf24; font-size:12px; text-transform:uppercase; letter-spacing:1px;
+      margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid rgba(251,191,36,0.15);
+    }
+    .panel h3:not(:first-child) { margin-top:16px; }
+
+    /* --- Stats list --- */
+    .stats-list { list-style:none; font-size:12px; }
+    .stats-list li { display:flex; justify-content:space-between; padding:3px 0; }
+    .stats-list li .lbl { color:#888; }
+    .stats-list li .val { color:#fbbf24; font-weight:700; }
+
+    /* Collapsible section headers */
+    .collapsible {
+      cursor: pointer; user-select: none;
+      display: flex !important; align-items: center; justify-content: space-between;
+      gap: 8px;
+    }
+    .collapsible .h3-text { flex: 1; }
+    .collapsible:hover { color:#fbbf24; background: rgba(251,191,36,0.08); border-radius: 6px; }
+    .collapsible .caret {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 26px; height: 22px;
+      font-size: 16px; font-weight: 900;
+      border: 1.5px solid #fbbf24; border-radius: 6px;
+      background: rgba(251,191,36,0.18);
+      color: #fbbf24; line-height: 1;
+      transition: transform 0.18s, background 0.12s;
+      text-transform: none;
+    }
+    .collapsible.collapsed .caret { transform: rotate(-90deg); }
+    .collapsible:hover .caret { background: #fbbf24; color: #0b1020; }
+    #click-upgrades.collapsed { display:none; }
+
+    /* --- Click upgrades (small cards) --- */
+    .ulist { display:flex; flex-direction:column; gap:6px; }
+    .upg {
+      background: rgba(15,52,96,0.5); border:1px solid rgba(59,130,246,0.3);
+      border-radius:10px; padding:8px 10px; cursor:pointer; transition:all 0.12s;
+    }
+    .upg:hover:not(.locked):not(.owned):not(.poor) {
+      background: rgba(59,130,246,0.2); transform: translateY(-1px);
+    }
+    .upg.owned { border-color: rgba(74,222,128,0.4); background:rgba(34,197,94,0.08); cursor:default; }
+    .upg.locked { opacity:0.38; cursor:not-allowed; }
+    .upg.poor { opacity:0.72; cursor:not-allowed; }
+    .upg .name { font-size:12px; font-weight:700; color:#fff; }
+    .upg .desc { font-size:10px; color:#888; margin-top:2px; }
+    .upg .cost { font-size:11px; color:#fbbf24; font-weight:700; margin-top:3px; }
+    .upg.owned .cost { color:#4ade80; }
+
+    /* --- Center clicker area --- */
+    .center-wrap {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:flex-start; gap:10px; padding:12px; text-align:center;
+    }
+    .big-count .c {
+      font-size:52px; font-weight:900; color:#fbbf24;
+      text-shadow: 0 0 30px rgba(251,191,36,0.35);
+      line-height:1.05;
+    }
+    .big-count .lbl { font-size:14px; color:#888; margin-top:-2px; }
+    .big-count .rate { font-size:14px; color:#93c5fd; font-weight:700; margin-top:6px; }
+
+    .duck-stage {
+      position:relative; width:300px; height:300px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .sunburst {
+      position:absolute; inset:0;
+      background: url('sunburst.webp') no-repeat center/contain;
+      opacity:0.35; filter: drop-shadow(0 0 20px rgba(251,191,36,0.25));
+      animation: spin 40s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+    .duck-btn {
+      position:relative; z-index:2;
+      width:220px; height:220px;
+      background:none; border:none; cursor:pointer;
+      outline:none; -webkit-tap-highlight-color: transparent;
+      padding:0;
+      transition: transform 0.08s;
+      filter: drop-shadow(0 8px 24px rgba(251,191,36,0.4));
+    }
+    .duck-btn:focus, .duck-btn:focus-visible { outline:none; }
+    .duck-btn img {
+      width:100%; height:100%; object-fit:contain;
+      pointer-events:none; user-select:none;
+      -webkit-user-drag: none;
+    }
+    .duck-btn:hover { transform: scale(1.03); }
+    .duck-btn:active { transform: scale(0.92); }
+
+    .duck-bob { animation: bob 2.8s ease-in-out infinite; }
+    @keyframes bob {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-8px); }
+    }
+
+    .floater {
+      position:fixed; pointer-events:none;
+      font-size:22px; font-weight:800; color:#fbbf24;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      animation: float 1s ease-out forwards;
+      z-index: 40;
+    }
+    .floater.crit {
+      font-size:33px; font-weight:900;
+      color:#f87171;
+      text-shadow: 0 0 12px rgba(239,68,68,0.85), 0 2px 4px rgba(0,0,0,0.6);
+      animation: float-crit 1.2s ease-out forwards;
+    }
+    @keyframes float {
+      0%   { opacity:1; transform: translateY(0) scale(1); }
+      100% { opacity:0; transform: translateY(-80px) scale(1.2); }
+    }
+    @keyframes float-crit {
+      0%   { opacity:1; transform: translateY(0) scale(0.9); }
+      20%  { opacity:1; transform: translateY(-10px) scale(1.25); }
+      100% { opacity:0; transform: translateY(-120px) scale(1.5); }
+    }
+
+    /* --- Buildings --- */
+    .bldg {
+      display:grid; grid-template-columns: 40px minmax(0,1fr) auto;
+      gap:10px; align-items:center;
+      max-width: 360px;
+      background: rgba(15,52,96,0.4); border:1px solid rgba(59,130,246,0.25);
+      border-radius:10px; padding:9px 11px; margin-bottom:6px;
+      cursor:pointer; transition: all 0.12s;
+    }
+    .bldg:hover:not(.locked):not(.poor) {
+      border-color: rgba(251,191,36,0.55); background: rgba(251,191,36,0.05);
+    }
+    .bldg.locked { opacity:0.3; cursor:not-allowed; }
+    .bldg.poor { opacity:0.68; cursor:not-allowed; }
+    .bldg .emoji { font-size:26px; text-align:center; }
+    .bldg .info { min-width: 0; }
+    .bldg .info .name { font-size:13px; font-weight:700; color:#fff; }
+    .bldg .info .prod { font-size:10px; color:#888; margin-top:2px; word-break: break-word; }
+    .bldg .right { text-align:right; }
+    .bldg .right .cost { font-size:12px; color:#fbbf24; font-weight:700; }
+    .bldg .right .owned { font-size:18px; color:#4ade80; font-weight:900; }
+    .bldg .right .lbl { font-size:9px; color:#666; text-transform:uppercase; }
+    .bldg .ubadge {
+      display:inline-block; background:#ef4444; color:#fff;
+      border-radius:8px; padding:1px 6px; font-size:9px; margin-left:4px;
+    }
+
+    /* Building upgrades (sparkly cards) */
+    .bldg.upg-card {
+      border-color: rgba(251,191,36,0.5);
+      background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(236,72,153,0.08));
+    }
+    .bldg.upg-card.achievement {
+      border-color: rgba(168,85,247,0.5);
+      background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(59,130,246,0.08));
+    }
+
+    /* Shrink building cards as the viewport narrows (placed after base .bldg so cascade wins) */
+    @media (max-width: 1600px) { .bldg { max-width: 340px; } }
+    @media (max-width: 1400px) { .bldg { max-width: 300px; } }
+    @media (max-width: 1200px) { .bldg { max-width: 260px; } }
+    @media (max-width: 1000px) { .bldg { max-width: 180px; } }
+
+    /* --- Toast --- */
+    .toast {
+      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+      background: rgba(10,10,22,0.96); border:1px solid #22c55e;
+      padding: 10px 20px; border-radius:10px; z-index:100;
+      font-weight:700; font-size:13px; color:#4ade80;
+      animation: toast 2.8s ease forwards;
+    }
+    @keyframes toast {
+      0%        { opacity:0; transform:translate(-50%, -20px); }
+      10%, 85%  { opacity:1; transform:translate(-50%, 0); }
+      100%      { opacity:0; transform:translate(-50%, -20px); }
+    }
+    .toast.err  { color:#f87171; border-color:#ef4444; }
+    .toast.ach  { color:#c084fc; border-color:#a855f7; }
+    .toast.boost{ color:#fbbf24; border-color:#fbbf24; }
+
+    /* --- Golden duck --- */
+    .golden {
+      position: fixed; z-index:30; cursor:pointer; pointer-events:auto;
+      width:80px; height:80px;
+      filter: drop-shadow(0 0 22px rgba(251,191,36,0.9));
+      animation: wiggle 0.55s ease-in-out infinite;
+    }
+    .golden img {
+      width:100%; height:100%; object-fit:contain;
+      filter: hue-rotate(-15deg) saturate(1.4) brightness(1.2);
+    }
+    @keyframes wiggle {
+      0%,100% { transform: rotate(-10deg) scale(1); }
+      50%     { transform: rotate(10deg) scale(1.12); }
+    }
+
+    /* Boost info chip */
+    .boost-list { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+    .boost-chip {
+      font-size:11px; padding:4px 10px; border-radius:6px;
+      background:rgba(236,72,153,0.15); border:1px solid rgba(236,72,153,0.4);
+      color:#f472b6; font-weight:700;
+    }
+    .boost-chip.lucky { background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.4); color:#4ade80; }
+    .boost-chip.golden{ background:rgba(251,191,36,0.15); border-color:rgba(251,191,36,0.45); color:#fbbf24; }
+
+    /* --- Modals --- */
+    .modal {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.78);
+      display:flex; align-items:center; justify-content:center;
+      z-index:60;
+    }
+    .modal.hidden { display:none; }
+    .modal-box {
+      background: rgba(10,10,22,0.98); border:1px solid rgba(251,191,36,0.3);
+      border-radius:16px; width:min(700px, 94vw); max-height:88vh; overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .modal-head {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 20px; border-bottom:1px solid rgba(251,191,36,0.15);
+    }
+    .modal-head h2 { color:#fbbf24; font-size:18px; }
+    .close-btn {
+      background:none; border:none; color:#888; font-size:22px; cursor:pointer;
+      line-height:1;
+    }
+    .close-btn:hover { color:#eee; }
+    .modal-body { padding:20px; overflow-y:auto; }
+    .modal-body p { line-height:1.6; font-size:14px; color:#ddd; }
+
+    /* Ducky shop */
+    .fshop-tabs { display:flex; gap:8px; margin:14px 0 0; }
+    .fshop-tab {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(168,85,247,0.08);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 8px;
+      color: #c084fc;
+      cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      font-family: inherit;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+    .fshop-tab:hover { background: rgba(168,85,247,0.18); }
+    .fshop-tab.active {
+      background: rgba(168,85,247,0.32);
+      border-color: #c084fc;
+      color: #fff;
+    }
+    .fshop-tab .tier-sub { font-size:10px; color:#9ca3af; font-weight:400; margin-left:4px; }
+    .fshop-tab.active .tier-sub { color:#e5e7eb; }
+    .dshop { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+    .dshop-item {
+      background: rgba(15,52,96,0.5); border:1px solid rgba(59,130,246,0.3);
+      border-radius:12px; padding:14px; text-align:center;
+    }
+    .dshop-item .icon { font-size:36px; margin-bottom:4px; }
+    .dshop-item .n { font-size:14px; font-weight:700; color:#fbbf24; }
+    .dshop-item .d { font-size:11px; color:#888; margin-top:3px; min-height:30px; line-height:1.4; }
+    .dshop-item button {
+      background: #3b82f6; color:#fff; border:none; padding:6px 14px;
+      border-radius:6px; font-weight:700; cursor:pointer; font-size:12px; margin-top:6px;
+    }
+    .dshop-item button:hover:not(:disabled) { background:#2563eb; }
+    .dshop-item button:disabled { background:#333; color:#666; cursor:not-allowed; }
+
+    /* Achievements grid */
+    .ach-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:10px; }
+    .ach-card {
+      background: rgba(15,52,96,0.35); border:1px solid rgba(59,130,246,0.25);
+      border-radius:10px; padding:10px 12px; display:flex; gap:10px; align-items:center;
+      opacity:0.45;
+    }
+    .ach-card.unlocked {
+      opacity:1; border-color: rgba(168,85,247,0.4);
+      background: rgba(168,85,247,0.08);
+    }
+    .ach-card .icon { font-size:26px; }
+    .ach-card .info { flex:1; min-width:0; }
+    .ach-card .name { font-size:12px; font-weight:700; color:#fff; }
+    .ach-card.unlocked .name { color:#c084fc; }
+    .ach-card .desc { font-size:10px; color:#888; margin-top:2px; }
+
+    /* Opt row */
+    .opt-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .opt-btn {
+      background:#3b82f6; color:#fff; border:none;
+      padding:8px 16px; border-radius:8px; cursor:pointer;
+      font-weight:700; font-size:13px;
+    }
+    .opt-btn:hover { background:#2563eb; }
+    .opt-btn.danger { background:#ef4444; }
+    .opt-btn.danger:hover { background:#dc2626; }
+    .opt-btn:disabled { background:#374151; color:#888; cursor:not-allowed; }
+
+    .text-input {
+      width: 100%; padding: 10px 14px;
+      background: rgba(15,52,96,0.5);
+      border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 8px;
+      color: #fff; font-size: 14px; font-family: inherit;
+      margin-top: 10px; letter-spacing: 1px;
+    }
+    .text-input:focus { outline:none; border-color:#ef4444; background: rgba(239,68,68,0.08); }
+
+    /* Ascend modal */
+    .ascend-preview {
+      background: rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.35);
+      border-radius:12px; padding:20px; text-align:center;
+      margin:12px 0;
+    }
+    .ascend-preview .gain {
+      font-size:44px; font-weight:900; color:#c084fc;
+      text-shadow: 0 0 20px rgba(168,85,247,0.4);
+    }
+    .ascend-preview .gain-lbl { font-size:13px; color:#888; margin-top:2px; }
+    .ascend-preview .boost { font-size:13px; color:#c084fc; margin-top:12px; font-weight:700; }
+
+    /* Bottom bar */
+    .botbar {
+      padding:8px 16px; display:flex; justify-content:center; gap:16px; align-items:center;
+      font-size:11px; color:#666;
+      border-top: 1px solid rgba(251,191,36,0.1);
+      flex-wrap:wrap;
+    }
+    .botbar a { color:#fbbf24; text-decoration:none; cursor:pointer; }
+    .botbar a:hover { text-decoration:underline; }
+
+    /* Responsive */
+  </style>
 </head>
 <body>
 
+<canvas id="bgcanvas"></canvas>
 
-<iframe id="myIframe" src="https://db2.duckmath.org/2026/more/ducky-clicker/index.html"></iframe>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-53Q9XR4QZK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<!-- Audio -->
+<audio id="snd-quack" src="quack.mp3" preload="auto"></audio>
+<audio id="snd-buy"   src="buy_1.mp3" preload="auto"></audio>
 
-  gtag('config', 'G-53Q9XR4QZK');
-</script>
+<div class="app">
+  <div class="topbar">
+    <div class="right">
+      <div class="user" id="user-slot">
+        <div>
+          <div class="n">Guest</div>
+          <div class="s">Ducky Clicker v1.1</div>
+        </div>
+      </div>
+      <div class="chip chip-dab"><span class="lbl">Dabloons</span> <span id="dab">--</span></div>
+      <div class="chip" onclick="openFeatherShop()" style="cursor:pointer" title="Feather Shop"><span class="lbl">🪶 Feathers</span> <span id="feathers">0</span></div>
+      <button class="btn ascend" id="ascend-btn" onclick="openAscend()">🪶 Ascend</button>
+      <button class="btn" onclick="openAchievements()">🏆 Trophies</button>
+      <button class="btn" onclick="toggleMute()" id="mute-btn">🔊</button>
+      <button class="btn primary" onclick="openShop()">🛒 Ducky Shop</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- LEFT: stats & click upgrades -->
+    <div class="panel stats-panel">
+      <h3>Stats</h3>
+      <ul class="stats-list">
+        <li><span class="lbl">Per click</span><span class="val" id="st-click">1</span></li>
+        <li><span class="lbl">Per second</span><span class="val" id="st-rate">0</span></li>
+        <li><span class="lbl">Ducks held</span><span class="val" id="st-held">0</span></li>
+        <li><span class="lbl">Baked this run</span><span class="val" id="st-total">0</span></li>
+        <li><span class="lbl">Lifetime ducks</span><span class="val" id="st-life">0</span></li>
+        <li><span class="lbl">Clicks</span><span class="val" id="st-clicks">0</span></li>
+        <li><span class="lbl">Golden ducks</span><span class="val" id="st-golden">0</span></li>
+        <li><span class="lbl">Achievements</span><span class="val" id="st-ach">0</span></li>
+        <li><span class="lbl">Ascensions</span><span class="val" id="st-asc">0</span></li>
+      </ul>
+
+      <h3 class="collapsible" id="click-upgrades-toggle" title="Click to collapse / expand"><span class="h3-text">Click Upgrades</span><span class="caret" aria-label="minimize">▾</span></h3>
+      <div id="click-upgrades" class="ulist"></div>
+    </div>
+
+    <div class="resizer" data-r="0"></div>
+    <!-- CENTER: big duck -->
+    <div class="panel clicker-panel center-wrap">
+      <div class="big-count">
+        <div class="c" id="coins">0</div>
+        <div class="lbl">ducks</div>
+        <div class="rate" id="rate">+0 per second</div>
+      </div>
+      <div class="duck-stage">
+        <div class="sunburst"></div>
+        <button class="duck-btn duck-bob" id="duck" onclick="onClick(event)" aria-label="Click the duck">
+          <img src="duck.webp" alt="Duck" draggable="false">
+        </button>
+      </div>
+      <div id="boost-info" class="boost-list"></div>
+    </div>
+
+    <div class="resizer" data-r="1"></div>
+    <!-- RIGHT: buildings & upgrades -->
+    <div class="panel buildings-panel">
+      <h3>Buildings</h3>
+      <div id="buildings"></div>
+      <div class="v-resizer" data-vr="buildings-upgrades"></div>
+      <div id="upgrades-section"></div>
+    </div>
+  </div>
+
+  <div class="botbar">
+    <a onclick="openAbout()">About</a>
+    <a onclick="openOptions()">Options</a>
+    <span>DuckMath: <span id="save-status">not signed in</span></span>
+  </div>
+</div>
+
+<!-- Ducky shop modal -->
+<div class="modal hidden" id="shop-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🛒 Ducky Shop</h2>
+      <button class="close-btn" onclick="closeModal('shop-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px; color:#888; margin-bottom:14px">
+        Use <b style="color:#93c5fd">dabloons</b> from your Ducky account.
+        Balance: <b id="dab-shop" style="color:#93c5fd">--</b>
+      </p>
+      <div class="dshop" id="dshop-list"></div>
+      <div id="dshop-locked" style="display:none; text-align:center; padding:20px; color:#888">
+        <p>Sign in on Ducky to unlock the shop.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- About modal -->
+<div class="modal hidden" id="about-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>About Ducky Clicker</h2>
+      <button class="close-btn" onclick="closeModal('about-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Click the duck. Get more ducks. Buy buildings. Get even more ducks.</p>
+      <p style="margin-top:10px; color:#888; font-size:12px">
+        A cookie-clicker style incremental game, built on the <b>Ducky Game API</b>.
+        Save progress is stored locally <i>and</i> synced to your DuckMath account.
+      </p>
+      <p style="margin-top:10px; font-size:13px">
+        Play more games at <a href="index" target="_blank" rel="noopener" style="color:#fbbf24; font-weight:700">duckmath.org</a>
+      </p>
+      <p style="margin-top:10px; font-size:12px; color:#ccc"><b>Tips:</b></p>
+      <ul style="margin:6px 0 0 18px; font-size:12px; color:#888; line-height:1.7">
+        <li>Buildings produce ducks automatically, even when you're away.</li>
+        <li>Buy enough of a building to unlock upgrades that double its output.</li>
+        <li>Golden Ducks pop up periodically — click them for big bonuses!</li>
+        <li>Earn achievements to passively boost production (+1% each).</li>
+        <li>Ascend to reset with permanent Prestige Feathers.</li>
+        <li>Click the 🪶 Feathers chip to open the <b>Feather Shop</b> — spend Feathers on permanent perks that survive every ascension.</li>
+        <li>Spend dabloons in the Ducky Shop for boosts and perks.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Achievements modal -->
+<div class="modal hidden" id="ach-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🏆 Achievements <span style="color:#888; font-size:13px; margin-left:10px" id="ach-count">0 / 0</span></h2>
+      <button class="close-btn" onclick="closeModal('ach-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px; color:#888; margin-bottom:14px">
+        Each unlocked achievement adds <b style="color:#c084fc">+1% production</b> permanently.
+      </p>
+      <div id="ach-list" class="ach-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ascend modal -->
+<div class="modal hidden" id="ascend-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🪶 Ascend</h2>
+      <button class="close-btn" onclick="closeModal('ascend-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Reset <b>all your ducks, buildings and upgrades</b> (click + building) and gain <b style="color:#c084fc">Prestige Feathers</b>.</p>
+      <p style="margin-top:8px; color:#888; font-size:12px">
+        You keep: feathers, achievements, ascension count. Each feather is <b>+1%</b> to production forever.
+      </p>
+      <div class="ascend-preview" id="ascend-preview">
+        <div class="gain" id="ascend-gain">0</div>
+        <div class="gain-lbl">Feathers you would gain</div>
+        <div class="boost" id="ascend-boost">+0% total production boost</div>
+      </div>
+      <div id="ascend-locked" style="display:none; text-align:center; padding:16px 14px; margin:10px 0; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:#c084fc">
+        <p style="margin:0; font-weight:700">Not ready to ascend yet.</p>
+        <p style="margin-top:6px; font-size:13px; color:#aaa">You need <b style="color:#c084fc">1T ducks baked this run</b> to earn a Feather.</p>
+        <p style="margin-top:4px; font-size:12px; color:#888">Currently: <b id="ascend-lifetime" style="color:#c084fc">0</b> this run</p>
+      </div>
+      <div id="ascend-warning" style="display:none; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); border-radius:10px; padding:12px 14px; margin:10px 0; color:#f87171; font-size:13px; line-height:1.5">
+        ⚠️ <b>You're not signed in to DuckMath.</b>
+        Prestige Feathers are stored on your account — if you sign in later, your cloud save will overwrite any Feathers earned while offline and you will <b>lose them</b>.
+        <br><br>
+        <b>Sign in first</b> if you want these Feathers to persist.
+      </div>
+      <div class="opt-row" style="justify-content:center">
+        <button class="opt-btn" id="ascend-confirm-btn" style="background:#a855f7" onclick="doAscend()">Ascend!</button>
+        <button class="opt-btn" onclick="closeModal('ascend-modal')" style="background:#374151">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feather Shop modal -->
+<div class="modal hidden" id="feather-shop-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🪶 Feather Shop</h2>
+      <button class="close-btn" onclick="closeModal('feather-shop-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:#ddd">Spend <b style="color:#c084fc">Prestige Feathers</b> on permanent upgrades that survive every ascension.</p>
+      <p style="margin-top:10px; font-size:12px; color:#888">
+        Available: <b id="fs-avail" style="color:#c084fc">0</b> ·
+        Earned: <b id="fs-total" style="color:#c084fc">0</b> ·
+        Spent: <b id="fs-spent" style="color:#888">0</b>
+      </p>
+      <div id="fshop-empty" style="display:none; text-align:center; padding:16px 10px; margin-top:10px; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.3); border-radius:10px; color:#c084fc">
+        <p><b>You have no Prestige Feathers yet.</b></p>
+        <p style="margin-top:6px; font-size:12px; color:#aaa">Bake 1T ducks in a single run, then ascend to earn your first Feather.</p>
+      </div>
+      <div class="fshop-tabs" id="fshop-tabs" style="display:flex; gap:8px; margin-top:14px">
+        <button type="button" class="fshop-tab active" data-level="1" onclick="switchFeatherShopLevel(1)">Level 1 <span class="tier-sub">(≤100)</span></button>
+        <button type="button" class="fshop-tab" data-level="2" onclick="switchFeatherShopLevel(2)">Level 2 <span class="tier-sub">(101–1000)</span></button>
+        <button type="button" class="fshop-tab" data-level="3" onclick="switchFeatherShopLevel(3)">Level 3 <span class="tier-sub">(1001+)</span></button>
+      </div>
+      <div class="dshop" id="fshop-list" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Reset confirmation modal -->
+<div class="modal hidden" id="reset-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 style="color:#ef4444">⚠️ Reset All Progress</h2>
+      <button class="close-btn" onclick="closeModal('reset-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>This will permanently delete <b style="color:#ef4444">EVERYTHING</b>: your ducks, buildings, click upgrades, achievements, ascensions, and feathers. The cloud save will also be overwritten.</p>
+      <p style="margin-top:14px">Type <b style="color:#ef4444; letter-spacing:1px">DELETE</b> below to confirm:</p>
+      <input type="text" id="reset-confirm-input" class="text-input" placeholder="Type DELETE here" oninput="updateResetBtn()" onkeydown="if(event.key==='Enter')confirmReset()" autocomplete="off" spellcheck="false">
+      <div class="opt-row" style="margin-top:16px">
+        <button class="opt-btn danger" id="reset-confirm-btn" disabled onclick="confirmReset()">Reset Forever</button>
+        <button class="opt-btn" onclick="closeModal('reset-modal')" style="background:#374151">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Options modal -->
+<div class="modal hidden" id="options-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Options</h2>
+      <button class="close-btn" onclick="closeModal('options-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="opt-row">
+        <button class="opt-btn" onclick="saveCloudNow()" id="save-now-btn">☁️ Save to DuckMath</button>
+        <button class="opt-btn danger" onclick="resetGame()">Reset Game</button>
+      </div>
+      <p id="save-state" style="margin-top:14px; font-size:12px; color:#888"></p>
+    </div>
+  </div>
+</div>
+
+
+<script src="game_5151df.js"></script>
 </body>
 </html>

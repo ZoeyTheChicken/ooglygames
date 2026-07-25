@@ -3,213 +3,229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Access Assistant</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+<title>Home - Classroom</title>
 <style>
-:root{
---bg:#08090c;
---text:#f5f7fb;
---muted:#94a3b8;
---accent:#3b82f6;
---success:#22c55e;
---danger:#ef4444;
---glass:rgba(18,22,30,.58);
---border:rgba(255,255,255,.08);
---mono:'JetBrains Mono', monospace;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-*{box-sizing:border-box}
-
-body{
-margin:0;
-padding:40px 20px;
-font-family:Inter,sans-serif;
-color:var(--text);
-background:
-radial-gradient(circle at top left, rgba(59,130,246,.18), transparent 35%),
-radial-gradient(circle at bottom right, rgba(139,92,246,.12), transparent 40%),
-var(--bg);
-min-height:100vh;
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #ffffff;
+    padding: 40px 20px;
+    min-height: 100vh;
 }
 
-.container{max-width:1100px;margin:auto}
-
-.glass{
-background:var(--glass);
-backdrop-filter:blur(24px) saturate(180%);
--webkit-backdrop-filter:blur(24px) saturate(180%);
-border:1px solid var(--border);
-box-shadow:0 10px 40px rgba(0,0,0,.25);
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:22px;
-border-radius:24px;
-margin-bottom:22px;
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1a1a1a;
 }
 
-h1{
-margin:0;
-font-size:34px;
-letter-spacing:-1px;
+h1 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
 }
 
-.subtitle{
-margin:6px 0 0;
-color:var(--muted);
+.subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-top: 4px;
 }
 
-.stats{
-display:flex;
-gap:12px;
-margin-bottom:22px;
+.stats {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
 }
 
-.stat{
-padding:14px 18px;
-border-radius:18px;
-min-width:120px;
+.stat {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
 }
 
-.stat span{
-display:block;
-font-size:12px;
-color:var(--muted);
+.stat span {
+    color: #888;
+    font-size: 13px;
 }
 
-.stat strong{
-font-size:22px;
+.stat strong {
+    font-size: 24px;
+    font-weight: 500;
 }
 
-.generator{
-padding:24px;
-border-radius:24px;
-display:flex;
-gap:16px;
-flex-wrap:wrap;
-margin-bottom:32px;
+.generator {
+    background: #141414;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
 }
 
-.field{
-flex:1;
-min-width:220px;
+.field {
+    flex: 1;
+    min-width: 180px;
 }
 
-label{
-display:block;
-margin-bottom:8px;
-font-size:11px;
-text-transform:uppercase;
-letter-spacing:1px;
-font-family:var(--mono);
-color:var(--muted);
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
 }
 
-select,input{
-width:100%;
-height:52px;
-padding:0 16px;
-border-radius:14px;
-border:1px solid var(--border);
-background:rgba(255,255,255,.04);
-color:white;
-font-family:var(--mono);
+select, input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 14px;
 }
 
-button{
-height:52px;
-padding:0 24px;
-border:none;
-border-radius:14px;
-cursor:pointer;
-font-weight:600;
-color:white;
-background:linear-gradient(180deg,#4b8cff,#2f6fff);
-box-shadow:0 10px 24px rgba(59,130,246,.3);
-transition:.2s;
+button {
+    height: 44px;
+    padding: 0 28px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
-button:hover{
-transform:translateY(-2px);
+button:hover {
+    background: #2a2a2a;
 }
 
-.routes{
-display:grid;
-gap:20px;
+.routes {
+    display: grid;
+    gap: 16px;
 }
 
-.group{
-padding:20px;
-border-radius:22px;
+.group {
+    background: #141414;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
 }
 
-.grouphead{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:14px;
+.grouphead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
 }
 
-.domain{
-font-family:var(--mono);
-color:#8ab4ff;
+.domain {
+    font-family: 'Courier New', monospace;
+    color: #aaa;
+    font-size: 15px;
 }
 
-.health{
-padding:6px 12px;
-border-radius:999px;
-font-size:11px;
-font-weight:700;
+.health {
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
-.checking{background:rgba(255,255,255,.08)}
-.online{background:rgba(34,197,94,.15);color:#4ade80}
-.offline{background:rgba(239,68,68,.15);color:#f87171}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:10px;
+.checking { 
+    background: #1a1a1a; 
+    color: #666;
 }
 
-.link{
-padding:14px;
-border-radius:16px;
-border:1px solid var(--border);
-background:rgba(255,255,255,.03);
-cursor:pointer;
-transition:.2s;
+.online { 
+    background: rgba(34, 197, 94, 0.15); 
+    color: #4ade80;
 }
 
-.link:hover{
-transform:translateY(-2px);
-border-color:rgba(59,130,246,.45);
+.offline { 
+    background: rgba(239, 68, 68, 0.15); 
+    color: #f87171;
 }
 
-.url{
-font-family:var(--mono);
-font-size:12px;
-word-break:break-all;
+.blocked { 
+    background: rgba(234, 179, 8, 0.15); 
+    color: #fbbf24;
 }
 
-.toast{
-position:fixed;
-bottom:20px;
-right:20px;
-padding:12px 16px;
-border-radius:14px;
-background:#111827;
-display:none;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 8px;
 }
 
-@media(max-width:700px){
-header{flex-direction:column;align-items:flex-start;gap:16px}
-.stats{flex-wrap:wrap}
+.link {
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid #1a1a1a;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.link:hover {
+    border-color: #2a2a2a;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.url {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #aaa;
+    word-break: break-all;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    display: none;
+    font-size: 14px;
+}
+
+.iframe-check {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .stats {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
 }
 </style>
 </head>
@@ -217,20 +233,21 @@ header{flex-direction:column;align-items:flex-start;gap:16px}
 
 <div class="container">
 
-<header class="glass">
+<header>
 <div>
 <h1>Access Assistant</h1>
-<div class="subtitle">Automatic diagnostic node monitoring active.</div>
+<div class="subtitle">Alternate route monitoring</div>
 </div>
-<button onclick="refreshAll()">Check Nodes</button>
+<button onclick="refreshAll()">Check Alternates</button>
 </header>
 
 <div class="stats">
-<div class="stat glass"><span>Nodes</span><strong id="nodes">0</strong></div>
-<div class="stat glass"><span>Online</span><strong id="online">0</strong></div>
+<div class="stat"><span>Alternates</span><strong id="nodes">0</strong></div>
+<div class="stat"><span>Online</span><strong id="online">0</strong></div>
+<div class="stat"><span>Blocked</span><strong id="blocked">0</strong></div>
 </div>
 
-<div class="generator glass">
+<div class="generator">
 <div class="field">
 <label>Target</label>
 <select id="domain"></select>
@@ -265,93 +282,140 @@ header{flex-direction:column;align-items:flex-start;gap:16px}
 </div>
 
 <script>
-const domains=[
-{n:"teststudy.vercel.app",v:["","?math=exam","#archive"]},
-{n:"ooglylearning.vercel.app",v:["","?math=review","#lab"]},
-{n:"ooglygames.vercel.app",v:["","?mode=edu","#stats"]},
-{n:"ooglygames1.netlify.app",v:["","?math=stats","#res"]},
-{n:"ooglygames2.netlify.app",v:["","?test=final","#archive"]},
-{n:"ooglygames3.netlify.app",v:["","?p=logic","#v6"]},
-{n:"oogly.chickennet.work",v:["","?mode=edu","#home"]}
+const alternates = [
+    {n: "teststudy.vercel.app", v: ["", "?math=exam", "#archive"]},
+    {n: "ooglylearning.vercel.app", v: ["", "?math=review", "#lab"]},
+    {n: "ooglygames.vercel.app", v: ["", "?mode=edu", "#stats"]},
+    {n: "ooglygames1.netlify.app", v: ["", "?math=stats", "#res"]},
+    {n: "ooglygames2.netlify.app", v: ["", "?test=final", "#archive"]},
+    {n: "ooglygames3.netlify.app", v: ["", "?p=logic", "#v6"]},
+    {n: "oogly.chickennet.work", v: ["", "?mode=edu", "#home"]}
 ];
 
-document.getElementById("nodes").textContent=domains.length;
+document.getElementById("nodes").textContent = alternates.length;
 
-const select=document.getElementById("domain");
-domains.forEach(d=>{
-const o=document.createElement("option");
-o.textContent=d.n;
-select.appendChild(o);
+const select = document.getElementById("domain");
+alternates.forEach(d => {
+    const o = document.createElement("option");
+    o.textContent = d.n;
+    select.appendChild(o);
 });
 
-function toast(msg){
-const t=document.getElementById("toast");
-t.textContent=msg;
-t.style.display="block";
-setTimeout(()=>t.style.display="none",2000);
+function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => t.style.display = "none", 2000);
 }
 
-function runTest(){
-const d=domain.value;
-const t=document.getElementById("type").value;
-const k=document.getElementById("kw").value||"curriculum";
-window.open(`https://${d}${t}${k}`,"_blank");
+function runTest() {
+    const d = document.getElementById("domain").value;
+    const t = document.getElementById("type").value;
+    const k = document.getElementById("kw").value || "curriculum";
+    window.open(`https://${d}${t}${k}`, "_blank");
 }
 
-async function checkHealth(domain,id){
-const el=document.getElementById(id);
-el.className="health checking";
-el.textContent="Checking";
+function checkHealth(domain, id) {
+    const el = document.getElementById(id);
+    el.className = "health checking";
+    el.textContent = "Checking";
 
-try{
-const controller=new AbortController();
-setTimeout(()=>controller.abort(),5000);
+    const iframe = document.createElement('iframe');
+    iframe.className = 'iframe-check';
+    iframe.src = `https://${domain}/?${Date.now()}`;
+    
+    let checked = false;
+    let timeoutId = setTimeout(() => {
+        if (!checked) {
+            el.className = "health offline";
+            el.textContent = "Offline";
+            checked = true;
+            updateCounts();
+        }
+    }, 4000);
 
-await fetch(`https://${domain}/favicon.ico?${Date.now()}`,{
-mode:"no-cors",
-signal:controller.signal
-});
+    iframe.onload = function() {
+        if (checked) return;
+        checked = true;
+        clearTimeout(timeoutId);
+        
+        try {
+            const blockedKeywords = ['goguardian', 'blocked', 'restricted', 'access denied'];
+            let isBlocked = false;
+            
+            try {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                const bodyText = doc.body ? doc.body.innerText.toLowerCase() : '';
+                isBlocked = blockedKeywords.some(kw => bodyText.includes(kw));
+                
+                if (doc.title && doc.title.toLowerCase().includes('blocked')) {
+                    isBlocked = true;
+                }
+            } catch (e) {
+                // Cross-origin - likely a real page, which is good
+                isBlocked = false;
+            }
+            
+            if (isBlocked) {
+                el.className = "health blocked";
+                el.textContent = "Blocked";
+            } else {
+                el.className = "health online";
+                el.textContent = "Online";
+            }
+        } catch (e) {
+            el.className = "health online";
+            el.textContent = "Online";
+        }
+        
+        updateCounts();
+        document.body.removeChild(iframe);
+    };
 
-el.className="health online";
-el.textContent="Online";
+    iframe.onerror = function() {
+        if (checked) return;
+        checked = true;
+        clearTimeout(timeoutId);
+        el.className = "health offline";
+        el.textContent = "Offline";
+        updateCounts();
+        document.body.removeChild(iframe);
+    };
+
+    document.body.appendChild(iframe);
 }
-catch{
-el.className="health offline";
-el.textContent="Offline";
+
+function updateCounts() {
+    const online = document.querySelectorAll('.online').length;
+    const blocked = document.querySelectorAll('.blocked').length;
+    document.getElementById('online').textContent = online;
+    document.getElementById('blocked').textContent = blocked;
 }
 
-updateOnlineCount();
+function refreshAll() {
+    alternates.forEach((d, i) => checkHealth(d.n, "h" + i));
 }
 
-function updateOnlineCount(){
-document.getElementById("online").textContent=
-document.querySelectorAll(".online").length;
-}
+const routes = document.getElementById("routes");
 
-function refreshAll(){
-domains.forEach((d,i)=>checkHealth(d.n,"h"+i));
-}
+alternates.forEach((d, i) => {
+    const group = document.createElement("div");
+    group.className = "group";
 
-const routes=document.getElementById("routes");
+    group.innerHTML = `
+        <div class="grouphead">
+            <div class="domain">${d.n}</div>
+            <div id="h${i}" class="health checking">Checking</div>
+        </div>
+        <div class="grid">
+            ${d.v.map(v => `
+                <div class="link" onclick="window.open('https://${d.n}${v}','_blank')">
+                    <div class="url">${d.n}${v}</div>
+                </div>`).join("")}
+        </div>`;
 
-domains.forEach((d,i)=>{
-const group=document.createElement("div");
-group.className="group glass";
-
-group.innerHTML=`
-<div class="grouphead">
-<div class="domain">${d.n}</div>
-<div id="h${i}" class="health checking">Checking</div>
-</div>
-<div class="grid">
-${d.v.map(v=>`
-<div class="link" onclick="window.open('https://${d.n}${v}','_blank')">
-<div class="url">${d.n}${v}</div>
-</div>`).join("")}
-</div>`;
-
-routes.appendChild(group);
-checkHealth(d.n,"h"+i);
+    routes.appendChild(group);
+    checkHealth(d.n, "h" + i);
 });
 </script>
 

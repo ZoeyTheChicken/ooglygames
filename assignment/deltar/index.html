@@ -1,66 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oogly Boogly Games - Deltarune</title>
-<style>
-  /* Make iframe cover the whole screen */
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: sans-serif;
-  }
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Home - Classroom</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
 
-  #myIframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border: none;
-    z-index: 1;
-  }
+    <meta name="generator" content="Scirra Construct" />
+    <meta name="author" content="DominosXpizza" />
+    <link rel="manifest" href="appmanifest.json" />
+    <link rel="apple-touch-icon" sizes="128x128" href="ic%C3%B4ne-128.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="ic%C3%B4ne-256.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="ic%C3%B4ne-512.png" />
+    <link rel="icon" type="image/png" href="ic%C3%B4ne-512.png" />
 
-  /* Popup overlay */
-  #popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 25px 40px;
-    border-radius: 12px;
-    text-align: center;
-    z-index: 2;
-    font-size: 18px;
-    animation: fadeOut 0.5s ease 3s forwards; /* auto-hide after 3s */
-  }
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <script>
+      window.addEventListener(
+        "keydown",
+        function (e) {
+          // space and arrow keys
+          if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+            e.preventDefault();
+          }
+        },
+        false
+      );
+    </script>
 
-  @keyframes fadeOut {
-    to { opacity: 0; visibility: hidden; }
-  }
-</style>
-</head>
-<body>
+    <script>
+      if (location.protocol.substr(0, 4) === "file") {
+        alert(
+          "Web exports won't work until you upload them. (When running on the file: protocol, browsers block many features from working for security reasons.)"
+        );
+      }
+    </script>
 
-<div id="popup">
-  Arrow keys to move<br>
-  Z key to interact
-</div>
-
-<iframe id="myIframe" src="https://db.duckmath.org/html/deltarune_dreamland_saga/"></iframe>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-53Q9XR4QZK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-53Q9XR4QZK');
-</script>
-</body>
+    <noscript>
+      <div id="notSupportedWrap">
+        <h2 id="notSupportedTitle">This content requires JavaScript</h2>
+        <p class="notSupportedMessage">
+          JavaScript appears to be disabled. Please enable it to view this
+          content.
+        </p>
+      </div>
+    </noscript>
+    <script src="supportcheck.js"></script>
+    <script src="offlineclient.js" type="module"></script>
+    <script src="main.js" type="module"></script>
+    <script src="register-sw.js" type="module"></script>
+  </body>
 </html>
