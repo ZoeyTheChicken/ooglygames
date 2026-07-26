@@ -293,7 +293,7 @@ input[type="file"] { display: none; }
 
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v8.1.1</span>
+  <span class="badge">v8.1.2</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
@@ -327,7 +327,7 @@ input[type="file"] { display: none; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 8.0</div>
+    <div class="about-version">Oogly Boogly Learning · Version 8.1.2</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and a quick and easy<strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
@@ -626,6 +626,11 @@ const assignments = [
 ];
 
 const newsData = [
+  {
+    date: "2026-07-26",
+    title: "Update v8.1.2 is here, this update is an emergency fix for an assignment that was previously not loading correctly.",
+    body: "v8.1.2 is an incremental update to v8.1.1 which fixes a critical issue with an assignment that wasn't loading correctly."
+  },
   {
     date: "2026-07-26",
     title: "Update v8.1.1 is now available, this update brings a small hotfix for the saving system.",
