@@ -293,7 +293,7 @@ input[type="file"] { display: none; }
 
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v8.1.5</span>
+  <span class="badge">v8.1.6</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
@@ -327,7 +327,7 @@ input[type="file"] { display: none; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 8.1.5</div>
+    <div class="about-version">Oogly Boogly Learning · Version 8.1.6</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and a quick and easy<strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
@@ -454,6 +454,7 @@ input[type="file"] { display: none; }
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"Among Us", link:"assignment/aus", category:"Action" },
   { title:"State.io", link:"assignment/stateio", category:"Action" },
   { title:"Aquapark", link:"assignment/aquapark", category:"Action" },
   { title:"Minecraft Pocket Edition (v0.6.1)", link:"assignment/mcpocket061", category:"Action" },
@@ -633,6 +634,11 @@ const assignments = [
 ];
 
 const newsData = [
+  {
+    date: "2026-07-31",
+    title: "Update v8.1.6 is a small update that adds some new assignments, and quality improvements.",
+    body: "v8.1.6 is an incremental update to add new assignments, and new quality enhancements for the user experience."
+  },
   {
     date: "2026-07-26",
     title: "Update v8.1.5 is a small update that adds 7 new assignments, fixes an issue with one assignment not loading correctly, and quality improvements.",
