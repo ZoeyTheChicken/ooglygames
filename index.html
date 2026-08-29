@@ -293,7 +293,7 @@ input[type="file"] { display: none; }
 
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v8.1.10</span>
+  <span class="badge">v8.1.11</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
@@ -327,7 +327,7 @@ input[type="file"] { display: none; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 8.1.10</div>
+    <div class="about-version">Oogly Boogly Learning · Version 8.1.11</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and a quick and easy<strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
@@ -454,6 +454,11 @@ input[type="file"] { display: none; }
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"Minesweeper+ (2.1)", link:"assignment/msw/MinesweeperPlus", category:"Action" },
+  { title:"Basketball FRVR", link:"assignment/basket", category:"Action" },
+  { title:"Going Balls", link:"assignment/goingb", category:"Action" },
+  { title:"Sushi Roll", link:"assignment/suroll", category:"Action" },
+  { title:"Turbo Stars", link:"assignment/tstar", category:"Action" },
   { title:"Drift Hunters Pro", link:"assignment/dhpro", category:"Action" },
   { title:"Moto X3M", link:"assignment/motox3m", category:"Action" },
   { title:"Among Us", link:"assignment/aus", category:"Action" },
@@ -636,6 +641,11 @@ const assignments = [
 ];
 
 const newsData = [
+  {
+    date: "2026-08-28",
+    title: "Update v8.1.11 is a small yet fun update as it adds 5 new assignments!",
+    body: "v8.1.11 adds 5 new assignments and includes several quality improvements."
+  },
   {
     date: "2026-08-21",
     title: "Update v8.1.10 fixes issues.",
