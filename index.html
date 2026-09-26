@@ -293,7 +293,7 @@ input[type="file"] { display: none; }
 
 <header>
   <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
-  <span class="badge">v8.1.13</span>
+  <span class="badge">v8.1.14</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
@@ -327,7 +327,7 @@ input[type="file"] { display: none; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 8.1.13</div>
+    <div class="about-version">Oogly Boogly Learning · Version 8.1.14</div>
     <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and a quick and easy<strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
@@ -449,6 +449,31 @@ input[type="file"] { display: none; }
 <div class="toast" id="toast"></div>
 
 <script>
+// ──────────────────────────────────────────────
+// TEMUNET DETECTION
+// ──────────────────────────────────────────────
+function isRunningInTemuNet() {
+  try {
+    // 1. Path-based detection (works across any TemuNet mirror domain)
+    if (location.pathname.indexOf('/proxy/') === 0) return true;
+
+    // 2. Referrer-based detection
+    if (document.referrer && document.referrer.indexOf('/proxy/') !== -1) return true;
+
+    // 3. Known TemuNet production domains
+    var host = location.hostname || '';
+    if (host === 'temu-net.vercel.app' || host.endsWith('.temu-net.vercel.app')) return true;
+    if (host.indexOf('temunet') === 0) return true;
+
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
+const IN_TEMUNET = isRunningInTemuNet();
+
+
 // ──────────────────────────────────────────────
 // DATA
 // ──────────────────────────────────────────────
@@ -642,6 +667,11 @@ const assignments = [
 ];
 
 const newsData = [
+  {
+    date: "2026-09-26",
+    title: "Update v8.1.14 adds support for playing games via Temu Net.",
+    body: "v8.1.14 changes how games are played when TemuNet is in use, allowing TemuNet to launch them properly."
+  },
   {
     date: "2026-09-23",
     title: "Update v8.1.13 adds the brand new Temu Kit!",
@@ -863,14 +893,6 @@ const GC_ICON = '/favicon-32x32.png';
 // GAME LAUNCH — fetch HTML → inject into about:blank
 // ──────────────────────────────────────────────
 async function launchGame(link, title) {
-  const gameTab = window.open('about:blank', '_blank');
-  if (!gameTab) {
-    toast('Popup blocked — enable popups for this site');
-    return;
-  }
-
-  const cloakTitle = cfg.gameCloakTitle || 'Home - Classroom';
-
   let absUrl;
   if (link.startsWith('http://') || link.startsWith('https://')) {
     absUrl = link;
@@ -881,7 +903,23 @@ async function launchGame(link, title) {
     absUrl = base + link;
   }
 
+  // ---- TEMUNET PATH ----
+  // Skip about:blank cloaking entirely. Just navigate the current tab.
+  // TemuNet is already hiding the destination from the school filter.
+  if (IN_TEMUNET) {
+    window.location.href = absUrl;
+    return;
+  }
+
+  // ---- NORMAL PATH ----
+  const cloakTitle = cfg.gameCloakTitle || 'Home - Classroom';
   const gameBase = absUrl.endsWith('/') ? absUrl : absUrl.substring(0, absUrl.lastIndexOf('/') + 1);
+
+  const gameTab = window.open('about:blank', '_blank');
+  if (!gameTab) {
+    toast('Popup blocked — enable popups for this site');
+    return;
+  }
 
   writeLoading(gameTab, title, cloakTitle);
 
