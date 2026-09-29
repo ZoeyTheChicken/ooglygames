@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blobdom — a tiny multiplayer blob world</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta
+      name="description"
+      content="A tiny multiplayer blob world. Walk, haul, talk, cast spells by typing them, and plant your clan's flag. Free in the browser."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Blobdom" />
+    <meta property="og:title" content="Blobdom — a tiny multiplayer blob world" />
+    <meta
+      property="og:description"
+      content="Walk, haul, talk, cast spells by typing them, and plant your clan's flag. Free in the browser."
+    />
+    <meta property="og:image" content="https://blobdom.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Blobdom — three friendly blobs on a white field" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Blobdom — a tiny multiplayer blob world" />
+    <meta
+      name="twitter:description"
+      content="Walk, haul, talk, cast spells by typing them, and plant your clan's flag. Free in the browser."
+    />
+    <meta name="twitter:image" content="https://blobdom.com/og.png" />
+    <meta name="twitter:image:alt" content="Blobdom — three friendly blobs on a white field" />
+
+    <meta name="theme-color" content="#fcfcfa" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,50,1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/site.css" />
+    <link rel="stylesheet" href="/static/landing.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="mark" href="/">
+          <img src="/favicon.svg" width="26" height="26" alt="" />
+          Blobdom
+        </a>
+        <div id="authbar"></div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="rise">
+            <p class="caps">Free · in the browser · nothing to install</p>
+            <h1>A tiny multiplayer blob world.</h1>
+            <p class="lede">
+              Blobs on a white field. A hundred coins that never respawn, a shop of spells you cast
+              by typing them, and clans that plant flags to hold ground.
+            </p>
+            <div class="cta-row">
+              <a class="play" href="/play">
+                Play now
+                <svg class="arrow" width="15" height="10" viewBox="0 0 15 10" aria-hidden="true">
+                  <path
+                    d="M1 5h12M9.5 1.5 13 5l-3.5 3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+              <p class="online caps" id="online" aria-live="polite">
+                <span class="dot" aria-hidden="true"></span>
+                <span id="online-label">Counting who is out there…</span>
+              </p>
+            </div>
+          </div>
+
+          
+          <div class="window rise">
+            <div class="preview">
+              <iframe
+                src="/spectate?scale=1.5"
+                title="Live view of the Blobdom world"
+                loading="eager"
+              ></iframe>
+              <a class="preview-hit" href="/play" tabindex="-1" aria-hidden="true"></a>
+              <span class="preview-chip caps"><i class="dot"></i>Live</span>
+              <p class="preview-enter caps">Step in →</p>
+            </div>
+            <p class="preview-cap caps">Following whoever is doing something</p>
+          </div>
+        </section>
+
+        
+        <section class="whats-next rise" id="whats-next" hidden>
+          <h2 class="head">What's next</h2>
+          <p class="note">
+            While a party is on, everybody can cast <span class="word">party</span> — no shop, no
+            coins. <a href="/calendar">The whole calendar →</a>
+          </p>
+          <ol class="next" id="next"></ol>
+        </section>
+
+        <section class="panels">
+          <section class="rise">
+            <h2 class="head">How to play</h2>
+            <p class="note">Five things, and you know the whole game.</p>
+            <ol class="steps">
+              <li>
+                <span class="n" aria-hidden="true">1</span>
+                <h3>Walk</h3>
+                <p>
+                  Click the ground and your blob walks there — tap it on a phone. Your gaze follows
+                  the cursor, and the wheel or a pinch zooms.
+                </p>
+              </li>
+              <li>
+                <span class="n" aria-hidden="true">2</span>
+                <h3>Haul</h3>
+                <p>
+                  Press an object and drag it: boulders, bombs, mushrooms, somebody else's flag.
+                  Coins are collected by hauling one onto your blob — and you spill what you are
+                  carrying when you die.
+                </p>
+              </li>
+              <li>
+                <span class="n" aria-hidden="true">3</span>
+                <h3>Talk</h3>
+                <p>
+                  Just type. The letters appear over your head for a few seconds, for anyone
+                  standing close enough to read them.
+                </p>
+              </li>
+              <li>
+                <span class="n" aria-hidden="true">4</span>
+                <h3>Cast</h3>
+                <p>
+                  A spell is a word: type <span class="word">fast</span>,
+                  <span class="word">hide</span>, <span class="word">fire</span> or
+                  <span class="word">wind</span> and press <kbd>Enter</kbd>. You buy them in the
+                  shop with the coins you hauled home.
+                </p>
+              </li>
+              <li>
+                <span class="n" aria-hidden="true">5</span>
+                <h3>Claim</h3>
+                <p>
+                  Found a clan, invite the people you like, buy it a pennant — then cast
+                  <span class="word">flag</span> to plant one where you stand. It keeps standing
+                  after you log off, until somebody drags it away or blows it up.
+                </p>
+              </li>
+            </ol>
+          </section>
+
+          <section class="rise">
+            <h2 class="head">Clans holding ground</h2>
+            <p class="note">Flags standing in the world right now, most first.</p>
+            <ol class="board" id="board"></ol>
+            <p class="empty" id="board-empty" hidden>
+              No flags standing. Every acre of it is unclaimed.
+            </p>
+            <p class="foot-note">
+              A clan buys one pennant and every member plants it, so a clan's ground all flies the
+              same design. A flag outlives whoever planted it — it stands until somebody hauls it
+              away or blows it up.
+            </p>
+          </section>
+        </section>
+
+        <section class="follow rise">
+          <div>
+            <h2 class="head">Follow along</h2>
+            <p>
+              Clips from the world, new spells as they reach the shop, and whatever strange thing
+              happened out there last night.
+            </p>
+          </div>
+          <div class="channels">
+            <a
+              class="channel tiktok"
+              href="https://www.tiktok.com/@blobdom"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Blobdom on TikTok"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"
+                />
+              </svg>
+              TikTok
+            </a>
+            <a
+              class="channel youtube"
+              href="https://www.youtube.com/@blobdom"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Blobdom on YouTube"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                />
+              </svg>
+              YouTube
+            </a>
+          </div>
+        </section>
+
+        
+        <section class="coins rise">
+          <div>
+            <h2 class="head">Buy coins</h2>
+            <p>
+              Bought coins are yours to keep — get killed and you keep them, log off and they are
+              still there next time.
+            </p>
+            <p class="fine">
+              Log in first and leave your username in the note at checkout, so the coins have
+              somewhere to go. They are added by hand, so give it a day.
+            </p>
+          </div>
+          <a
+            class="buy"
+            href="https://buymeacoffee.com/antonmedv/e/565287"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="coin-glyph" aria-hidden="true"></span>
+            Buy coins
+          </a>
+        </section>
+</main>
+    </div>
+
+    <footer>
+      <div class="wrap foot">
+        <span>Blobdom — a tiny multiplayer blob world</span>
+        <nav>
+          <a href="/play">Play</a>
+          <a href="/calendar">Parties</a>
+          <a href="/wallpaper">Wallpapers</a>
+          <a href="/terms">Terms</a>
+          <a href="/privacy">Privacy</a>
+          <a href="https://www.tiktok.com/@blobdom" target="_blank" rel="noopener noreferrer"
+            >TikTok</a
+          >
+          <a href="https://www.youtube.com/@blobdom" target="_blank" rel="noopener noreferrer"
+            >YouTube</a
+          >
+        </nav>
+      </div>
+    </footer>
+    <link rel="modulepreload" href="/assets/auth-ui-DRhktMJt.js" />
+    <link rel="modulepreload" href="/assets/calendar-view-FOcv55G0.js" />
+    <link rel="modulepreload" href="/assets/ids-BqIuZcaM.js" />
+    <link rel="modulepreload" href="/assets/color-VaOoxt0i.js" />
+    <link rel="modulepreload" href="/assets/flag-styles-A5tkCmLa.js" />
+    <script type="module" src="/assets/landing-BxLtsvMg.js"></script>
+  </body>
+</html>

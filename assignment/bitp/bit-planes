@@ -5,9 +5,74 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>Bit Planes</title>
-<link href="./btp/styles.css" rel="stylesheet"></head>
+    <script>
+      // Some sites embed this page in an iframe and pass the game off as their
+      // own. Spot a foreign framing ancestor before the first paint: the page
+      // then shows nothing but the banner (see the html.embedded rules), and
+      // main() refuses to boot the game.
+      (function () {
+        if (window.self === window.top) return
+        try {
+          // A same-origin parent is us — our own pages may frame the game.
+          if (window.top.location.href) return
+        } catch (e) {
+        }
+
+        function ours(url) {
+          var host = (url.split('/')[2] || '').split(':')[0]
+          return /(^|\.)medv\.io$/.test(host) || host === 'localhost' || host === '127.0.0.1'
+        }
+
+        var origins = location.ancestorOrigins
+        var foreign = true
+        if (origins && origins.length) {
+          foreign = false
+          for (var i = 0; i < origins.length; i++) {
+            if (!ours(origins[i])) foreign = true
+          }
+        } else if (document.referrer) {
+          // Firefox has no ancestorOrigins; the referrer is the framing page.
+          foreign = !ours(document.referrer)
+        }
+        if (foreign) document.documentElement.className += ' embedded'
+      })()
+    </script>
+<link href="styles.css?ab2d401ab2bf43654d73" rel="stylesheet"></head>
 <body>
 <main>
+    <div class="embed-notice">
+        <h1>
+            <i class="logo"></i>
+            Bit Planes
+            <i class="logo"></i>
+        </h1>
+        <p>This site shows an embedded copy. Play the real thing on medv.io:</p>
+        <a class="btn" href="https://medv.io/bit-planes/" target="_blank" rel="noopener">‣ Play Bit Planes</a>
+    </div>
+    <a class="promo" href="https://blobly.medv.io" target="_blank" rel="noopener">
+        <div class="promo-info">
+            <span class="promo-badge">New game</span>
+            <div class="promo-title">
+                <svg class="promo-mark" viewBox="0 0 64 64" aria-hidden="true">
+                    <path d="M32 6 C43.05 6 52 16.74 52 30 C52 43.26 43.05 52.08 32 52.08
+                             C20.95 52.08 12 43.26 12 30 C12 16.74 20.95 6 32 6 Z"
+                          fill="#fff" stroke="#2273c3" stroke-width="3.4" stroke-linejoin="round"/>
+                    <g fill="#2273c3">
+                        <circle cx="23.6" cy="25.7" r="3.6"/>
+                        <circle cx="40.4" cy="25.7" r="3.6"/>
+                    </g>
+                </svg>
+                Blobly
+            </div>
+            <p class="promo-tagline">A tiny multiplayer blob world.</p>
+            <span class="promo-cta">Play now <span class="arrow">→</span></span>
+        </div>
+        <div class="promo-preview">
+            <iframe src="https://blobly.medv.io/spectate.html?scale=0.8" title="Live view of the Blobly world"
+                    tabindex="-1" loading="lazy"></iframe>
+            <span class="promo-live">Live</span>
+        </div>
+    </a>
     <section class="welcome">
 <!--        <div class="ribbon right black">-->
 <!--            <a href="" tabindex="-1" target="_blank"></a>-->
@@ -178,9 +243,9 @@
   })
 </script>
 <noscript>
-    <div><img src="94977381" style="position:absolute; left:-9999px;" alt=""/></div>
+    <div><img src="https://mc.yandex.ru/watch/94977381" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
 
-<script type="text/javascript" src="./btp/index.js"></script></body>
+<script type="text/javascript" src="index.js?ab2d401ab2bf43654d73"></script></body>
 </html>
