@@ -449,18 +449,10 @@ input[type="file"] { display: none; }
 <div class="toast" id="toast"></div>
 
 <script>
-// ──────────────────────────────────────────────
-// TEMUNET DETECTION
-// ──────────────────────────────────────────────
 function isRunningInTemuNet() {
   try {
-    // 1. Path-based detection (works across any TemuNet mirror domain)
     if (location.pathname.indexOf('/proxy/') === 0) return true;
-
-    // 2. Referrer-based detection
     if (document.referrer && document.referrer.indexOf('/proxy/') !== -1) return true;
-
-    // 3. Known TemuNet production domains
     var host = location.hostname || '';
     if (host === 'temu-net.vercel.app' || host.endsWith('.temu-net.vercel.app')) return true;
     if (host.indexOf('temunet') === 0) return true;
@@ -479,7 +471,7 @@ const IN_TEMUNET = isRunningInTemuNet();
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
-  { title:"TemuNet", link:"https://temu-net.vercel.app", category:"Utility" },
+  { title:"Study Client", link:"https://studyclient.vercel.app", category:"Utility" },
   { title:"TemuTube", link:"https://exactpath.lovable.app", category:"Utility" },
   { title:"Minecraft 26.2", link:"assignment/eagler262", category:"Action" },
   { title:"Minecraft 1.20.6 (Renewed)", link:"assignment/eagler1206", category:"Action" },
@@ -694,8 +686,8 @@ const newsData = [
   },
   {
     date: "2026-09-29",
-    title: "Update v8.1.19 fixes TemuNet",
-    body: "v8.1.19 fixes how TemuNet communicates, attempting to fix previous issues present in v8.1.18."
+    title: "Update v8.1.19 fixes StudyClient",
+    body: "v8.1.19 fixes how Study Client communicates, attempting to fix previous issues present in v8.1.18."
   },
   {
     date: "2026-09-28",
@@ -704,8 +696,8 @@ const newsData = [
   },
   {
     date: "2026-09-27",
-    title: "Update v8.1.17 separates TemuKit into TemuNet and TemuTube.",
-    body: "v8.1.17 separates TemuKit into TemuNet and TemuTube, allowing for easier navigation, a better viewing experience, and improved overall functionality."
+    title: "Update v8.1.17 separates TemuKit into Study Client and TemuTube.",
+    body: "v8.1.17 separates TemuKit into Study Client and TemuTube, allowing for easier navigation, a better viewing experience, and improved overall functionality."
   },
   {
     date: "2026-09-26",
@@ -714,8 +706,8 @@ const newsData = [
   },
   {
     date: "2026-09-26",
-    title: "Update v8.1.14 adds support for playing games via Temu Net.",
-    body: "v8.1.14 changes how games are played when TemuNet is in use, allowing TemuNet to launch them properly."
+    title: "Update v8.1.14 adds support for playing games via Study Client.",
+    body: "v8.1.14 changes how games are played when Study Client is in use, allowing Study Client to launch them properly."
   },
   {
     date: "2026-09-23",
@@ -949,11 +941,9 @@ async function launchGame(link, title) {
   }
 
   // ---- EXEMPT URLS ----
-  // Some sites (like TemuTube) don't work through about:blank cloaking.
-  // Navigate directly to them instead.
   const EXEMPT_URLS = [
     'https://exactpath.lovable.app',
-    'https://temu-net.vercel.app',
+    'https://studyclient.vercel.app',
   ];
   const isExempt = EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0);
 
@@ -962,9 +952,7 @@ async function launchGame(link, title) {
     return;
   }
 
-  // ---- TEMUNET PATH ----
-  // Skip about:blank cloaking entirely. Just navigate the current tab.
-  // TemuNet is already hiding the destination from the school filter.
+  // ---- STUDYCLIENT PATH ----
   if (IN_TEMUNET) {
     window.location.href = absUrl;
     return;
