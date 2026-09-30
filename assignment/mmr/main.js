@@ -7,6 +7,7 @@ class PlaysaurusPayments
     iframePath = "/v1/"
     iframeFile = "popup/index.html"
     iframeSrc;
+    VERSION = "1.0.0"
 
     paypalToken;
     stripeToken;

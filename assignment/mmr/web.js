@@ -496,7 +496,7 @@ const SUBSCRIPTION_ENDPOINT = "https://mrmine.com/subscribe.php";
 const CODE_REDEMPTION_ENDPOINT = "https://mrmine.com/redemption.php";
 
 var assetLoader = new AssetLoader();
-assetLoader.setEndpoint("https://cdn.mrmine.com/game/desktop/");
+assetLoader.setEndpoint("./");
 // assetLoader.setEndpoint(""); //steam is empty, web is the above
 loadAssets();
 
