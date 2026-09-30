@@ -292,12 +292,12 @@ input[type="file"] { display: none; }
 <body>
 
 <header>
-  <div class="logo" id="logoEl" onclick="filterCat('All')">Oogly Boogly <span>Learning</span></div>
+  <div class="logo" id="logoEl" onclick="filterCat('All')">OBL<span></span></div>
   <span class="badge">v8.1.22</span>
   <input id="search" type="text" placeholder="Search assignments..." oninput="onSearchInput(this.value)" autocomplete="off"/>
   <div class="header-btns">
     <button class="xbtn" id="chatBtn" onclick="openUnblocker()">Unblock Assistant</button>
-    <button class="xbtn" id="chatBtn2" onclick="openChat()">Oogly Chat</button>
+    <button class="xbtn" id="chatBtn2" onclick="openChat()">OB Chat</button>
     <button class="hbtn" onclick="openModal('saveModal')">Game Save</button>
     <button class="hbtn" onclick="openModal('newsModal')">News</button>
     <button class="hbtn" onclick="openModal('settingsModal')">Settings</button>
@@ -327,8 +327,8 @@ input[type="file"] { display: none; }
       <div class="modal-title">About</div>
       <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
     </div>
-    <div class="about-version">Oogly Boogly Learning · Version 8.1.22</div>
-    <p class="about-p">Oogly Boogly Learning makes assignments easy, with a simple, easy to use portal for your assignments.</p>
+    <div class="about-version">OBL · Version 8.1.23</div>
+    <p class="about-p">OBL makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface, and a quick and easy<strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
 </div>
@@ -673,6 +673,11 @@ const assignments = [
 
 const newsData = [
   {
+    date: "2026-09-30",
+    title: "Update v8.1.23 changes the site name to OBL (for bl0ck reasons)",
+    body: "v8.1.23 changes the site name to OBL (for bl0ck reasons)."
+  },
+  {
     date: "2026-09-29",
     title: "Update v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title.",
     body: "v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title. This update ensures that all assignments now display the correct tab title consistently. This update also messes with Mr. Mine (still broken just for u liam)"
@@ -744,8 +749,8 @@ const newsData = [
   },
   {
     date: "2026-08-02",
-    title: "Update v8.1.7 is a small incremental update to fix one issue, and update the Oogly Chat systems.",
-    body: "v8.1.7 updates the Oogly Chat systems, bringing service back, and fixing an issue."
+    title: "Update v8.1.7 is a small incremental update to fix one issue, and update the OBL Chat systems.",
+    body: "v8.1.7 updates the OBL Chat systems, bringing service back, and fixing an issue."
   },
   {
     date: "2026-07-31",
@@ -804,18 +809,18 @@ const newsData = [
   },
   {
     date: "2026-04-25",
-    title: "oogly.chat is now available.",
-    body: "You can now chat with others on Oogly Boogly Learning!"
+    title: "OB Chat is now available.",
+    body: "You can now chat with others on OB Chat!"
   },
   {
     date: "2026-04-25",
-    title: "Oogly Boogly Learning adds new assignments!",
-    body: "Oogly Boogly Learning has added new 5 new assignments to play, ad-free!"
+    title: "OBL adds new assignments!",
+    body: "OBL has added new 5 new assignments to play, ad-free!"
   },
   {
     date: "2026-04-24",
-    title: "Oogly Boogly Learning is released!",
-    body: "Oogly Boogly Learning is now live, with 100s of assignments you can easily do online, and for free! Anytime!"
+    title: "OBL is released!",
+    body: "OBL is now live, with 100s of assignments you can easily do online, and for free! Anytime!"
   },
 ];
 
@@ -1523,7 +1528,7 @@ async function exportSave() {
     const stamp = new Date().toISOString().slice(0, 10);
 
     a.href = url;
-    a.download = `oogly-boogly-save-${stamp}.oblsave`;
+    a.download = `obl-save-${stamp}.oblsave`;
 
     document.body.appendChild(a);
     a.click();
