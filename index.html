@@ -665,6 +665,11 @@ const assignments = [
 
 const newsData = [
   {
+    date: "2026-10-01",
+    title: "Update v8.1.24 does some small stuff behinds the scenes.",
+    body: "v8.1.24 implements small stuff behind the scenes to... make the experience better."
+  },
+  {
     date: "2026-09-30",
     title: "Update v8.1.23 changes the site name to OBL (for bl0ck reasons)",
     body: "v8.1.23 changes the site name to OBL (for bl0ck reasons)."
@@ -944,6 +949,7 @@ async function launchGame(link, title) {
   const EXEMPT_URLS = [
     'https://exactpath.lovable.app',
     'https://studyclient.vercel.app',
+    'https://studyclient.fly.dev',
   ];
   const isExempt = EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0);
 
