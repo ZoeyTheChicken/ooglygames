@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPACALLAX 3.0.0</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: 'Consolas', 'Courier New', monospace;
+        cursor: none; /* Hide default cursor */
+    }
+    #gameCanvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        background: #0a0a14;
+        cursor: none; /* Hide cursor over canvas */
+        outline: none; /* Remove focus outline */
+    }
+    #hint {
+        position: fixed;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,0.35);
+        font-size: 12px;
+        pointer-events: none; /* IMPORTANT: Don't block clicks */
+        z-index: 10;
+    }
+    #fpsCounter {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        color: rgba(0,255,255,0.7);
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 10;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" tabindex="0"></canvas>
+<div id="hint">Arrows/WASD: Move • Space: Shoot • S: Settings • F11: Fullscreen • R: Restart</div>
+<div id="fpsCounter"></div>
+
+<script>
+// ============================================================
+// SPACALLAX 3.0.0 - Web Port (Fixed Input)
+// ============================================================
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const fpsCounter = document.getElementById('fpsCounter');
+
+// Focus canvas immediately and on any click
+canvas.focus();
+canvas.addEventListener('click', () => canvas.focus());
+window.addEventListener('click', () => canvas.focus());
+window.addEventListener('focus', () => canvas.focus());
+
+// Resize canvas
+let W = 0, H = 0;
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ============================================================
+// GAME STATE
+// ============================================================
+const GameState = { MENU: 0, PLAYING: 1, GAMEOVER: 2, SETTINGS: 3 };
+let currentState = GameState.MENU;
+
+const Difficulty = {
+    EASY: 0, MEDIUM: 1, HARD: 2, INSANE: 3,
+    SERIOUSLY_INSANE: 4, UNBEATABLE: 5, BLIND_NIGHTMARE: 6
+};
+const difficultyNames = [
+    "Easy", "Medium", "Hard",
+    "INSANE", "SERIOUSLY INSANE",
+    "UNBEATABLE!", "BLIND NIGHTMARE"
+];
+let currentDifficulty = Difficulty.MEDIUM;
+let selectedDifficultyIndex = 1;
+
+// ============================================================
+// ENTITIES
+// ============================================================
+let player = null;
+let enemies = [];
+let playerBullets = [];
+let enemyBullets = [];
+let powerUps = [];
+let particles = [];
+let stars = [];
+let scorePopups = [];
+
+// ============================================================
+// STATE VARIABLES
+// ============================================================
+let score = 0;
+let highScore = parseInt(localStorage.getItem('spacallaxHighScore') || '0');
+let enemySpawnTimer = 0;
+let enemySpawnInterval = 0.4;
+let powerUpSpawnTimer = 0;
+let powerUpSpawnInterval = 5;
+let enemyBaseSpeed = 200;
+let enemySpeedMultiplier = 1;
+let spawnIntervalMultiplier = 1;
+let frame = 0;
+let animationTimer = 0;
+let gameTime = 0;
+
+// Timers
+let rapidFireTimer = 0, shieldTimer = 0, scoreMultiplierTimer = 0;
+let shotCooldownTimer = 0;
+const rapidFireDuration = 5, shieldDuration = 5, scoreMultiplierDuration = 5;
+const shotCooldownDuration = 5, blindShotCooldown = 2;
+
+// Mode flags
+let insaneMode = false, seriouslyInsaneMode = false;
+let unbeatableMode = false, blindNightmare = false;
+
+// Camera shake
+let cameraShake = 0, cameraShakeDuration = 0;
+
+// Settings
+let settings = {
+    masterVolume: 0.8,
+    soundVolume: 0.8,
+    musicVolume: 0.8,
+    showFPS: true,
+    screenShake: true,
+    showParticles: true
+};
+let selectedSettingIndex = 0;
+const settingNames = [
+    "Master Volume", "Sound Volume", "Music Volume",
+    "Show FPS", "Screen Shake", "Particles", "Back"
+];
+
+// ============================================================
+// INPUT - Fixed with multiple fallbacks
+// ============================================================
+const keys = {};
+const keysPrev = {};
+const keysThisFrame = {}; // For single-press detection
+
+// Attach to both document and window for maximum compatibility
+document.addEventListener('keydown', e => {
+    if (!e.repeat) {
+        keysThisFrame[e.code] = true;
+    }
+    keys[e.code] = true;
+
+    // Prevent default scrolling/behaviors
+    if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
+         'KeyW','KeyA','KeyS','KeyD','F11'].includes(e.code)) {
+        e.preventDefault();
+    }
+
+    if (e.code === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+    }
+});
+
+document.addEventListener('keyup', e => {
+    keys[e.code] = false;
+});
+
+// Single-press detection (clear after each frame)
+function keyPressed(code) {
+    return keysThisFrame[code] === true;
+}
+
+function clearFrameKeys() {
+    for (const k in keysThisFrame) delete keysThisFrame[k];
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen().catch(() => {});
+    }
+}
+
+// ============================================================
+// AUDIO
+// ============================================================
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            audioCtx = null;
+        }
+    }
+    // Resume audio context (browser autoplay policy)
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTone(freq, duration, type = 'square', volume = 0.1) {
+    if (!audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        const vol = volume * settings.masterVolume * settings.soundVolume;
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {}
+}
+
+function playShootSound() {
+    playTone(880, 0.08, 'square', 0.06);
+    setTimeout(() => playTone(660, 0.05, 'square', 0.04), 30);
+}
+
+function playExplosionSound() {
+    playTone(200, 0.15, 'sawtooth', 0.08);
+    setTimeout(() => playTone(100, 0.1, 'sawtooth', 0.06), 40);
+}
+
+function playHitSound() {
+    playTone(150, 0.2, 'square', 0.1);
+}
+
+// ============================================================
+// STARFIELD
+// ============================================================
+function initStars() {
+    stars = [];
+    for (let i = 0; i < 200; i++) {
+        stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            speed: 20 + Math.random() * 80,
+            brightness: 0.3 + Math.random() * 0.7,
+            size: 1 + Math.floor(Math.random() * 2)
+        });
+    }
+}
+initStars();
+
+// ============================================================
+// PLAYER
+// ============================================================
+function createPlayer() {
+    return {
+        x: W / 2,
+        y: H - 100,
+        vx: 0,
+        vy: 0,
+        size: 40,
+        speed: 400,
+        bulletSpeed: 600,
+        shootCooldown: 0,
+        health: 3,
+        maxHealth: 3,
+        invincibleTimer: 0
+    };
+}
+
+// ============================================================
+// SPAWNERS
+// ============================================================
+function spawnEnemy() {
+    const size = 35;
+    const x = size + Math.random() * (W - size * 2);
+    enemies.push({
+        x: x,
+        y: -size,
+        size: size,
+        speed: enemyBaseSpeed * enemySpeedMultiplier + (Math.random() * 60 - 30),
+        angle: 0,
+        shootCooldown: 0.5 + Math.random() * 1.5
+    });
+}
+
+function spawnPowerUp() {
+    const types = [0, 1, 2, 3];
+    powerUps.push({
+        x: 20 + Math.random() * (W - 40),
+        y: -20,
+        size: 20,
+        type: types[Math.floor(Math.random() * types.length)],
+        angle: 0
+    });
+}
+
+// ============================================================
+// PARTICLES
+// ============================================================
+function emitParticles(x, y, count, color, spread = 200) {
+    if (!settings.showParticles) return;
+    for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * spread;
+        particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 0.5 + Math.random() * 1.0,
+            maxLife: 1.5,
+            size: 2 + Math.random() * 4,
+            color: color
+        });
+    }
+}
+
+function updateParticles(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= 0.95;
+        p.vy *= 0.95;
+        p.life -= dt;
+        if (p.life <= 0) particles.splice(i, 1);
+    }
+}
+
+// ============================================================
+// SCORE POPUP
+// ============================================================
+function addScorePopup(x, y, text, color) {
+    scorePopups.push({
+        x: x, y: y, text: text, color: color, life: 1.0
+    });
+}
+
+function updateScorePopups(dt) {
+    for (let i = scorePopups.length - 1; i >= 0; i--) {
+        const sp = scorePopups[i];
+        sp.y -= 30 * dt;
+        sp.life -= dt * 2;
+        if (sp.life <= 0) scorePopups.splice(i, 1);
+    }
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame() {
+    initAudio();
+    currentDifficulty = selectedDifficultyIndex;
+    insaneMode = (currentDifficulty === Difficulty.INSANE);
+    seriouslyInsaneMode = (currentDifficulty === Difficulty.SERIOUSLY_INSANE);
+    unbeatableMode = (currentDifficulty === Difficulty.UNBEATABLE);
+    blindNightmare = (currentDifficulty === Difficulty.BLIND_NIGHTMARE);
+
+    switch (currentDifficulty) {
+        case Difficulty.EASY:
+            enemyBaseSpeed = 150; enemySpawnInterval = 0.6; break;
+        case Difficulty.MEDIUM:
+            enemyBaseSpeed = 200; enemySpawnInterval = 0.4; break;
+        case Difficulty.HARD:
+            enemyBaseSpeed = 300; enemySpawnInterval = 0.25; break;
+        case Difficulty.INSANE:
+            enemyBaseSpeed = 450; enemySpawnInterval = 0.15; break;
+        case Difficulty.SERIOUSLY_INSANE:
+            enemyBaseSpeed = 600; enemySpawnInterval = 0.1; break;
+        case Difficulty.UNBEATABLE:
+            enemyBaseSpeed = 700; enemySpawnInterval = 0.08; break;
+        case Difficulty.BLIND_NIGHTMARE:
+            enemyBaseSpeed = 600; enemySpawnInterval = 0.1; break;
+    }
+
+    player = createPlayer();
+    const oneHP = insaneMode || seriouslyInsaneMode || unbeatableMode || blindNightmare;
+    player.health = oneHP ? 1 : 3;
+    player.maxHealth = player.health;
+    player.bulletSpeed = 700 + currentDifficulty * 100;
+
+    enemies = [];
+    playerBullets = [];
+    enemyBullets = [];
+    powerUps = [];
+    particles = [];
+    scorePopups = [];
+
+    enemySpawnTimer = 0;
+    powerUpSpawnTimer = 0;
+    enemySpeedMultiplier = 1;
+    spawnIntervalMultiplier = 1;
+    score = 0;
+    rapidFireTimer = 0;
+    shieldTimer = 0;
+    scoreMultiplierTimer = 0;
+    shotCooldownTimer = 0;
+    gameTime = 0;
+
+    currentState = GameState.PLAYING;
+}
+
+// ============================================================
+// UPDATE
+// ============================================================
+function update(dt) {
+    frame++;
+    animationTimer += dt;
+    gameTime += dt;
+
+    if (cameraShakeDuration > 0) {
+        cameraShakeDuration -= dt;
+        if (cameraShakeDuration <= 0) cameraShake = 0;
+    }
+
+    for (const s of stars) {
+        s.y += s.speed * dt;
+        if (s.y > H) { s.y = 0; s.x = Math.random() * W; }
+    }
+
+    if (currentState === GameState.MENU) updateMenu();
+    else if (currentState === GameState.PLAYING) updatePlaying(dt);
+    else if (currentState === GameState.GAMEOVER) updateGameOver();
+    else if (currentState === GameState.SETTINGS) updateSettings();
+
+    updateParticles(dt);
+    updateScorePopups(dt);
+
+    // CRITICAL: Clear single-press keys at end of frame
+    clearFrameKeys();
+}
+
+function updateMenu() {
+    if (keyPressed('ArrowLeft') || keyPressed('KeyA')) {
+        selectedDifficultyIndex--;
+        if (selectedDifficultyIndex < 0) selectedDifficultyIndex = 6;
+    }
+    if (keyPressed('ArrowRight') || keyPressed('KeyD')) {
+        selectedDifficultyIndex++;
+        if (selectedDifficultyIndex > 6) selectedDifficultyIndex = 0;
+    }
+    if (keyPressed('Enter') || keyPressed('Space') || keyPressed('NumpadEnter')) {
+        startGame();
+    }
+    if (keyPressed('KeyS')) {
+        currentState = GameState.SETTINGS;
+        selectedSettingIndex = 0;
+    }
+}
+
+function updateSettings() {
+    if (keyPressed('ArrowUp') || keyPressed('KeyW')) {
+        selectedSettingIndex--;
+        if (selectedSettingIndex < 0) selectedSettingIndex = settingNames.length - 1;
+    }
+    if (keyPressed('ArrowDown') || keyPressed('KeyS')) {
+        selectedSettingIndex++;
+        if (selectedSettingIndex >= settingNames.length) selectedSettingIndex = 0;
+    }
+    if (keyPressed('ArrowLeft') || keyPressed('KeyA')) adjustSetting(-1);
+    if (keyPressed('ArrowRight') || keyPressed('KeyD')) adjustSetting(1);
+
+    if (keyPressed('Escape') ||
+        (selectedSettingIndex === settingNames.length - 1 &&
+         (keyPressed('Enter') || keyPressed('Space')))) {
+        saveSettings();
+        currentState = GameState.MENU;
+    }
+}
+
+function adjustSetting(delta) {
+    switch (selectedSettingIndex) {
+        case 0: settings.masterVolume = clamp(settings.masterVolume + delta * 0.05, 0, 1); break;
+        case 1: settings.soundVolume = clamp(settings.soundVolume + delta * 0.05, 0, 1); break;
+        case 2: settings.musicVolume = clamp(settings.musicVolume + delta * 0.05, 0, 1); break;
+        case 3: settings.showFPS = !settings.showFPS; break;
+        case 4: settings.screenShake = !settings.screenShake; break;
+        case 5: settings.showParticles = !settings.showParticles; break;
+    }
+}
+
+function updatePlaying(dt) {
+    if (rapidFireTimer > 0) rapidFireTimer -= dt;
+    if (shieldTimer > 0) shieldTimer -= dt;
+    if (scoreMultiplierTimer > 0) scoreMultiplierTimer -= dt;
+    if ((insaneMode || seriouslyInsaneMode || blindNightmare) && shotCooldownTimer > 0)
+        shotCooldownTimer -= dt;
+
+    // Shooting (continuous fire on hold)
+    const canFire = !((insaneMode || seriouslyInsaneMode || blindNightmare) && shotCooldownTimer > 0);
+    const currentFireCooldown = rapidFireTimer > 0 ? 0.075 : (unbeatableMode ? 0.1 : 0.15);
+    player.shootCooldown -= dt;
+
+    if (keys['Space'] && player.shootCooldown <= 0 && canFire) {
+        player.shootCooldown = currentFireCooldown;
+        if (insaneMode || seriouslyInsaneMode) shotCooldownTimer = shotCooldownDuration;
+        if (blindNightmare) shotCooldownTimer = blindShotCooldown;
+
+        playerBullets.push({
+            x: player.x,
+            y: player.y - player.size / 2 - 5,
+            size: 8,
+            vx: 0,
+            vy: -player.bulletSpeed
+        });
+
+        playShootSound();
+        emitParticles(player.x, player.y - player.size / 2, 3, '#ffff00', 100);
+    }
+
+    // Movement
+    let moveX = 0, moveY = 0;
+    if (keys['ArrowLeft'] || keys['KeyA']) moveX -= 1;
+    if (keys['ArrowRight'] || keys['KeyD']) moveX += 1;
+    if (keys['ArrowUp'] || keys['KeyW']) moveY -= 1;
+    if (keys['ArrowDown'] || keys['KeyS']) moveY += 1;
+
+    if (moveX !== 0 || moveY !== 0) {
+        const len = Math.sqrt(moveX * moveX + moveY * moveY);
+        player.vx = (moveX / len) * player.speed;
+        player.vy = (moveY / len) * player.speed;
+    } else {
+        player.vx = player.vy = 0;
+    }
+
+    player.x += player.vx * dt;
+    player.y += player.vy * dt;
+    player.x = clamp(player.x, player.size / 2, W - player.size / 2);
+    player.y = clamp(player.y, player.size / 2, H - player.size / 2);
+
+    // Spawn enemies
+    enemySpawnTimer += dt;
+    while (enemySpawnTimer >= enemySpawnInterval * spawnIntervalMultiplier) {
+        enemySpawnTimer -= enemySpawnInterval * spawnIntervalMultiplier;
+        spawnEnemy();
+    }
+
+    // Spawn power-ups
+    if (!insaneMode && !seriouslyInsaneMode && !unbeatableMode && !blindNightmare) {
+        powerUpSpawnTimer += dt;
+        while (powerUpSpawnTimer >= powerUpSpawnInterval) {
+            powerUpSpawnTimer -= powerUpSpawnInterval;
+            spawnPowerUp();
+        }
+    }
+
+    // Update enemies
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const e = enemies[i];
+        e.y += e.speed * dt;
+        e.angle += 180 * dt;
+
+        if (insaneMode || seriouslyInsaneMode || unbeatableMode || blindNightmare) {
+            e.shootCooldown -= dt;
+            const shootInterval = (unbeatableMode || blindNightmare) ? 0.5 : 1.5;
+            if (e.shootCooldown <= 0) {
+                e.shootCooldown = shootInterval * (0.8 + Math.random() * 0.4);
+                enemyBullets.push({
+                    x: e.x,
+                    y: e.y + e.size / 2,
+                    size: 8,
+                    vx: 0,
+                    vy: unbeatableMode || blindNightmare ? 600 : 400
+                });
+            }
+        }
+
+        if (e.y > H + 30) enemies.splice(i, 1);
+    }
+
+    // Player bullets
+    for (let i = playerBullets.length - 1; i >= 0; i--) {
+        const b = playerBullets[i];
+        b.y += b.vy * dt;
+        if (b.y < -20) { playerBullets.splice(i, 1); continue; }
+
+        let hit = false;
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            const e = enemies[j];
+            const dx = b.x - e.x, dy = b.y - e.y;
+            if (Math.sqrt(dx * dx + dy * dy) < (b.size + e.size) / 2) {
+                enemies.splice(j, 1);
+                hit = true;
+
+                let basePoints = 10;
+                if (e.speed > enemyBaseSpeed * 1.5) basePoints = 20;
+                else if (e.speed > enemyBaseSpeed) basePoints = 15;
+                const points = basePoints * (scoreMultiplierTimer > 0 ? 2 : 1);
+                score += points;
+
+                addScorePopup(e.x, e.y - 10, `+${points}`, '#ffff00');
+                playExplosionSound();
+                emitParticles(e.x, e.y, 15, '#ff8800', 300);
+
+                if (settings.screenShake) {
+                    cameraShake = 5;
+                    cameraShakeDuration = 0.15;
+                }
+
+                enemySpeedMultiplier = Math.min(3, enemySpeedMultiplier + 0.02);
+                spawnIntervalMultiplier = Math.max(0.3, spawnIntervalMultiplier - 0.01);
+                break;
+            }
+        }
+        if (hit) playerBullets.splice(i, 1);
+    }
+
+    // Enemy bullets
+    for (let i = enemyBullets.length - 1; i >= 0; i--) {
+        const b = enemyBullets[i];
+        b.y += b.vy * dt;
+        if (b.y > H + 20) { enemyBullets.splice(i, 1); continue; }
+
+        if (shieldTimer <= 0) {
+            const dx = b.x - player.x, dy = b.y - player.y;
+            if (Math.sqrt(dx * dx + dy * dy) < (b.size + player.size) / 2 && player.invincibleTimer <= 0) {
+                player.health--;
+                player.invincibleTimer = 1.2;
+                enemyBullets.splice(i, 1);
+
+                playHitSound();
+                emitParticles(b.x, b.y, 10, '#ff00ff', 200);
+
+                if (settings.screenShake) {
+                    cameraShake = 10;
+                    cameraShakeDuration = 0.3;
+                }
+
+                if (player.health <= 0) endGame();
+            }
+        }
+    }
+
+    // Power-ups
+    for (let i = powerUps.length - 1; i >= 0; i--) {
+        const p = powerUps[i];
+        p.y += 100 * dt;
+        p.angle += 90 * dt;
+
+        if (p.y > H + 30) { powerUps.splice(i, 1); continue; }
+
+        const dx = p.x - player.x, dy = p.y - player.y;
+        if (Math.sqrt(dx * dx + dy * dy) < (p.size + player.size) / 2) {
+            switch (p.type) {
+                case 0:
+                    player.health = Math.min(player.maxHealth, player.health + 1);
+                    addScorePopup(p.x, p.y, '+HEALTH', '#00ff00');
+                    break;
+                case 1:
+                    rapidFireTimer = rapidFireDuration;
+                    addScorePopup(p.x, p.y, 'RAPID FIRE!', '#ff8800');
+                    break;
+                case 2:
+                    shieldTimer = shieldDuration;
+                    addScorePopup(p.x, p.y, 'SHIELD!', '#00ffff');
+                    break;
+                case 3:
+                    scoreMultiplierTimer = scoreMultiplierDuration;
+                    addScorePopup(p.x, p.y, '2X SCORE!', '#ffd700');
+                    break;
+            }
+            emitParticles(p.x, p.y, 8, '#ffffff', 150);
+            powerUps.splice(i, 1);
+        }
+    }
+
+    // Player-enemy collision
+    if (shieldTimer <= 0) {
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const e = enemies[i];
+            const dx = e.x - player.x, dy = e.y - player.y;
+            if (Math.sqrt(dx * dx + dy * dy) < (e.size + player.size) / 2 && player.invincibleTimer <= 0) {
+                player.health--;
+                player.invincibleTimer = 1.2;
+                enemies.splice(i, 1);
+
+                emitParticles(e.x, e.y, 20, '#ff0000', 350);
+                playHitSound();
+
+                if (settings.screenShake) {
+                    cameraShake = 15;
+                    cameraShakeDuration = 0.4;
+                }
+
+                if (player.health <= 0) endGame();
+                break;
+            }
+        }
+    }
+
+    if (player.invincibleTimer > 0) player.invincibleTimer -= dt;
+    score += Math.floor(dt * 10);
+}
+
+function endGame() {
+    currentState = GameState.GAMEOVER;
+    emitParticles(player.x, player.y, 40, '#ff0000', 500);
+    playExplosionSound();
+
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('spacallaxHighScore', highScore.toString());
+    }
+}
+
+function updateGameOver() {
+    if (keyPressed('Space') || keyPressed('Enter')) startGame();
+    if (keyPressed('KeyR')) currentState = GameState.MENU;
+}
+
+// ============================================================
+// DRAW
+// ============================================================
+function draw() {
+    ctx.save();
+
+    if (cameraShake > 0 && settings.screenShake) {
+        const ox = (Math.random() * 2 - 1) * cameraShake;
+        const oy = (Math.random() * 2 - 1) * cameraShake;
+        ctx.translate(ox, oy);
+    }
+
+    if (blindNightmare && currentState === GameState.PLAYING) {
+        const t = animationTimer;
+        const warpX = Math.sin(t * 2) * 10 + Math.sin(t * 1.3) * 5;
+        const warpY = Math.cos(t * 1.7) * 10 + Math.sin(t * 2.5) * 5;
+        const rot = Math.sin(t * 1.2) * 2;
+        ctx.translate(warpX, warpY);
+        ctx.rotate(rot * Math.PI / 180);
+    }
+
+    ctx.fillStyle = '#0a0a14';
+    ctx.fillRect(-50, -50, W + 100, H + 100);
+
+    for (const s of stars) {
+        const b = Math.floor(255 * s.brightness);
+        ctx.fillStyle = `rgb(${b},${b},${b})`;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+    }
+
+    if (currentState === GameState.PLAYING || currentState === GameState.GAMEOVER) {
+        drawPowerUps();
+        drawParticles();
+        drawBullets();
+        drawEnemies();
+        drawPlayer();
+        drawScorePopups();
+    }
+
+    ctx.restore();
+
+    if (blindNightmare && currentState === GameState.PLAYING && player) {
+        drawSpotlight();
+    }
+
+    drawUI();
+}
+
+function drawSpotlight() {
+    const radius = 150;
+    const grad = ctx.createRadialGradient(player.x, player.y, radius * 0.6, player.x, player.y, radius);
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.95)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+}
+
+function drawPlayer() {
+    if (!player || currentState !== GameState.PLAYING) return;
+    if (player.invincibleTimer > 0 && Math.floor(player.invincibleTimer * 10) % 2 === 0) return;
+
+    const s = player.size;
+
+    if (shieldTimer > 0) {
+        ctx.strokeStyle = `rgba(0,255,255,${0.5 + Math.sin(animationTimer * 10) * 0.3})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, s * 0.8, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.shadowColor = '#00ffff';
+    ctx.shadowBlur = 15;
+
+    ctx.fillStyle = '#00ffff';
+    ctx.beginPath();
+    ctx.moveTo(0, -s / 2);
+    ctx.lineTo(s / 2, s / 2);
+    ctx.lineTo(0, s / 3);
+    ctx.lineTo(-s / 2, s / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(0, 0, s / 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawEnemies() {
+    for (const e of enemies) {
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        ctx.rotate(e.angle * Math.PI / 180);
+        ctx.shadowColor = '#ff0000';
+        ctx.shadowBlur = 10;
+
+        ctx.fillStyle = '#ff3333';
+        ctx.beginPath();
+        const r = e.size / 2;
+        for (let i = 0; i < 6; i++) {
+            const a = (i * Math.PI / 3);
+            const px = Math.cos(a) * r;
+            const py = Math.sin(a) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#ff8888';
+        ctx.beginPath();
+        ctx.arc(0, 0, r / 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+function drawBullets() {
+    ctx.shadowColor = '#ffff00';
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = '#ffff00';
+    for (const b of playerBullets) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.shadowColor = '#ff00ff';
+    ctx.fillStyle = '#ff00ff';
+    for (const b of enemyBullets) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.shadowBlur = 0;
+}
+
+function drawPowerUps() {
+    for (const p of powerUps) {
+        let color;
+        switch (p.type) {
+            case 0: color = '#00ff00'; break;
+            case 1: color = '#ff8800'; break;
+            case 2: color = '#00ffff'; break;
+            case 3: color = '#ffd700'; break;
+        }
+
+        const pulse = 0.7 + Math.sin(animationTimer * 5 + p.x) * 0.3;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 15 * pulse;
+        ctx.fillStyle = color;
+
+        ctx.beginPath();
+        ctx.moveTo(0, -p.size / 2);
+        ctx.lineTo(p.size / 2, 0);
+        ctx.lineTo(0, p.size / 2);
+        ctx.lineTo(-p.size / 2, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+    }
+    ctx.shadowBlur = 0;
+}
+
+function drawParticles() {
+    for (const p of particles) {
+        const alpha = Math.min(1, p.life / p.maxLife);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+}
+
+function drawScorePopups() {
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 16px Consolas, monospace';
+    for (const sp of scorePopups) {
+        ctx.globalAlpha = sp.life;
+        ctx.fillStyle = sp.color;
+        ctx.shadowColor = sp.color;
+        ctx.shadowBlur = 5;
+        ctx.fillText(sp.text, sp.x, sp.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    ctx.textAlign = 'left';
+}
+
+// ============================================================
+// UI
+// ============================================================
+function drawUI() {
+    if (currentState === GameState.MENU) drawMenuUI();
+    else if (currentState === GameState.PLAYING) drawGameUI();
+    else if (currentState === GameState.GAMEOVER) drawGameOverUI();
+    else if (currentState === GameState.SETTINGS) drawSettingsUI();
+}
+
+function drawMenuUI() {
+    ctx.textAlign = 'center';
+
+    ctx.shadowColor = '#00ffff';
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = '#00ffff';
+    ctx.font = 'bold 64px Consolas, monospace';
+    ctx.fillText('SPACALLAX 3.0.0', W / 2, 150 + Math.sin(animationTimer * 2) * 8);
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '24px Consolas, monospace';
+    ctx.fillText('Select Difficulty:', W / 2, 260);
+
+    ctx.shadowColor = '#ffff00';
+    ctx.shadowBlur = 15;
+    ctx.fillStyle = '#ffff00';
+    ctx.font = 'bold 36px Consolas, monospace';
+    ctx.fillText(`< ${difficultyNames[selectedDifficultyIndex]} >`, W / 2, 320);
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#aaaaaa';
+    ctx.font = '18px Consolas, monospace';
+    ctx.fillText('Press SPACE or ENTER to start', W / 2, 420);
+    ctx.fillText('Press S for Settings', W / 2, 455);
+
+    if (highScore > 0) {
+        ctx.fillStyle = '#ffd700';
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 10;
+        ctx.font = 'bold 24px Consolas, monospace';
+        ctx.fillText(`HIGH SCORE: ${highScore}`, W / 2, 520);
+    }
+
+    ctx.shadowBlur = 0;
+    ctx.textAlign = 'left';
+}
+
+function drawGameUI() {
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Consolas, monospace';
+    ctx.fillText(`Score: ${score}`, 15, 30);
+    ctx.fillText(`High: ${highScore}`, 15, 55);
+
+    const healthColor = player.health > 1 ? '#00ff00' : '#ff0000';
+    ctx.fillStyle = healthColor;
+    ctx.fillText(`HP: ${player.health}/${player.maxHealth}`, 15, 80);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#ff8800';
+    ctx.font = '16px Consolas, monospace';
+    ctx.fillText(`Difficulty: ${difficultyNames[currentDifficulty]}`, W - 15, 30);
+
+    let y = 55;
+    if (rapidFireTimer > 0) {
+        ctx.fillStyle = '#ff8800';
+        ctx.fillText(`Rapid Fire: ${rapidFireTimer.toFixed(1)}s`, W - 15, y);
+        y += 22;
+    }
+    if (shieldTimer > 0) {
+        ctx.fillStyle = '#00ffff';
+        ctx.fillText(`Shield: ${shieldTimer.toFixed(1)}s`, W - 15, y);
+        y += 22;
+    }
+    if (scoreMultiplierTimer > 0) {
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText(`2X Score: ${scoreMultiplierTimer.toFixed(1)}s`, W - 15, y);
+        y += 22;
+    }
+    if ((insaneMode || seriouslyInsaneMode || blindNightmare) && shotCooldownTimer > 0) {
+        ctx.fillStyle = '#ff00ff';
+        ctx.fillText(`Shot ready in: ${shotCooldownTimer.toFixed(1)}s`, W - 15, y);
+    }
+
+    ctx.textAlign = 'left';
+}
+
+function drawGameOverUI() {
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = '#ff0000';
+    ctx.font = 'bold 72px Consolas, monospace';
+    ctx.fillText('GAME OVER', W / 2, H / 2 - 80);
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px Consolas, monospace';
+    ctx.fillText(`Your Score: ${score}`, W / 2, H / 2);
+
+    ctx.fillStyle = '#ffd700';
+    ctx.fillText(`High Score: ${highScore}`, W / 2, H / 2 + 45);
+
+    ctx.fillStyle = '#00ff00';
+    ctx.font = '20px Consolas, monospace';
+    ctx.fillText('Press SPACE to restart', W / 2, H / 2 + 130);
+    ctx.fillStyle = '#aaaaaa';
+    ctx.fillText('Press R to return to menu', W / 2, H / 2 + 165);
+
+    ctx.shadowBlur = 0;
+    ctx.textAlign = 'left';
+}
+
+function drawSettingsUI() {
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#00ffff';
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = '#00ffff';
+    ctx.font = 'bold 48px Consolas, monospace';
+    ctx.fillText('SETTINGS', W / 2, 100);
+
+    ctx.shadowBlur = 0;
+    const startY = 200;
+    const lineHeight = 50;
+
+    for (let i = 0; i < settingNames.length; i++) {
+        const isSelected = (i === selectedSettingIndex);
+        const color = isSelected ? '#ffff00' : '#ffffff';
+
+        let valueText = '';
+        switch (i) {
+            case 0: valueText = `${Math.floor(settings.masterVolume * 100)}%`; break;
+            case 1: valueText = `${Math.floor(settings.soundVolume * 100)}%`; break;
+            case 2: valueText = `${Math.floor(settings.musicVolume * 100)}%`; break;
+            case 3: valueText = settings.showFPS ? 'ON' : 'OFF'; break;
+            case 4: valueText = settings.screenShake ? 'ON' : 'OFF'; break;
+            case 5: valueText = settings.showParticles ? 'ON' : 'OFF'; break;
+            case 6: valueText = ''; break;
+        }
+
+        const display = valueText ? `${settingNames[i]}: ${valueText}` : settingNames[i];
+
+        ctx.fillStyle = color;
+        if (isSelected) {
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 10;
+        }
+        ctx.font = isSelected ? 'bold 28px Consolas, monospace' : '26px Consolas, monospace';
+        ctx.fillText(display, W / 2, startY + i * lineHeight);
+        ctx.shadowBlur = 0;
+    }
+
+    ctx.fillStyle = '#888888';
+    ctx.font = '16px Consolas, monospace';
+    ctx.fillText('Use Arrow Keys to navigate, Left/Right to change', W / 2, H - 80);
+    ctx.fillText('Press ESC or Enter on "Back" to return', W / 2, H - 55);
+
+    ctx.textAlign = 'left';
+}
+
+// ============================================================
+// FPS COUNTER
+// ============================================================
+let fpsUpdateTime = 0;
+let fpsFrames = 0;
+let fpsValue = 0;
+
+function updateFPS(dt) {
+    fpsFrames++;
+    fpsUpdateTime += dt;
+    if (fpsUpdateTime >= 1) {
+        fpsValue = fpsFrames;
+        fpsFrames = 0;
+        fpsUpdateTime = 0;
+    }
+
+    if (settings.showFPS) {
+        fpsCounter.textContent = `${fpsValue} FPS`;
+    } else {
+        fpsCounter.textContent = '';
+    }
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function saveSettings() {
+    try {
+        localStorage.setItem('spacallaxSettings', JSON.stringify(settings));
+    } catch (e) {}
+}
+
+function loadSettings() {
+    try {
+        const saved = localStorage.getItem('spacallaxSettings');
+        if (saved) settings = Object.assign(settings, JSON.parse(saved));
+    } catch (e) {}
+}
+loadSettings();
+
+// ============================================================
+// MAIN GAME LOOP
+// ============================================================
+let lastTime = performance.now();
+
+function gameLoop(now) {
+    const dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
+
+    update(dt);
+    draw();
+    updateFPS(dt);
+
+    requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
