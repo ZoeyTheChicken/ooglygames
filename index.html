@@ -17,7 +17,43 @@
 
     /* ───── ALT MONITOR MODAL ───── */
 .alt-monitor { width: 720px; }
+.hero-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity .6s var(--ease), transform .8s var(--ease);
+  filter: brightness(.55) saturate(1.1);
+}
 
+.hero-art.has-image img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Darkening gradient so hero text stays readable over game art */
+.hero-art.has-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(11,12,14,.92) 0%,
+    rgba(11,12,14,.75) 40%,
+    rgba(11,12,14,.35) 70%,
+    rgba(11,12,14,.15) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Keep the floating accent circles visible above the image */
+.hero-art::before {
+  z-index: 2;
+}
 .alt-recommended {
   display: flex; align-items: center; gap: 14px;
   padding: 16px 18px; margin-bottom: 14px;
@@ -335,7 +371,7 @@ header {
 
 /* ───── TOOL RAIL ───── */
 .rail {
-  width: 84px; min-width: 84px;
+  width: 64px; min-width: 64px;
   position: sticky; top: 60px; height: calc(100vh - 60px);
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -344,13 +380,14 @@ header {
   overflow-y: auto;
   animation: fadeIn .5s var(--ease) both;
 }
+
 .tool-btn {
-  width: 68px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 11px 0;
+  width: 52px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 9px 0;
   background: none; border: 1px solid transparent; border-radius: 10px;
   color: var(--muted);
-  font-family: var(--font-main); font-size: 11px; font-weight: 600;
+  font-family: var(--font-main); font-size: 10px; font-weight: 600;
   cursor: pointer;
   transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring);
 }
@@ -557,8 +594,9 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   border-top: 1px solid rgba(255, 255, 255, .10);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
   font-size: 14px; font-weight: 600; line-height: 1.2;
-  overflow: hidden; display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background .25s, border-color .25s;
 }
 .card:hover .card-title {
@@ -873,7 +911,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     flex-direction: row; justify-content: flex-start; overflow-x: auto;
     padding: 8px 10px; border-right: none; border-bottom: 1px solid var(--border);
   }
-  .tool-btn { width: 68px; min-width: 68px; }
+  .tool-btn { width: 52px; min-width: 52px; }
   main { padding: 14px; }
   .hero { height: 230px; padding: 22px; }
   .hero-title { font-size: 32px; }
@@ -941,9 +979,11 @@ html.calm *, html.calm *::before, html.calm *::after {
       </div>
     </div>
 
-    <section class="hero" id="hero">
-      <div class="hero-art" id="heroArt"></div>
-      <div class="hero-body">
+<section class="hero" id="hero">
+  <div class="hero-art" id="heroArt">
+    <img id="heroArtImg" alt="" />
+  </div>
+  <div class="hero-body">
         <span class="trend-pill"><i class="fa-solid fa-wand-magic-sparkles"></i> Picked for you</span>
         <h1 class="hero-title" id="heroTitle"></h1>
         <div class="hero-meta" id="heroMeta"></div>
@@ -1017,7 +1057,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.0</div>
+        <div class="modal-sub">Oogly Boogly Version 9.0.1</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1707,6 +1747,8 @@ function openUnblocker() { openAltMonitor(); }
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"Mad Grand Prix", link:"assignment/mgp", category:"Action" },
+  { title:"Brotato", link:"assignment/brotato", category:"Action" },
   { title:"Basket Random", link:"assignment/basketrandom", category:"Arcade" },
   { title:"Basket Bros", link:"assignment/basketbros", category:"Arcade" },
   { title:"Mr. Mine", link:"assignment/mmr", category:"Idle" },
@@ -1898,10 +1940,15 @@ const assignments = [
   { title:"Deadly Descent", link:"/dd", category:"Action" },
   { title:"Race Survival Arena King", link:"/rsak", category:"Action" },
   { title:"ArrowMaster.io", link:"/am", category:"Action" },
-  { title:"Cookie Clicker", link:"assignment/index.html", category:"Idle" }
+  { title:"Cookie Clicker", link:"assignment/cc", category:"Idle" }
 ];
 
 const newsData = [
+  {
+    date: "2026-10-10",
+    title: "v9.0.1 introduces a few minor tweaks to the v9.0 design to make the experience smoother and more inviting.",
+    body: "v9.0.1 introduces minor tweaks to the sidebar panel, recommended game card, and game cards themselves to make the experience more unified."
+  },
     {
     date: "2026-10-09",
     title: "v9.0 introduces a major design overhaul",
@@ -2071,16 +2118,12 @@ const newsData = [
 
 // Latest update, shown in the popup on first load after each version change
 const UPDATE = {
-  version: '9.0',
-  date: '2026-10-09',
-  title: 'Oogly Boogly version 9.0 is here!',
+  version: '9.0.1',
+  date: '2026-10-10',
+  title: 'Oogly Boogly v9.0.1 is here!',
   items: [
-    '<b>Inbox</b> Ever wanted to be alerted of new games and updates that matter to you? Now you can!.',
-    '<b>Favorites</b> Like a game, and want to easily find it later? Just favorite it by pressing the little heart in the top right corner.',
-    '<b>Curated Games</b> The five best games selected by the Oogly Boogly team for the week.',
-    '<b>Font Selector</b> Have you wanted to make Oogly Boogly even more yours? Now you can even customize the font, with dozens of Google Fonts available.',
-    '<b>Easily tuneable recommendation engine</b> You can easily adjust your preferences to get the game recommendations you want most.',
-    '<b>A more inviting design</b> Oogly Boogly\'s new design is worlds ahead in user-friendliness, and is extremely adaptable.',
+    '<b>Design Tweaks</b> Minor adjustments to the sidebar panel, recommended game card, and game cards for a more unified experience.',
+    '<b>Minor Bug Fixes</b> Various small bugs have been fixed to improve overall stability and performance.'
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -2138,7 +2181,7 @@ async function installApp() {
     if (choice.outcome === 'accepted') toast('Installing OBL…');
     return;
   }
-  toast('Use the install icon in the address bar to add OBL');
+  toast('Tap the three dots ⋮ and select "Cast, save, and share" and then press Install page as app...');
 }
 
 // ──────────────────────────────────────────────
@@ -2896,15 +2939,22 @@ function renderHero() {
   const subEl = document.getElementById('heroSub');
   const playBtn = document.getElementById('heroPlay');
   const tilesEl = document.getElementById('heroTiles');
+  const artWrap = document.getElementById('heroArt');
+  const artImg = document.getElementById('heroArtImg');
 
   const recs = currentRecs();
   tilesEl.innerHTML = '';
 
+  // Reset the swap animation on the text body
   body.classList.remove('swap');
   void body.offsetWidth;
   body.classList.add('swap');
 
+  // ── Empty state ──────────────────────────────────────────
   if (!recs.length) {
+    artWrap.classList.remove('has-image');
+    artImg.removeAttribute('src');
+
     titleEl.textContent = 'Your picks start here';
     titleEl.classList.add('placeholder');
     metaEl.textContent = 'Recommendations';
@@ -2913,6 +2963,7 @@ function renderHero() {
     return;
   }
 
+  // ── Primary pick text ────────────────────────────────────
   const top = recs[0];
   titleEl.textContent = top.a.title;
   titleEl.classList.remove('placeholder');
@@ -2924,7 +2975,24 @@ function renderHero() {
   playBtn.style.display = '';
   playBtn.onclick = () => launchGame(top.a.link, top.a.title);
 
-  recs.slice(1, 6).forEach((r, i) => {
+  // ── Hero background art (crossfade via preload) ──────────
+  withThumb(top.a.link, url => {
+    if (!url) {
+      artWrap.classList.remove('has-image');
+      return;
+    }
+    const pre = new Image();
+    pre.onload = () => {
+      artImg.src = url;
+      artWrap.classList.add('has-image');
+    };
+    pre.onerror = () => artWrap.classList.remove('has-image');
+    pre.src = url;
+  });
+
+  // ── Secondary tiles ──────────────────────────────────────
+  const tiles = recs.slice(1, 6);
+  tiles.forEach((r, i) => {
     const b = document.createElement('button');
     b.className = 'hero-tile';
     b.style.setProperty('--i', i);
@@ -2934,6 +3002,10 @@ function renderHero() {
     applyThumb(b, r.a);
     tilesEl.appendChild(b);
   });
+
+  // ── Warm the thumbnail cache for the other tiles ─────────
+  // Runs after the primary so the hero art resolves first.
+  tiles.forEach(r => withThumb(r.a.link, () => {}));
 }
 
 // hero follows the cursor a little
