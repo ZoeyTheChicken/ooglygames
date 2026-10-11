@@ -15,251 +15,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
 <style>
 
-    /* ───── ALT MONITOR MODAL ───── */
-.alt-monitor { width: 720px; }
-.hero-art img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1.08);
-  transition: opacity .6s var(--ease), transform .8s var(--ease);
-  filter: brightness(.55) saturate(1.1);
-}
-
-.hero-art.has-image img {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Darkening gradient so hero text stays readable over game art */
-.hero-art.has-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(11,12,14,.92) 0%,
-    rgba(11,12,14,.75) 40%,
-    rgba(11,12,14,.35) 70%,
-    rgba(11,12,14,.15) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Keep the floating accent circles visible above the image */
-.hero-art::before {
-  z-index: 2;
-}
-.alt-recommended {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 18px; margin-bottom: 14px;
-  background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(59,130,246,.04));
-  border: 1px solid rgba(59,130,246,.35);
-  border-radius: 14px;
-  position: relative; overflow: hidden;
-  animation: rise .5s var(--ease) both;
-}
-.alt-recommended::before {
-  content: ''; position: absolute; right: -40px; top: -40px;
-  width: 140px; height: 140px; border-radius: 50%;
-  background: rgba(var(--accent-rgb), .08);
-  animation: float 8s ease-in-out infinite;
-}
-.alt-rec-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 11px; border-radius: 999px;
-  background: var(--accent); color: #fff;
-  font-size: 11px; font-weight: 700; letter-spacing: .3px;
-  flex-shrink: 0;
-}
-.alt-rec-badge i { font-size: 10px; }
-.alt-rec-domain {
-  font-family: var(--font-mono); font-size: 15px; font-weight: 600;
-  color: var(--text); flex: 1; min-width: 0;
-  word-break: break-all;
-}
-.alt-rec-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-.alt-stats {
-  display: flex; align-items: center; gap: 18px;
-  padding: 14px 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; flex-wrap: wrap;
-}
-.alt-stat { display: flex; align-items: baseline; gap: 6px; }
-.alt-stat-num { font-size: 22px; font-weight: 700; }
-.alt-stat-label {
-  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
-  color: var(--muted);
-}
-.alt-stat-num.alt-online { color: #4ade80; }
-.alt-stat-num.alt-blocked { color: #fbbf24; }
-.alt-stats .btn { margin-left: auto; }
-
-.alt-generator {
-  display: flex; gap: 10px; flex-wrap: wrap;
-  padding: 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.alt-field { flex: 1; min-width: 140px; }
-.alt-field-btn { flex: 0; }
-.alt-field label {
-  display: block; margin-bottom: 6px;
-  font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
-  color: var(--muted);
-}
-.alt-field select,
-.alt-field input {
-  width: 100%; height: 38px; padding: 0 12px;
-  background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 9px; color: var(--text);
-  font-family: var(--font-main); font-size: 13px;
-  outline: none; transition: border-color .15s;
-}
-.alt-field select:focus,
-.alt-field input:focus { border-color: var(--accent); }
-
-.alt-routes { display: flex; flex-direction: column; gap: 10px; }
-.alt-group {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
-  animation: rise .35s var(--ease) backwards;
-  transition: border-color .2s;
-}
-.alt-group:hover { border-color: var(--border2); }
-.alt-group-rec {
-  border-color: rgba(59,130,246,.4);
-  background: linear-gradient(135deg, rgba(59,130,246,.06), var(--surface2));
-}
-.alt-group-head {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px;
-}
-.alt-group-domain {
-  font-family: var(--font-mono); font-size: 13px; color: var(--muted);
-  word-break: break-all; display: flex; align-items: center;
-}
-.alt-group-rec .alt-group-domain { color: var(--text); font-weight: 600; }
-.alt-health {
-  padding: 3px 10px; border-radius: 999px;
-  font-size: 11px; font-weight: 600; flex-shrink: 0;
-}
-.alt-health.checking { background: var(--surface3); color: var(--muted); }
-.alt-health.online   { background: rgba(74,222,128,.15); color: #4ade80; }
-.alt-health.offline  { background: rgba(248,113,113,.15); color: #f87171; }
-.alt-health.blocked  { background: rgba(251,191,36,.15); color: #fbbf24; }
-
-.alt-group-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 6px;
-}
-.alt-link {
-  padding: 8px 11px; border-radius: 8px;
-  border: 1px solid var(--border); background: rgba(255,255,255,.02);
-  cursor: pointer; transition: border-color .15s, background .15s, transform .15s var(--spring);
-  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-  word-break: break-all;
-}
-.alt-link:hover {
-  border-color: var(--accent); color: var(--text);
-  background: rgba(255,255,255,.04); transform: translateY(-1px);
-}
-.alt-iframe-check { display: none; }
-
-/* ───── COPY TOAST ───── */
-@keyframes copyFlash {
-  0% { background: rgba(var(--accent-rgb), .3); }
-  100% { background: rgba(255,255,255,.02); }
-}
-    /* ───── ALT MONITOR MODAL ───── */
-.alt-monitor { width: 680px; }
-
-.alt-stats {
-  display: flex; align-items: center; gap: 18px;
-  padding: 14px 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; flex-wrap: wrap;
-}
-.alt-stat { display: flex; align-items: baseline; gap: 6px; }
-.alt-stat-num { font-size: 22px; font-weight: 700; }
-.alt-stat-label {
-  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
-  color: var(--muted);
-}
-.alt-stat-num.alt-online { color: #4ade80; }
-.alt-stat-num.alt-blocked { color: #fbbf24; }
-.alt-stats .btn { margin-left: auto; }
-
-.alt-generator {
-  display: flex; gap: 10px; flex-wrap: wrap;
-  padding: 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.alt-field { flex: 1; min-width: 140px; }
-.alt-field-btn { flex: 0; }
-.alt-field label {
-  display: block; margin-bottom: 6px;
-  font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
-  color: var(--muted);
-}
-.alt-field select,
-.alt-field input {
-  width: 100%; height: 38px; padding: 0 12px;
-  background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 9px; color: var(--text);
-  font-family: var(--font-main); font-size: 13px;
-  outline: none; transition: border-color .15s;
-}
-.alt-field select:focus,
-.alt-field input:focus { border-color: var(--accent); }
-
-.alt-routes { display: flex; flex-direction: column; gap: 10px; }
-.alt-group {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
-  animation: rise .35s var(--ease) backwards;
-}
-.alt-group-head {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px;
-}
-.alt-group-domain {
-  font-family: var(--font-mono); font-size: 13px; color: var(--muted);
-  word-break: break-all;
-}
-.alt-health {
-  padding: 3px 10px; border-radius: 999px;
-  font-size: 11px; font-weight: 600; flex-shrink: 0;
-}
-.alt-health.checking { background: var(--surface3); color: var(--muted); }
-.alt-health.online   { background: rgba(74,222,128,.15); color: #4ade80; }
-.alt-health.offline  { background: rgba(248,113,113,.15); color: #f87171; }
-.alt-health.blocked  { background: rgba(251,191,36,.15); color: #fbbf24; }
-
-.alt-group-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 6px;
-}
-.alt-link {
-  padding: 8px 11px; border-radius: 8px;
-  border: 1px solid var(--border); background: rgba(255,255,255,.02);
-  cursor: pointer; transition: border-color .15s, background .15s, transform .15s var(--spring);
-  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-  word-break: break-all;
-}
-.alt-link:hover {
-  border-color: var(--accent); color: var(--text);
-  background: rgba(255,255,255,.04); transform: translateY(-1px);
-}
-.alt-iframe-check { display: none; }
+/* ─────────────────────────────────────────────
+   THEMES
+   Each theme overrides bg + accent; derived surfaces
+   are computed in JS via lighten(). Add a theme by
+   dropping a new entry in THEMES below.
+   ───────────────────────────────────────────── */
 :root {
   --bg: #0b0c0e;
   --surface: #121418;
@@ -273,14 +34,19 @@
   --accent: #3b82f6;
   --accent-rgb: 59,130,246;
   --heart: #f472b6;
-  --radius: 12px;
+  --radius: 14px;
+  --radius-sm: 10px;
   --font-main: 'Fredoka', system-ui, sans-serif;
   --font-mono: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
   --ease: cubic-bezier(.2,.8,.2,1);
   --spring: cubic-bezier(.34,1.45,.5,1);
+  --cozy-shadow: 0 14px 34px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25);
+  --cozy-glow: 0 0 0 1px rgba(var(--accent-rgb), .12), 0 12px 30px rgba(var(--accent-rgb), .08);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
@@ -288,30 +54,49 @@ body {
   font-family: var(--font-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
 }
+
+/* Soft grain for coziness */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: .025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+header, .layout, .toast { position: relative; z-index: 1; }
 
 /* ───── KEYFRAMES ───── */
 @keyframes rise    { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes cardIn  { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes cardIn  { from { opacity: 0; transform: translateY(16px) scale(.94) rotate(-1deg); } to { opacity: 1; transform: none; } }
 @keyframes pop     { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
-@keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(.94); } to { opacity: 1; transform: none; } }
 @keyframes float   { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-16px, 12px); } }
 @keyframes float2  { 0%,100% { transform: translate(0,0); } 50% { transform: translate(12px, -10px); } }
-@keyframes glow    { 0%,100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),.45); } 60% { box-shadow: 0 0 0 10px rgba(var(--accent-rgb),0); } }
+@keyframes glow    { 0%,100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb),.45); } 60% { box-shadow: 0 0 0 12px rgba(var(--accent-rgb),0); } }
 @keyframes spinIn  { from { transform: rotate(-200deg) scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes toastIn { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(14px) scale(.94); } to { opacity: 1; transform: none; } }
 @keyframes heartPop{ 0% { transform: scale(1); } 35% { transform: scale(1.5); } 65% { transform: scale(.85); } 100% { transform: scale(1); } }
 @keyframes bob     { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-@keyframes wiggle  { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@keyframes wiggle  { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
 @keyframes spark   { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
+@keyframes waveHi  { 0% { transform: rotate(0); } 20% { transform: rotate(16deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(12deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(0); } }
+@keyframes heartBeat { 0%,100% { transform: scale(1); } 25% { transform: scale(1.12); } 60% { transform: scale(.96); } }
+@keyframes tileNudge { 0% { transform: translateY(0) rotate(0); } 100% { transform: translateY(-4px) rotate(-3deg); } }
+@keyframes swatchPop { 0% { transform: scale(1); } 45% { transform: scale(1.28); } 100% { transform: scale(1.18); } }
+@keyframes arrowPulse { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes railIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
 
 /* ───── HEADER ───── */
 header {
   position: sticky; top: 0; z-index: 100;
   height: 60px; padding: 0 16px;
   display: flex; align-items: center; gap: 14px;
-  background: var(--surface);
+  background: linear-gradient(180deg, var(--surface), rgba(0,0,0,0));
+  background-color: var(--surface);
   border-bottom: 1px solid var(--border);
   animation: fadeIn .4s var(--ease) both;
 }
@@ -321,36 +106,31 @@ header {
   color: var(--text); white-space: nowrap; cursor: pointer; user-select: none;
 }
 .logo::before {
-  content: ''; width: 26px; height: 26px; border-radius: 8px;
-  background: var(--accent);
+  content: ''; width: 26px; height: 26px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), .55));
   animation: spinIn .8s var(--spring) both;
-  transition: transform .3s var(--spring);
+  transition: transform .35s var(--spring), box-shadow .25s;
+  box-shadow: 0 6px 14px rgba(var(--accent-rgb), .3);
 }
-.logo:hover::before { transform: rotate(90deg) scale(1.08); }
+.logo:hover::before { transform: rotate(90deg) scale(1.1); box-shadow: 0 8px 20px rgba(var(--accent-rgb), .5); }
 .logo span { color: var(--muted); font-weight: 400; }
-
-.badge {
-  font-family: var(--font-mono); font-size: 10px;
-  background: var(--surface3); color: var(--muted);
-  padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
-}
 
 #sidebar {
   display: flex; align-items: center; gap: 4px;
   padding-left: 6px; border-left: 1px solid var(--border);
 }
 .cat-btn {
-  width: 36px; height: 36px; border-radius: 9px;
+  width: 36px; height: 36px; border-radius: 10px;
   display: grid; place-items: center;
   background: none; border: 1px solid transparent;
   color: var(--muted); font-size: 15px; cursor: pointer;
   transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring);
 }
-.cat-btn i { transition: transform .3s var(--spring); }
+.cat-btn i { transition: transform .35s var(--spring); }
 .cat-btn:hover { color: var(--text); background: var(--surface2); }
-.cat-btn:hover i { transform: translateY(-2px) scale(1.12); }
-.cat-btn:active { transform: scale(.9); }
-.cat-btn.active { color: var(--accent); background: var(--surface3); border-color: var(--border2); }
+.cat-btn:hover i { transform: translateY(-2px) scale(1.15); }
+.cat-btn:active { transform: scale(.88); }
+.cat-btn.active { color: var(--accent); background: var(--surface3); border-color: var(--border2); box-shadow: var(--cozy-glow); }
 .cat-btn.active i { animation: pop .4s var(--spring) both; }
 .cat-btn[data-cat="Favorites"].active,
 .cat-btn[data-cat="Favorites"]:hover { color: var(--heart); }
@@ -358,13 +138,13 @@ header {
 #search {
   flex: 1; max-width: 420px; margin: 0 auto;
   background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 9px; color: var(--text);
+  border-radius: 10px; color: var(--text);
   font-family: var(--font-main); font-size: 14px; font-weight: 500;
-  padding: 8px 14px; outline: none;
-  transition: border-color .2s, box-shadow .25s var(--ease), background .2s;
+  padding: 9px 14px; outline: none;
+  transition: border-color .2s, box-shadow .25s var(--ease), background .2s, transform .2s var(--spring);
 }
 #search::placeholder { color: var(--muted2); }
-#search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .18); background: var(--surface3); }
+#search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .18); background: var(--surface3); transform: translateY(-1px); }
 
 /* ───── LAYOUT ───── */
 .layout { display: flex; min-height: calc(100vh - 60px); }
@@ -380,23 +160,31 @@ header {
   overflow-y: auto;
   animation: fadeIn .5s var(--ease) both;
 }
-
 .tool-btn {
   width: 52px;
   display: flex; flex-direction: column; align-items: center; gap: 5px;
   padding: 9px 0;
-  background: none; border: 1px solid transparent; border-radius: 10px;
+  background: none; border: 1px solid transparent; border-radius: 11px;
   color: var(--muted);
   font-family: var(--font-main); font-size: 10px; font-weight: 600;
   cursor: pointer;
-  transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring);
+  opacity: 0;
+  animation: railIn .4s var(--spring) forwards;
+  transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring), box-shadow .25s;
 }
+.tool-btn:nth-child(1) { animation-delay: .05s; }
+.tool-btn:nth-child(2) { animation-delay: .10s; }
+.tool-btn:nth-child(3) { animation-delay: .15s; }
+.tool-btn:nth-child(4) { animation-delay: .20s; }
+.tool-btn:nth-child(5) { animation-delay: .25s; }
+.tool-btn:nth-child(6) { animation-delay: .30s; }
+.tool-btn:nth-child(7) { animation-delay: .35s; }
+.tool-btn:nth-child(8) { animation-delay: .40s; }
+.tool-btn:nth-child(9) { animation-delay: .45s; }
 .tool-btn i { font-size: 16px; transition: transform .35s var(--spring); }
-.tool-btn:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); transform: translateY(-2px); }
-.tool-btn:hover i { transform: scale(1.18) rotate(-6deg); }
-.tool-btn:active { transform: scale(.94); }
-.tool-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-.tool-btn.primary:hover { background: #2f6fe0; border-color: #2f6fe0; }
+.tool-btn:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--cozy-shadow); }
+.tool-btn:hover i { transform: scale(1.22) rotate(-6deg); }
+.tool-btn:active { transform: scale(.92); }
 .tool-btn[hidden] { display: none; }
 .rail-ico { position: relative; display: inline-grid; place-items: center; }
 .rail-badge {
@@ -405,6 +193,7 @@ header {
   background: var(--heart); color: #fff;
   font-size: 10px; font-weight: 700; display: grid; place-items: center;
   animation: pop .4s var(--spring) both;
+  box-shadow: 0 2px 8px rgba(244,114,182,.45);
 }
 .rail-badge[hidden] { display: none; }
 
@@ -416,15 +205,17 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   margin-bottom: 18px; animation: rise .5s var(--ease) both;
 }
 .greet-text { flex: 1; min-width: 200px; }
-.greet-hi { font-size: 26px; font-weight: 700; letter-spacing: -.3px; }
+.greet-hi { font-size: 26px; font-weight: 700; letter-spacing: -.3px; display: inline-flex; align-items: center; gap: 10px; }
+.greet-hi i { color: var(--accent); font-size: 22px; animation: waveHi 1.4s var(--ease) .3s 1; transform-origin: 70% 80%; }
 
 /* ───── HERO ───── */
 .hero {
   position: relative; overflow: hidden;
   height: 280px; margin-bottom: 22px;
-  border-radius: 16px; border: 1px solid var(--border);
+  border-radius: 18px; border: 1px solid var(--border);
   display: flex; align-items: center; padding: 0 36px;
   background: var(--surface);
+  box-shadow: var(--cozy-shadow);
   animation: rise .6s var(--ease) both;
 }
 .hero-art {
@@ -434,15 +225,34 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .hero-art::before {
   content: ''; position: absolute; right: -80px; top: -90px;
   width: 340px; height: 340px; border-radius: 50%;
-  background: rgba(var(--accent-rgb), .12);
+  background: radial-gradient(circle, rgba(var(--accent-rgb), .18), transparent 70%);
   animation: float 10s ease-in-out infinite;
 }
 .hero-art::after {
   content: ''; position: absolute; right: 150px; bottom: -110px;
   width: 200px; height: 200px; border-radius: 50%;
-  background: rgba(var(--accent-rgb), .08);
+  background: rgba(var(--accent-rgb), .10);
   animation: float2 12s ease-in-out infinite;
 }
+.hero-art img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transform: scale(1.08);
+  transition: opacity .6s var(--ease), transform .8s var(--ease);
+  filter: brightness(.55) saturate(1.05);
+}
+.hero-art.has-image img { opacity: 1; transform: scale(1); }
+.hero-art.has-image::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    rgba(11,12,14,.94) 0%,
+    rgba(11,12,14,.78) 40%,
+    rgba(11,12,14,.35) 70%,
+    rgba(11,12,14,.12) 100%);
+  pointer-events: none; z-index: 1;
+}
+.hero-art::before { z-index: 2; }
+
 .hero-body { position: relative; z-index: 1; max-width: 480px; }
 .hero-body > * { animation: rise .55s var(--ease) backwards; }
 .hero-body > *:nth-child(2) { animation-delay: .06s; }
@@ -465,24 +275,24 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .hero-title { font-size: 50px; font-weight: 700; letter-spacing: -1px; line-height: 1.05; margin-bottom: 8px; }
 .hero-title.placeholder { font-size: 36px; }
 .hero-meta { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 10px; }
-.hero-sub { font-size: 15px; color: rgba(242,244,247,.75); line-height: 1.5; margin-bottom: 20px; max-width: 460px; }
+.hero-sub { font-size: 15px; color: rgba(242,244,247,.78); line-height: 1.5; margin-bottom: 20px; max-width: 460px; }
 
 .play-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent); color: #fff; border: none;
   font-family: var(--font-main); font-size: 15px; font-weight: 600;
-  padding: 11px 24px; border-radius: 999px; cursor: pointer;
-  animation: glow 2.8s ease-out infinite;
-  transition: background .15s, transform .2s var(--spring);
+  padding: 12px 26px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(var(--accent-rgb), .35);
+  transition: background .15s, transform .2s var(--spring), box-shadow .25s;
 }
-.play-btn:hover { background: #2f6fe0; transform: translateY(-2px); }
+.play-btn:hover { background: var(--accent); filter: brightness(1.08); transform: translateY(-3px); box-shadow: 0 14px 30px rgba(var(--accent-rgb), .5); }
 .play-btn:active { transform: scale(.96); }
 .play-btn i { transition: transform .3s var(--spring); }
-.play-btn:hover i { transform: translateX(3px) scale(1.1); }
+.play-btn:hover i { transform: translateX(3px) scale(1.15); }
 
 .hero-tiles { position: absolute; right: 20px; bottom: 20px; z-index: 1; display: flex; gap: 8px; }
 .hero-tile {
-  width: 60px; height: 60px; border-radius: 14px;
+  width: 60px; height: 60px; border-radius: 15px;
   border: 1px solid var(--border2); cursor: pointer;
   background: var(--surface3); color: var(--accent);
   font-family: var(--font-main); font-size: 22px; font-weight: 700;
@@ -490,12 +300,10 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   overflow: hidden; padding: 0;
   animation: pop .5s var(--spring) backwards;
   animation-delay: calc(var(--i, 0) * 70ms + 200ms);
-  transition: border-color .15s, transform .25s var(--spring);
+  transition: border-color .2s, transform .3s var(--spring), box-shadow .25s;
 }
-.hero-tile img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
-.hero-tile:hover { border-color: var(--accent); transform: translateY(-4px) rotate(-3deg); }
+.hero-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-tile:hover { border-color: var(--accent); transform: translateY(-6px) rotate(-4deg) scale(1.06); box-shadow: 0 14px 28px rgba(0,0,0,.5); }
 .hero-tile:active { transform: scale(.92); }
 
 /* ───── ROWS ───── */
@@ -508,7 +316,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .row-title { font-size: 20px; font-weight: 600; letter-spacing: -.2px; display: flex; align-items: center; gap: 9px; }
 .row-title i { color: var(--accent); font-size: 16px; transition: transform .35s var(--spring); }
 .row-section.fav-sec .row-title i { color: var(--heart); }
-.row-head:hover .row-title i { transform: rotate(-12deg) scale(1.15); }
+.row-section.fav-sec.has-items .row-title i { animation: heartBeat 2.6s ease-in-out infinite; }
+.row-head:hover .row-title i { transform: rotate(-12deg) scale(1.18); }
 .row-count { font-size: 12px; font-weight: 600; color: var(--muted); }
 .row-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .view-all {
@@ -516,16 +325,16 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   font-family: var(--font-main); font-size: 13px; font-weight: 600; color: var(--muted);
   transition: color .15s, transform .2s var(--spring);
 }
-.view-all:hover { color: var(--text); transform: translateX(2px); }
+.view-all:hover { color: var(--text); transform: translateX(3px); }
 .nav-arrow {
-  width: 30px; height: 30px; border-radius: 9px;
+  width: 30px; height: 30px; border-radius: 10px;
   display: grid; place-items: center;
   background: var(--surface2); border: 1px solid var(--border2); color: var(--muted);
   font-size: 12px; cursor: pointer;
   transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring);
 }
 .nav-arrow:hover { color: var(--text); background: var(--surface3); border-color: var(--accent); }
-.nav-arrow:hover i { transform: scale(1.2); }
+.nav-arrow:hover i { animation: arrowPulse .5s var(--spring); }
 .nav-arrow:active { transform: scale(.85); }
 .nav-arrow i { transition: transform .25s var(--spring); }
 .row-scroll {
@@ -538,7 +347,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .empty-row {
   display: flex; align-items: center; gap: 10px; width: 100%;
   color: var(--muted); font-size: 14px; font-weight: 500;
-  padding: 22px; border: 1px dashed var(--border2); border-radius: 12px;
+  padding: 22px; border: 1px dashed var(--border2); border-radius: 14px;
+  background: rgba(255,255,255,.015);
 }
 .empty-row i { color: var(--heart); }
 
@@ -568,50 +378,44 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   contain-intrinsic-size: 180px 120px;
 }
 .card:hover {
-  transform: translateY(-4px) scale(1.02);
-  border-color: rgba(var(--accent-rgb), .55);
-  box-shadow: 0 16px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(var(--accent-rgb), .15);
+  transform: translateY(-5px) scale(1.02);
+  border-color: rgba(var(--accent-rgb), .6);
+  box-shadow: 0 18px 38px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--accent-rgb), .18);
+  z-index: 2;
 }
 .card:active { transform: translateY(-1px) scale(.98); transition-duration: .1s; }
 .card.is-hidden { display: none; }
 .card-thumb {
   position: absolute; inset: 0;
   display: grid; place-items: center;
-  background: var(--surface3);
+  background: linear-gradient(135deg, var(--surface3), var(--surface2));
   font-size: 52px; font-weight: 700; color: var(--accent);
   transition: transform .45s var(--ease), filter .3s;
 }
-.card-thumb img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card:hover .card-thumb { transform: scale(1.08); filter: brightness(1.15); }
 .card-title {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   padding: 10px 13px;
-  background: rgba(18, 20, 24, .22);
-  -webkit-backdrop-filter: blur(4px) saturate(120%);
-  backdrop-filter: blur(4px) saturate(120%);
+  background: rgba(18, 20, 24, .28);
+  -webkit-backdrop-filter: blur(6px) saturate(130%);
+  backdrop-filter: blur(6px) saturate(130%);
   border-top: 1px solid rgba(255, 255, 255, .10);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
   font-size: 14px; font-weight: 600; line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background .25s, border-color .25s;
 }
-.card:hover .card-title {
-  background: rgba(24, 27, 33, .32);
-  border-top-color: rgba(255, 255, 255, .16);
-}
+.card:hover .card-title { background: rgba(24, 27, 33, .38); border-top-color: rgba(255, 255, 255, .18); }
 .card-cat { display: none; }
 .card-arrow {
   position: absolute; left: 50%; top: 42%; z-index: 2;
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 42px; height: 42px; border-radius: 50%;
   display: grid; place-items: center;
   background: var(--accent); color: #fff; font-size: 13px;
-  opacity: 0; transform: translate(-50%, -50%) scale(.5);
+  opacity: 0; transform: translate(-50%, -50%) scale(.4);
   transition: opacity .25s, transform .4s var(--spring);
-  pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,.4);
+  pointer-events: none; box-shadow: 0 10px 24px rgba(0,0,0,.5);
 }
 .card:hover .card-arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 .fav-btn {
@@ -620,23 +424,24 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   display: grid; place-items: center;
   background: rgba(0,0,0,.55); border: none; color: var(--muted); font-size: 13px; cursor: pointer;
   opacity: 0; transform: scale(.8);
-  transition: opacity .2s, transform .3s var(--spring), color .2s;
+  transition: opacity .2s, transform .3s var(--spring), color .2s, background .2s;
 }
 .card:hover .fav-btn, .fav-btn.on { opacity: 1; transform: scale(1); }
-.fav-btn.on { color: var(--heart); }
-.fav-btn:hover { transform: scale(1.18); color: var(--heart); }
+.fav-btn.on { color: var(--heart); background: rgba(0,0,0,.7); }
+.fav-btn:hover { transform: scale(1.22); color: var(--heart); }
 .fav-btn.pop i { animation: heartPop .5s var(--spring); }
 .rank {
   position: absolute; top: 8px; left: 8px; z-index: 2;
   min-width: 26px; height: 26px; padding: 0 7px;
-  border-radius: 8px; background: var(--surface); color: var(--text);
+  border-radius: 9px; background: var(--surface); color: var(--text);
   border: 1px solid var(--border2);
   font-size: 12px; font-weight: 700;
   display: grid; place-items: center;
   animation: pop .5s var(--spring) backwards;
   animation-delay: calc(var(--i, 0) * 35ms + 150ms);
+  box-shadow: 0 2px 6px rgba(0,0,0,.4);
 }
-.rank.top { background: var(--accent); border-color: var(--accent); color: #fff; }
+.rank.top { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(var(--accent-rgb),.4); }
 
 .spark {
   position: fixed; width: 7px; height: 7px; border-radius: 50%;
@@ -652,13 +457,13 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   opacity: 0; pointer-events: none; transition: opacity .25s var(--ease);
   padding: 20px; backdrop-filter: blur(0px);
 }
-.modal-bg.open { opacity: 1; pointer-events: all; backdrop-filter: blur(4px); }
+.modal-bg.open { opacity: 1; pointer-events: all; backdrop-filter: blur(6px); }
 .modal-bg.stacked { z-index: 300; }
 .modal {
   background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 16px; padding: 24px;
+  border-radius: 18px; padding: 24px;
   width: 440px; max-width: 100%; max-height: 88vh; overflow-y: auto;
-  box-shadow: 0 30px 70px rgba(0,0,0,.6);
+  box-shadow: 0 30px 80px rgba(0,0,0,.7);
 }
 .modal-bg.open .modal { animation: modalIn .4s var(--spring) both; }
 .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
@@ -666,23 +471,23 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .modal-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
 .modal-close {
   background: var(--surface2); border: 1px solid var(--border2); color: var(--muted);
-  font-size: 13px; cursor: pointer; width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
-  transition: color .15s, background .15s, transform .25s var(--spring);
+  font-size: 13px; cursor: pointer; width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  transition: color .15s, background .15s, transform .3s var(--spring);
 }
-.modal-close:hover { color: var(--text); background: var(--surface3); transform: rotate(90deg); }
+.modal-close:hover { color: var(--text); background: var(--surface3); transform: rotate(90deg) scale(1.05); }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-main); font-size: 14px; font-weight: 600;
-  padding: 10px 16px; border-radius: 10px; cursor: pointer;
+  padding: 10px 16px; border-radius: 11px; cursor: pointer;
   border: 1px solid transparent;
-  transition: background .15s, border-color .15s, color .15s, transform .2s var(--spring), filter .15s;
+  transition: background .15s, border-color .15s, color .15s, transform .2s var(--spring), box-shadow .2s;
 }
 .btn:active { transform: scale(.96); }
 .btn i { transition: transform .3s var(--spring); }
-.btn:hover i { transform: scale(1.15); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #2f6fe0; }
+.btn:hover i { transform: scale(1.18); }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 16px rgba(var(--accent-rgb), .28); }
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(var(--accent-rgb), .38); }
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--border2); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 .btn-block { width: 100%; }
@@ -690,7 +495,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 
 .text-in {
   background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 9px; color: var(--text);
+  border-radius: 10px; color: var(--text);
   font-family: var(--font-main); font-size: 13px; font-weight: 500;
   padding: 8px 11px; outline: none; width: 200px;
   transition: border-color .2s, box-shadow .2s;
@@ -709,7 +514,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .update-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .pill {
   font-family: var(--font-mono); font-size: 11px; font-weight: 700;
-  background: var(--surface3); color: var(--text); padding: 3px 9px; border-radius: 6px;
+  background: var(--surface3); color: var(--text); padding: 3px 9px; border-radius: 7px;
 }
 .muted-date { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 .update-title { font-size: 26px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 16px; }
@@ -728,7 +533,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .update-list li:nth-child(7) { animation-delay: .52s; }
 .update-list li i {
   color: var(--accent); font-size: 11px; margin-top: 4px;
-  width: 18px; height: 18px; border-radius: 6px;
+  width: 18px; height: 18px; border-radius: 7px;
   background: rgba(var(--accent-rgb), .15);
   display: grid; place-items: center; flex-shrink: 0;
 }
@@ -744,15 +549,15 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .inbox-actions { display: flex; gap: 8px; margin-bottom: 14px; }
 .inbox-item {
   position: relative; display: flex; gap: 12px; align-items: flex-start;
-  padding: 13px; margin-bottom: 8px; border-radius: 12px;
+  padding: 13px; margin-bottom: 8px; border-radius: 14px;
   border: 1px solid var(--border); background: var(--surface2);
   cursor: pointer; animation: rise .4s var(--ease) backwards;
-  transition: border-color .2s, transform .25s var(--spring), background .2s;
+  transition: border-color .2s, transform .25s var(--spring), background .2s, box-shadow .25s;
 }
-.inbox-item:hover { transform: translateX(3px); border-color: var(--border2); }
+.inbox-item:hover { transform: translateX(3px); border-color: var(--border2); box-shadow: var(--cozy-shadow); }
 .inbox-item.unread { border-color: rgba(var(--accent-rgb), .4); background: rgba(var(--accent-rgb), .06); }
 .inbox-ico {
-  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
   display: grid; place-items: center;
   background: rgba(var(--accent-rgb), .15); color: var(--accent); font-size: 14px;
 }
@@ -774,19 +579,20 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .font-tile {
   text-align: left; padding: 12px 13px; cursor: pointer;
   background: var(--surface2); color: var(--text);
-  border: 1px solid var(--border2); border-radius: 11px;
-  transition: border-color .2s, transform .25s var(--spring), background .2s;
+  border: 1px solid var(--border2); border-radius: 12px;
+  min-width: 0;
+  transition: border-color .2s, transform .25s var(--spring), background .2s, box-shadow .25s;
   animation: pop .35s var(--spring) backwards;
 }
-.font-tile:hover { transform: translateY(-2px); border-color: var(--muted2); }
-.font-tile.active { border-color: var(--accent); background: rgba(var(--accent-rgb), .1); }
-.font-sample { display: block; font-size: 22px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.font-tile:hover { transform: translateY(-2px); border-color: var(--muted2); box-shadow: var(--cozy-shadow); }
+.font-tile.active { border-color: var(--accent); background: rgba(var(--accent-rgb), .1); box-shadow: var(--cozy-glow); }
+.font-sample { display: block; font-size: 22px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .font-name { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 6px; }
 .custom-font { display: flex; gap: 8px; margin-top: 12px; }
 .custom-font .text-in { flex: 1; }
 
 /* settings */
-.settings { width: 540px; }
+.settings { width: 560px; }
 .set-section { margin-bottom: 24px; }
 .set-heading {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px;
@@ -801,27 +607,60 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .set-label { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
 .set-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
 .set-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Theme picker grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+.theme-tile {
+  position: relative;
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  background: var(--surface2);
+  transition: transform .25s var(--spring), border-color .2s, box-shadow .25s;
+  animation: pop .35s var(--spring) backwards;
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font-main);
+}
+.theme-tile:hover { transform: translateY(-3px); border-color: var(--muted2); box-shadow: var(--cozy-shadow); }
+.theme-tile.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.theme-swatches { display: flex; gap: 4px; margin-bottom: 8px; }
+.theme-swatch {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  transition: transform .25s var(--spring);
+}
+.theme-tile:hover .theme-swatch { transform: scale(1.08); }
+.theme-name { font-size: 13px; font-weight: 600; }
+.theme-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
 .swatches { display: flex; gap: 6px; }
 .swatch {
   width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent;
   cursor: pointer; transition: transform .25s var(--spring), box-shadow .2s;
 }
 .swatch:hover { transform: scale(1.18); }
-.swatch.selected { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+.swatch.selected { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); animation: swatchPop .35s var(--spring); }
 .color-picker {
   width: 34px; height: 28px; border: 1px solid var(--border2);
-  border-radius: 8px; padding: 2px; background: var(--surface2); cursor: pointer;
+  border-radius: 9px; padding: 2px; background: var(--surface2); cursor: pointer;
   transition: border-color .15s, transform .2s var(--spring);
 }
-.color-picker:hover { border-color: var(--accent); transform: scale(1.05); }
+.color-picker:hover { border-color: var(--accent); transform: scale(1.06); }
 .seg {
   display: inline-flex; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 3px; gap: 2px;
+  border-radius: 11px; padding: 3px; gap: 2px;
 }
 .seg button {
   background: none; border: none; color: var(--muted);
   font-family: var(--font-main); font-size: 13px; font-weight: 600;
-  padding: 6px 11px; border-radius: 7px; cursor: pointer;
+  padding: 6px 11px; border-radius: 8px; cursor: pointer;
   transition: color .15s, background .2s var(--ease), transform .2s var(--spring);
 }
 .seg button:hover { color: var(--text); }
@@ -829,6 +668,31 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .seg button.active { background: var(--surface3); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
 .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+/* Locked switch: reads as off, dimmed, refuses hover */
+.switch input:disabled + .slider {
+  opacity: .45;
+  cursor: not-allowed;
+  background: var(--surface3) !important;
+  border-color: var(--border) !important;
+}
+
+/* Force the knob to the left (off) position, neutral gray */
+.switch input:disabled + .slider::before {
+  transform: translateX(0) !important;
+  background: var(--muted2) !important;
+}
+
+/* Kill focus ring and hover styling */
+.switch input:disabled:focus-visible + .slider {
+  box-shadow: none;
+}
+
+/* Keep the not-allowed cursor on the whole control */
+.switch input:disabled,
+.switch input:disabled + .slider,
+.switch input:disabled + .slider::before {
+  cursor: not-allowed;
+}
 .slider {
   position: absolute; inset: 0; cursor: pointer;
   background: var(--surface3); border: 1px solid var(--border2); border-radius: 999px;
@@ -845,28 +709,20 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .switch input:focus-visible + .slider { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .3); }
 .range { width: 160px; accent-color: var(--accent); }
 .range-val { font-family: var(--font-mono); font-size: 11px; color: var(--muted); min-width: 110px; text-align: right; }
-.key-cap {
-  min-width: 64px; padding: 7px 12px; border-radius: 9px; cursor: pointer;
-  background: var(--surface2); border: 1px solid var(--border2); color: var(--text);
-  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
-  transition: border-color .2s, transform .2s var(--spring), color .2s;
-}
-.key-cap:hover { border-color: var(--accent); transform: translateY(-1px); }
-.key-cap.listening { border-color: var(--heart); color: var(--heart); animation: glow 1.2s infinite; }
 .settings-foot { display: flex; justify-content: center; margin-top: 4px; }
 .link-btn {
   background: none; border: none; cursor: pointer;
   font-family: var(--font-main); font-size: 13px; font-weight: 600; color: var(--muted2);
-  transition: color .15s;
+  transition: color .15s, transform .2s var(--spring);
 }
-.link-btn:hover { color: var(--text); }
+.link-btn:hover { color: var(--text); transform: translateY(-1px); }
 
 /* about / save */
 .about-p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
 .save-status { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; min-height: 16px; }
 .save-notice {
   font-size: 12px; color: var(--muted); line-height: 1.6;
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
   padding: 12px 14px; margin-top: 16px;
   display: flex; gap: 10px; align-items: flex-start;
 }
@@ -876,18 +732,100 @@ input[type="file"] { display: none; }
 /* ───── TOAST ───── */
 .toast {
   position: fixed; bottom: 20px; right: 20px; z-index: 999;
-  background: var(--surface3); border: 1px solid var(--border2); border-radius: 12px;
-  padding: 10px 16px; font-size: 14px; font-weight: 600; color: var(--text);
-  box-shadow: 0 12px 30px rgba(0,0,0,.5);
-  opacity: 0; transform: translateY(12px); pointer-events: none;
+  background: var(--surface3); border: 1px solid var(--border2); border-radius: 14px;
+  padding: 11px 17px; font-size: 14px; font-weight: 600; color: var(--text);
+  box-shadow: 0 16px 40px rgba(0,0,0,.6);
+  opacity: 0; transform: translateY(14px); pointer-events: none;
   transition: opacity .25s var(--ease), transform .35s var(--spring);
 }
 .toast.show { opacity: 1; transform: translateY(0); animation: toastIn .4s var(--spring); }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; transition: background .2s; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; transition: background .2s; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
+
+/* ───── ALT MONITOR ───── */
+.alt-monitor { width: 720px; }
+.alt-recommended {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin-bottom: 14px;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb),.12), rgba(var(--accent-rgb),.04));
+  border: 1px solid rgba(var(--accent-rgb),.35);
+  border-radius: 14px;
+  position: relative; overflow: hidden;
+  animation: rise .5s var(--ease) both;
+}
+.alt-recommended::before {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(var(--accent-rgb), .08);
+  animation: float 8s ease-in-out infinite;
+}
+.alt-rec-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--accent); color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  flex-shrink: 0;
+}
+.alt-rec-domain { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; word-break: break-all; }
+.alt-stats {
+  display: flex; align-items: center; gap: 18px;
+  padding: 14px 16px; margin-bottom: 18px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; flex-wrap: wrap;
+}
+.alt-stat { display: flex; align-items: baseline; gap: 6px; }
+.alt-stat-num { font-size: 22px; font-weight: 700; }
+.alt-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+.alt-stat-num.alt-online { color: #4ade80; }
+.alt-stat-num.alt-blocked { color: #fbbf24; }
+.alt-stats .btn { margin-left: auto; }
+.alt-generator {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  padding: 16px; margin-bottom: 18px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.alt-field { flex: 1; min-width: 140px; }
+.alt-field-btn { flex: 0; }
+.alt-field label { display: block; margin-bottom: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.alt-field select, .alt-field input {
+  width: 100%; height: 38px; padding: 0 12px;
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 10px; color: var(--text);
+  font-family: var(--font-main); font-size: 13px;
+  outline: none; transition: border-color .15s;
+}
+.alt-field select:focus, .alt-field input:focus { border-color: var(--accent); }
+.alt-routes { display: flex; flex-direction: column; gap: 10px; }
+.alt-group {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+  animation: rise .35s var(--ease) backwards;
+  transition: border-color .2s, box-shadow .25s;
+}
+.alt-group:hover { border-color: var(--border2); box-shadow: var(--cozy-shadow); }
+.alt-group-rec { border-color: rgba(var(--accent-rgb),.4); background: linear-gradient(135deg, rgba(var(--accent-rgb),.06), var(--surface2)); }
+.alt-group-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.alt-group-domain { font-family: var(--font-mono); font-size: 13px; color: var(--muted); word-break: break-all; display: flex; align-items: center; }
+.alt-group-rec .alt-group-domain { color: var(--text); font-weight: 600; }
+.alt-health { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.alt-health.checking { background: var(--surface3); color: var(--muted); }
+.alt-health.online   { background: rgba(74,222,128,.15); color: #4ade80; }
+.alt-health.offline  { background: rgba(248,113,113,.15); color: #f87171; }
+.alt-health.blocked  { background: rgba(251,191,36,.15); color: #fbbf24; }
+.alt-group-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; }
+.alt-link {
+  padding: 8px 11px; border-radius: 10px;
+  border: 1px solid var(--border); background: rgba(255,255,255,.02);
+  cursor: pointer; transition: border-color .15s, background .15s, transform .15s var(--spring);
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  word-break: break-all;
+}
+.alt-link:hover { border-color: var(--accent); color: var(--text); background: rgba(255,255,255,.05); transform: translateY(-1px); }
+.alt-iframe-check { display: none; }
 
 /* ───── CALM MODE ───── */
 html.calm *, html.calm *::before, html.calm *::after {
@@ -911,13 +849,18 @@ html.calm *, html.calm *::before, html.calm *::after {
     flex-direction: row; justify-content: flex-start; overflow-x: auto;
     padding: 8px 10px; border-right: none; border-bottom: 1px solid var(--border);
   }
-  .tool-btn { width: 52px; min-width: 52px; }
-  main { padding: 14px; }
-  .hero { height: 230px; padding: 22px; }
-  .hero-title { font-size: 32px; }
-  .hero-sub { display: none; }
-  .row-scroll .card { flex-basis: 150px; }
-  .set-row { flex-direction: column; align-items: flex-start; }
+.tool-btn {
+  width: 52px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 9px 0;
+  background: none; border: 1px solid transparent; border-radius: 11px;
+  color: var(--muted);
+  font-family: var(--font-main); font-size: 10px; font-weight: 600;
+  cursor: pointer;
+  opacity: 1;                                 /* ← visible by default */
+  animation: railIn .4s var(--spring) backwards;  /* ← was `forwards` */
+  animation-fill-mode: backwards;
+  transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring), box-shadow .25s;
 }
 @media (max-width: 480px) {
   .modal { padding: 20px; }
@@ -935,7 +878,7 @@ html.calm *, html.calm *::before, html.calm *::after {
 <body>
 
 <header>
-  <div class="" onclick="filterCat('All')">Oogly Boogly<span></span></div>
+  <div class="logo" onclick="filterCat('All')">Oogly Boogly</div>
   <nav id="sidebar"></nav>
   <input id="search" type="text" placeholder="Search games and categories" oninput="onSearchInput(this.value)" autocomplete="off"/>
 </header>
@@ -951,7 +894,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     <button class="tool-btn" id="installBtn" title="Install Oogly Boogly as an app" onclick="installApp()" hidden>
       <i class="fa-solid fa-download"></i><span>Install</span>
     </button>
-    <button class="tool-btn" title="Unblock Assistant" onclick="openUnblocker()">
+    <button class="tool-btn" title="Unblock Assistant" onclick="openAltMonitor()">
       <i class="fa-solid fa-shield-halved"></i><span>Unblock</span>
     </button>
     <button class="tool-btn" title="Inbox" onclick="openInbox()">
@@ -975,15 +918,15 @@ html.calm *, html.calm *::before, html.calm *::after {
   <main>
     <div class="greet">
       <div class="greet-text">
-        <div class="greet-hi" id="greetHi">Hey there</div>
+        <div class="greet-hi" id="greetHi"><i class="fa-regular fa-hand"></i> Good morning</div>
       </div>
     </div>
 
-<section class="hero" id="hero">
-  <div class="hero-art" id="heroArt">
-    <img id="heroArtImg" alt="" />
-  </div>
-  <div class="hero-body">
+    <section class="hero" id="hero">
+      <div class="hero-art" id="heroArt">
+        <img id="heroArtImg" alt="" />
+      </div>
+      <div class="hero-body">
         <span class="trend-pill"><i class="fa-solid fa-wand-magic-sparkles"></i> Picked for you</span>
         <h1 class="hero-title" id="heroTitle"></h1>
         <div class="hero-meta" id="heroMeta"></div>
@@ -1003,7 +946,7 @@ html.calm *, html.calm *::before, html.calm *::after {
   </main>
 </div>
 
-<!-- UPDATE POPUP (first load after each version) -->
+<!-- UPDATE POPUP -->
 <div class="modal-bg" id="updateModal">
   <div class="modal update-modal">
     <div class="update-hero"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
@@ -1051,22 +994,22 @@ html.calm *, html.calm *::before, html.calm *::after {
   </div>
 </div>
 
-<!-- ABOUT MODAL -->
+<!-- ABOUT -->
 <div class="modal-bg" id="aboutModal">
   <div class="modal">
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.0.1</div>
+        <div class="modal-sub">Oogly Boogly Version 9.1</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <p class="about-p">Oogly Boogly makes assignments easy, with a simple, easy to use portal for your assignments.</p>
-    <p class="about-p">Use the <strong>Settings</strong> menu to customize the interface and tune recommendations, and a quick and easy <strong>Save</strong> system to back up your progress to a single file.</p>
+    <p class="about-p">Use the <strong>Settings</strong> menu to pick a theme, tune recommendations, and swap typefaces — plus a quick and easy <strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
 </div>
 
-<!-- TYPEFACE PICKER (stacked above Settings) -->
+<!-- TYPEFACE -->
 <div class="modal-bg stacked" id="fontModal">
   <div class="modal font-modal">
     <div class="modal-head">
@@ -1088,7 +1031,7 @@ html.calm *, html.calm *::before, html.calm *::after {
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
+<!-- SETTINGS -->
 <div class="modal-bg" id="settingsModal">
   <div class="modal settings">
     <div class="modal-head">
@@ -1100,26 +1043,22 @@ html.calm *, html.calm *::before, html.calm *::after {
     </div>
 
     <section class="set-section">
-      <div class="set-heading">Appearance</div>
-      <div class="set-row">
+      <div class="set-heading">Theme</div>
+      <div class="theme-grid" id="themeGrid"></div>
+      <div class="set-row" style="margin-top:14px">
         <div class="set-text">
-          <div class="set-label">Accent color</div>
-          <div class="set-desc">Highlights, buttons and focus states</div>
+          <div class="set-label">Custom accent</div>
+          <div class="set-desc">Fine-tune the highlight color on top of the theme</div>
         </div>
         <div class="set-control">
           <div class="swatches" id="swatchRow"></div>
           <input type="color" class="color-picker" id="colorPicker" oninput="setCfg({accent: this.value}); populateSettingsUI();"/>
         </div>
       </div>
-      <div class="set-row">
-        <div class="set-text">
-          <div class="set-label">Background</div>
-          <div class="set-desc">Base color of the interface</div>
-        </div>
-        <div class="set-control">
-          <input type="color" class="color-picker" id="bgPicker" oninput="setCfg({bg: this.value})"/>
-        </div>
-      </div>
+    </section>
+
+    <section class="set-section">
+      <div class="set-heading">Appearance</div>
       <div class="set-row">
         <div class="set-text">
           <div class="set-label">Typeface</div>
@@ -1131,12 +1070,15 @@ html.calm *, html.calm *::before, html.calm *::after {
       </div>
       <div class="set-row">
         <div class="set-text">
-          <div class="set-label">Calm mode</div>
-          <div class="set-desc">Turns off animations and motion across OBL</div>
+          <div class="set-label">Reduced motion</div>
+          <div class="set-desc">Turns off animations and motion across the site</div>
         </div>
-        <div class="set-control">
-          <label class="switch"><input type="checkbox" id="calmMode" onchange="setCfg({calm: this.checked}); populateSettingsUI();"/><span class="slider"></span></label>
-        </div>
+    <div class="set-control">
+      <label class="switch">
+      <input type="checkbox" id="calmMode" disabled onchange="setCfg({calm: this.checked}); populateSettingsUI();"/>
+    <span class="slider"></span>
+  </label>
+</div>
       </div>
     </section>
 
@@ -1253,37 +1195,6 @@ html.calm *, html.calm *::before, html.calm *::after {
     </section>
 
     <section class="set-section">
-      <div class="set-heading">Panic</div>
-      <div class="set-row">
-        <div class="set-text">
-          <div class="set-label">Panic key</div>
-          <div class="set-desc">Closes game tabs and jumps to your safe page instantly</div>
-        </div>
-        <div class="set-control">
-          <label class="switch"><input type="checkbox" id="panicEnable" onchange="setPanic({enabled: this.checked})"/><span class="slider"></span></label>
-        </div>
-      </div>
-      <div class="set-row">
-        <div class="set-text">
-          <div class="set-label">Key</div>
-          <div class="set-desc">Click, then press the key you want</div>
-        </div>
-        <div class="set-control">
-          <button class="key-cap" id="panicKeyBtn" onclick="startPanicCapture()">\`</button>
-        </div>
-      </div>
-      <div class="set-row">
-        <div class="set-text">
-          <div class="set-label">Safe page</div>
-          <div class="set-desc">Where the panic key sends you</div>
-        </div>
-        <div class="set-control">
-          <input class="text-in" id="panicUrl" type="text" placeholder="https://www.google.com" onchange="setPanicUrl(this.value)"/>
-        </div>
-      </div>
-    </section>
-
-    <section class="set-section">
       <div class="set-heading">Data</div>
       <div class="set-row">
         <div class="set-text">
@@ -1329,13 +1240,13 @@ html.calm *, html.calm *::before, html.calm *::after {
   </div>
 </div>
 
-<!-- GAME SAVE MODAL -->
+<!-- GAME SAVE -->
 <div class="modal-bg" id="saveModal">
   <div class="modal">
     <div class="modal-head">
       <div>
         <div class="modal-title">Game Save</div>
-        <div class="modal-sub">Ever wanted to save game data easily? Now you can!</div>
+        <div class="modal-sub">Back up your progress to a single file</div>
       </div>
       <button class="modal-close" onclick="closeModal('saveModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1371,7 +1282,8 @@ html.calm *, html.calm *::before, html.calm *::after {
 </div>
 
 <div class="toast" id="toast"></div>
-<!-- ALT MONITOR MODAL -->
+
+<!-- ALT MONITOR -->
 <div class="modal-bg" id="altMonitorModal">
   <div class="modal alt-monitor">
     <div class="modal-head">
@@ -1385,9 +1297,6 @@ html.calm *, html.calm *::before, html.calm *::after {
     <div class="alt-recommended">
       <div class="alt-rec-badge"><i class="fa-solid fa-star"></i> Recommended</div>
       <div class="alt-rec-domain">blooketgame.lovable.app</div>
-      <div class="alt-rec-actions">
-    
-      </div>
     </div>
 
     <div class="alt-stats">
@@ -1411,16 +1320,6 @@ html.calm *, html.calm *::before, html.calm *::after {
           <option>oogly.chickennet.work</option>
           <option>oogly.dev</option>
           <option>basement.sbs</option>
-          <option>1.oogly.dev</option>
-          <option>1.basement.sbs</option>
-          <option>2.oogly.dev</option>
-          <option>2.basement.sbs</option>
-          <option>3.oogly.dev</option>
-          <option>3.basement.sbs</option>
-          <option>4.oogly.dev</option>
-          <option>4.basement.sbs</option>
-          <option>5.oogly.dev</option>
-          <option>5.basement.sbs</option>
         </select>
       </div>
       <div class="alt-field">
@@ -1443,218 +1342,66 @@ html.calm *, html.calm *::before, html.calm *::after {
       </div>
     </div>
 
-    <div id="altRoutes" class="alt-routes">
-
-      <div class="alt-group alt-group-rec">
-        <div class="alt-group-head"><div class="alt-group-domain"><i class="fa-solid fa-star" style="color: var(--accent); margin-right: 6px; font-size: 11px;"></i>blooketgame.lovable.app</div><div id="altHRec" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://blooketgame.lovable.app">blooketgame.lovable.app</div>
-          <div class="alt-link" data-url="https://blooketgame.lovable.app?mode=edu">blooketgame.lovable.app?mode=edu</div>
-          <div class="alt-link" data-url="https://blooketgame.lovable.app#home">blooketgame.lovable.app#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">teststudy.vercel.app</div><div id="altH0" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://teststudy.vercel.app">teststudy.vercel.app</div>
-          <div class="alt-link" data-url="https://teststudy.vercel.app?math=exam">teststudy.vercel.app?math=exam</div>
-          <div class="alt-link" data-url="https://teststudy.vercel.app#archive">teststudy.vercel.app#archive</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">ooglylearning.vercel.app</div><div id="altH1" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://ooglylearning.vercel.app">ooglylearning.vercel.app</div>
-          <div class="alt-link" data-url="https://ooglylearning.vercel.app?math=review">ooglylearning.vercel.app?math=review</div>
-          <div class="alt-link" data-url="https://ooglylearning.vercel.app#lab">ooglylearning.vercel.app#lab</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">ooglygames.vercel.app</div><div id="altH2" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://ooglygames.vercel.app">ooglygames.vercel.app</div>
-          <div class="alt-link" data-url="https://ooglygames.vercel.app?mode=edu">ooglygames.vercel.app?mode=edu</div>
-          <div class="alt-link" data-url="https://ooglygames.vercel.app#stats">ooglygames.vercel.app#stats</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">ooglygames1.netlify.app</div><div id="altH3" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://ooglygames1.netlify.app">ooglygames1.netlify.app</div>
-          <div class="alt-link" data-url="https://ooglygames1.netlify.app?math=stats">ooglygames1.netlify.app?math=stats</div>
-          <div class="alt-link" data-url="https://ooglygames1.netlify.app#res">ooglygames1.netlify.app#res</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">ooglygames2.netlify.app</div><div id="altH4" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://ooglygames2.netlify.app">ooglygames2.netlify.app</div>
-          <div class="alt-link" data-url="https://ooglygames2.netlify.app?test=final">ooglygames2.netlify.app?test=final</div>
-          <div class="alt-link" data-url="https://ooglygames2.netlify.app#archive">ooglygames2.netlify.app#archive</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">ooglygames3.netlify.app</div><div id="altH5" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://ooglygames3.netlify.app">ooglygames3.netlify.app</div>
-          <div class="alt-link" data-url="https://ooglygames3.netlify.app?p=logic">ooglygames3.netlify.app?p=logic</div>
-          <div class="alt-link" data-url="https://ooglygames3.netlify.app#v6">ooglygames3.netlify.app#v6</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">oogly.chickennet.work</div><div id="altH6" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://oogly.chickennet.work">oogly.chickennet.work</div>
-          <div class="alt-link" data-url="https://oogly.chickennet.work?mode=edu">oogly.chickennet.work?mode=edu</div>
-          <div class="alt-link" data-url="https://oogly.chickennet.work#home">oogly.chickennet.work#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">oogly.dev</div><div id="altH7" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://oogly.dev">oogly.dev</div>
-          <div class="alt-link" data-url="https://oogly.dev?mode=edu">oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://oogly.dev#home">oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">basement.sbs</div><div id="altH8" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://basement.sbs">basement.sbs</div>
-          <div class="alt-link" data-url="https://basement.sbs?mode=edu">basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://basement.sbs#home">basement.sbs#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">1.oogly.dev</div><div id="altH9" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://1.oogly.dev">1.oogly.dev</div>
-          <div class="alt-link" data-url="https://1.oogly.dev?mode=edu">1.oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://1.oogly.dev#home">1.oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">1.basement.sbs</div><div id="altH10" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://1.basement.sbs">1.basement.sbs</div>
-          <div class="alt-link" data-url="https://1.basement.sbs?mode=edu">1.basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://1.basement.sbs#home">1.basement.sbs#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">2.oogly.dev</div><div id="altH11" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://2.oogly.dev">2.oogly.dev</div>
-          <div class="alt-link" data-url="https://2.oogly.dev?mode=edu">2.oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://2.oogly.dev#home">2.oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">2.basement.sbs</div><div id="altH12" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://2.basement.sbs">2.basement.sbs</div>
-          <div class="alt-link" data-url="https://2.basement.sbs?mode=edu">2.basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://2.basement.sbs#home">2.basement.sbs#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">3.oogly.dev</div><div id="altH13" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://3.oogly.dev">3.oogly.dev</div>
-          <div class="alt-link" data-url="https://3.oogly.dev?mode=edu">3.oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://3.oogly.dev#home">3.oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">3.basement.sbs</div><div id="altH14" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://3.basement.sbs">3.basement.sbs</div>
-          <div class="alt-link" data-url="https://3.basement.sbs?mode=edu">3.basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://3.basement.sbs#home">3.basement.sbs#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">4.oogly.dev</div><div id="altH15" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://4.oogly.dev">4.oogly.dev</div>
-          <div class="alt-link" data-url="https://4.oogly.dev?mode=edu">4.oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://4.oogly.dev#home">4.oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">4.basement.sbs</div><div id="altH16" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://4.basement.sbs">4.basement.sbs</div>
-          <div class="alt-link" data-url="https://4.basement.sbs?mode=edu">4.basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://4.basement.sbs#home">4.basement.sbs#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">5.oogly.dev</div><div id="altH17" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://5.oogly.dev">5.oogly.dev</div>
-          <div class="alt-link" data-url="https://5.oogly.dev?mode=edu">5.oogly.dev?mode=edu</div>
-          <div class="alt-link" data-url="https://5.oogly.dev#home">5.oogly.dev#home</div>
-        </div>
-      </div>
-
-      <div class="alt-group">
-        <div class="alt-group-head"><div class="alt-group-domain">5.basement.sbs</div><div id="altH18" class="alt-health checking">Checking</div></div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://5.basement.sbs">5.basement.sbs</div>
-          <div class="alt-link" data-url="https://5.basement.sbs?mode=edu">5.basement.sbs?mode=edu</div>
-          <div class="alt-link" data-url="https://5.basement.sbs#home">5.basement.sbs#home</div>
-        </div>
-      </div>
-
-    </div>
+    <div id="altRoutes" class="alt-routes"></div>
   </div>
 </div>
 
 <script>
-function isRunningInTemuNet() {
-  try {
-    if (location.pathname.indexOf('/proxy/') === 0) return true;
-    if (document.referrer && document.referrer.indexOf('/proxy/') !== -1) return true;
-    var host = location.hostname || '';
-    if (host === 'temu-net.vercel.app' || host.endsWith('.temu-net.vercel.app')) return true;
-    if (host.indexOf('temunet') === 0) return true;
-    return false;
-  } catch (e) {
-    return false;
-  }
+// ──────────────────────────────────────────────
+// ALT MONITOR DOMAIN LIST (used both to build
+// the routes UI and to power the health checks)
+// ──────────────────────────────────────────────
+const ALT_DOMAINS = [
+  { domain: 'blooketgame.lovable.app', recommended: true },
+  { domain: 'teststudy.vercel.app' },
+  { domain: 'ooglylearning.vercel.app' },
+  { domain: 'ooglygames.vercel.app' },
+  { domain: 'ooglygames1.netlify.app' },
+  { domain: 'ooglygames2.netlify.app' },
+  { domain: 'ooglygames3.netlify.app' },
+  { domain: 'oogly.chickennet.work' },
+  { domain: 'oogly.dev' },
+  { domain: 'basement.sbs' },
+  { domain: '1.oogly.dev' },
+  { domain: '1.basement.sbs' },
+  { domain: '2.oogly.dev' },
+  { domain: '2.basement.sbs' },
+  { domain: '3.oogly.dev' },
+  { domain: '3.basement.sbs' },
+  { domain: '4.oogly.dev' },
+  { domain: '4.basement.sbs' },
+  { domain: '5.oogly.dev' },
+  { domain: '5.basement.sbs' },
+];
+
+function buildAltRoutes() {
+  const wrap = document.getElementById('altRoutes');
+  wrap.innerHTML = ALT_DOMAINS.map((entry, i) => {
+    const id = 'altH' + i;
+    const star = entry.recommended
+      ? '<i class="fa-solid fa-star" style="color: var(--accent); margin-right: 6px; font-size: 11px;"></i>'
+      : '';
+    const d = entry.domain;
+    return `
+      <div class="alt-group${entry.recommended ? ' alt-group-rec' : ''}">
+        <div class="alt-group-head">
+          <div class="alt-group-domain">${star}${d}</div>
+          <div id="${id}" class="alt-health checking">Checking</div>
+        </div>
+        <div class="alt-group-links">
+          <div class="alt-link" data-url="https://${d}">${d}</div>
+          <div class="alt-link" data-url="https://${d}?mode=edu">${d}?mode=edu</div>
+          <div class="alt-link" data-url="https://${d}#home">${d}#home</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  wrap.querySelectorAll('.alt-link').forEach(el => {
+    el.addEventListener('click', () => window.open(el.dataset.url, '_blank', 'noopener'));
+  });
 }
 
-const IN_TEMUNET = isRunningInTemuNet();
-
-// ──────────────────────────────────────────────
-// ALT MONITOR
-// ──────────────────────────────────────────────
 const ALT_BLOCKED_KEYWORDS = ['goguardian', 'blocked', 'restricted', 'access denied'];
-
-document.querySelectorAll('#altRoutes .alt-link').forEach(linkEl => {
-  linkEl.addEventListener('click', () => {
-    window.open(linkEl.dataset.url, '_blank', 'noopener');
-  });
-});
 
 function checkAltHealth(domain, id) {
   const statusEl = document.getElementById(id);
@@ -1681,17 +1428,13 @@ function checkAltHealth(domain, id) {
     if (checked) return;
     checked = true;
     clearTimeout(timeoutId);
-
     let isBlocked = false;
     try {
       const doc = iframe.contentDocument || iframe.contentWindow.document;
       const bodyText = doc.body ? doc.body.innerText.toLowerCase() : '';
       isBlocked = ALT_BLOCKED_KEYWORDS.some(kw => bodyText.includes(kw));
       if (doc.title && doc.title.toLowerCase().includes('blocked')) isBlocked = true;
-    } catch (e) {
-      isBlocked = false;
-    }
-
+    } catch (e) { isBlocked = false; }
     statusEl.className = 'alt-health ' + (isBlocked ? 'blocked' : 'online');
     statusEl.textContent = isBlocked ? 'Blocked' : 'Online';
     updateAltCounts();
@@ -1720,7 +1463,7 @@ function updateAltCounts() {
 
 function refreshAllAlts() {
   document.querySelectorAll('#altRoutes .alt-group').forEach((group, i) => {
-    const domain = group.querySelector('.alt-group-domain').textContent.trim();
+    const domain = group.querySelector('.alt-group-domain').textContent.replace(/^\s+/, '').trim();
     checkAltHealth(domain, 'altH' + i);
   });
 }
@@ -1741,12 +1484,27 @@ function openAltMonitor() {
   }
 }
 
-function openUnblocker() { openAltMonitor(); }
+// ──────────────────────────────────────────────
+// TEMU NET DETECTION
+// ──────────────────────────────────────────────
+function isRunningInTemuNet() {
+  try {
+    if (location.pathname.indexOf('/proxy/') === 0) return true;
+    if (document.referrer && document.referrer.indexOf('/proxy/') !== -1) return true;
+    var host = location.hostname || '';
+    if (host === 'temu-net.vercel.app' || host.endsWith('.temu-net.vercel.app')) return true;
+    if (host.indexOf('temunet') === 0) return true;
+    return false;
+  } catch (e) { return false; }
+}
+const IN_TEMUNET = isRunningInTemuNet();
+
 // ──────────────────────────────────────────────
 // DATA
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"City Idle", link:"assignment/ci", category:"Idle" },
   { title:"Mad Grand Prix", link:"assignment/mgp", category:"Action" },
   { title:"Brotato", link:"assignment/brotato", category:"Action" },
   { title:"Basket Random", link:"assignment/basketrandom", category:"Arcade" },
@@ -1945,18 +1703,28 @@ const assignments = [
 
 const newsData = [
   {
+    date: "2026-10-11",
+    title: "v9.1 brings theme presets and card tooltips",
+    body: "v9.1 adds a full theme selector with six hand-picked presets, hover tooltips on every game card, and a heap of microanimations to make the whole thing feel cozier."
+  },
+  {
+    date: "2026-10-11",
+    title: "v9.0.2 introduces a new assignment",
+    body: "v9.0.2 introduces City Idle, a new math assignment where you add numbers and multiply to make buildings and grow your city."
+  },
+  {
     date: "2026-10-10",
-    title: "v9.0.1 introduces a few minor tweaks to the v9.0 design to make the experience smoother and more inviting.",
+    title: "v9.0.1 introduces a few minor tweaks to the v9.0 design",
     body: "v9.0.1 introduces minor tweaks to the sidebar panel, recommended game card, and game cards themselves to make the experience more unified."
   },
-    {
+  {
     date: "2026-10-09",
     title: "v9.0 introduces a major design overhaul",
     body: "v9.0 introduces a major design overhaul, replacing the grid-card layout used since v6.0 with a way more user friendly, thumbnail-based categorized, modern layout with flexibility and animation built in."
   },
   {
     date: "2026-10-08",
-    title: "Update v8.1.25 finally makes the assignment, Mr. Mine work properly (ur welcome liam)",
+    title: "Update v8.1.25 finally makes Mr. Mine work properly (ur welcome liam)",
     body: "v8.1.25 finally makes Mr. Mine work properly, as has been long requested by someone (... liam), and so now it works yippee."
   },
   {
@@ -1972,17 +1740,17 @@ const newsData = [
   {
     date: "2026-09-29",
     title: "Update v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title.",
-    body: "v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title. This update ensures that all assignments now display the correct tab title consistently. This update also messes with Mr. Mine (still broken just for u liam)"
-  },
-    {
-    date: "2026-09-29",
-    title: "Update v8.1.21 adds a new assignment (Mr. Mine).",
-    body: "v8.1.21 adds Mr. Mine, a new assignment about mining and exploring treasure and whatever (guess what liam it doesnt actually work)"
+    body: "v8.1.22 fixes a few assignments that may have caused them to render the wrong tab title. This update also messes with Mr. Mine (still broken just for u liam)."
   },
   {
     date: "2026-09-29",
-    title: "Update v8.1.20 applies fixes to Bit Planes, allowing it to function properly.",
-    body: "v8.1.20 addresses issues found in Bit Planes, that would prevent the game from running correctly. It should now properly load, start a game, and play! Have fun playing."
+    title: "Update v8.1.21 adds Mr. Mine.",
+    body: "v8.1.21 adds Mr. Mine, a new assignment about mining and exploring treasure and whatever (guess what liam it doesnt actually work)."
+  },
+  {
+    date: "2026-09-29",
+    title: "Update v8.1.20 applies fixes to Bit Planes.",
+    body: "v8.1.20 addresses issues found in Bit Planes, that would prevent the game from running correctly. It should now properly load, start a game, and play!"
   },
   {
     date: "2026-09-29",
@@ -2002,7 +1770,7 @@ const newsData = [
   {
     date: "2026-09-26",
     title: "Update v8.1.15 adds 4 new M1n3cr@ft versions",
-    body: "v8.1.15 adds 4 new versions of M1n3cr@ft, including the long awaited v26.2! It also adds a new version of 1.20 that has more features and is better/newer, and 2 older versions."
+    body: "v8.1.15 adds 4 new versions of M1n3cr@ft, including the long awaited v26.2!"
   },
   {
     date: "2026-09-26",
@@ -2012,12 +1780,12 @@ const newsData = [
   {
     date: "2026-09-23",
     title: "Update v8.1.13 adds the brand new Temu Kit!",
-    body: "v8.1.13 adds Temu Kit, a new way to access YT and the internet.."
+    body: "v8.1.13 adds Temu Kit, a new way to access YT and the internet."
   },
   {
     date: "2026-08-29",
     title: "Update v8.1.12 updates 1 assignment (Doom)!",
-    body: "v8.1.12 updates Doom to work properly, previously did not work, the assignment would not load correctly."
+    body: "v8.1.12 updates Doom to work properly."
   },
   {
     date: "2026-08-28",
@@ -2051,37 +1819,37 @@ const newsData = [
   },
   {
     date: "2026-07-26",
-    title: "Update v8.1.5 is a small update that adds 7 new assignments, fixes an issue with one assignment not loading correctly, and quality improvements.",
+    title: "Update v8.1.5 is a small update that adds 7 new assignments.",
     body: "v8.1.5 is an enhancement of v8.1.4 with 7 new assignments, fixes for issues, and QoL improvements."
   },
   {
     date: "2026-07-26",
-    title: "Update v8.1.4 is a small emergency fix release to address issues with the frontend launcher, and issues with missing assignments.",
+    title: "Update v8.1.4 is a small emergency fix release.",
     body: "v8.1.4 is an incremental update to v8.1.3 which fixes issues with the frontend launcher, and 2 assignments being missing."
   },
   {
     date: "2026-07-26",
-    title: "Update v8.1.3 fixes issues previously found in v8.1.0-8.1.2 with certain assignments not loading correctly.",
+    title: "Update v8.1.3 fixes issues with certain assignments not loading correctly.",
     body: "v8.1.3 is an incremental update to v8.1.2 which fixes issues in certain assignments, and also adds some new assignments."
   },
   {
     date: "2026-07-26",
-    title: "Update v8.1.2 is here, this update is an emergency fix for an assignment that was previously not loading correctly.",
+    title: "Update v8.1.2 is here.",
     body: "v8.1.2 is an incremental update to v8.1.1 which fixes a critical issue with an assignment that wasn't loading correctly."
   },
   {
     date: "2026-07-26",
-    title: "Update v8.1.1 is now available, this update brings a small hotfix for the saving system.",
+    title: "Update v8.1.1 is now available.",
     body: "v8.1.1 is a small incremental update to v8.1 which adds more detailed info about what is happening during the save process, and fixes an issue."
   },
   {
     date: "2026-07-26",
-    title: "Update 8.1 is live! New assignments and fixes are here.",
+    title: "Update 8.1 is live!",
     body: "v8.1 adds some new assignments for you to try, and fixes to the system."
   },
   {
     date: "2026-07-25",
-    title: "Fully updated interface with numerous new assignments, fixes, and a global game save system*! *BETA - Not all games are supported.",
+    title: "Fully updated interface with numerous new assignments, fixes, and a global game save system*!",
     body: "v8.0 brings a redesigned interface, deeper customization options, dozens of new assignments, and a new Game Save tool that backs up your progress to a single .OBLSAVE file."
   },
   {
@@ -2116,30 +1884,26 @@ const newsData = [
   },
 ];
 
-// Latest update, shown in the popup on first load after each version change
 const UPDATE = {
-  version: '9.0.1',
-  date: '2026-10-10',
-  title: 'Oogly Boogly v9.0.1 is here!',
+  version: '9.1',
+  date: '2026-10-11',
+  title: 'Oogly Boogly v9.1 is here!',
   items: [
-    '<b>Design Tweaks</b> Minor adjustments to the sidebar panel, recommended game card, and game cards for a more unified experience.',
-    '<b>Minor Bug Fixes</b> Various small bugs have been fixed to improve overall stability and performance.'
+    '<b>Themes</b> Six hand-picked theme presets to recolor the entire site in one click.',
+    '<b>Card tooltips</b> Hover any game card to see its full name.',
+    '<b>More animations</b> Buttons bounce, cards lift, hearts beat, and the whole place feels cozier.',
+    '<b>Greeting</b> Simpler, warmer, and always says good morning.',
+    '<b>Simplified settings</b> The Panic section has been removed to keep things tidy.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
 
 const GAME_REQUEST_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeaWbCgiReXc1pYuiaIbTuqLxHxcUrPS4_gqVZHBvjZZPcWSQ/viewform?usp=publish-editor';
 
-function openUnblocker() {
-  openModal('altMonitorModal');
-}
-
-function requestGame() {
-  window.open(GAME_REQUEST_URL, '_blank', 'noopener');
-}
+function requestGame() { window.open(GAME_REQUEST_URL, '_blank', 'noopener'); }
 
 // ──────────────────────────────────────────────
-// APP INSTALL (Chrome desktop / ChromeOS only)
+// APP INSTALL
 // ──────────────────────────────────────────────
 let deferredInstallPrompt = null;
 
@@ -2158,8 +1922,8 @@ function isInstalled() {
 
 function updateInstallButton() {
   const btn = document.getElementById('installBtn');
-  const show = isChromeDesktop() && !isInstalled();
-  btn.hidden = !show;
+  if (!btn) return;
+  btn.hidden = !(isChromeDesktop() && !isInstalled());
 }
 
 window.addEventListener('beforeinstallprompt', e => {
@@ -2181,11 +1945,11 @@ async function installApp() {
     if (choice.outcome === 'accepted') toast('Installing OBL…');
     return;
   }
-  toast('Tap the three dots ⋮ and select "Cast, save, and share" and then press Install page as app...');
+  toast('Tap the three dots ⋮ and choose "Install page as app…"');
 }
 
 // ──────────────────────────────────────────────
-// DISPLAY CONFIG
+// CATEGORY ICONS + CURATED
 // ──────────────────────────────────────────────
 const CAT_ICONS = {
   All: 'fa-solid fa-house',
@@ -2197,60 +1961,35 @@ const CAT_ICONS = {
   Utility: 'fa-solid fa-screwdriver-wrench'
 };
 
-const CURATED = [
-  'Basket Random',
-  'Basket Bros',
-  'Drift Hunters',
-  'Minecraft 26.2',
-  'Capybara Clicker'
-];
-
-const TOP_TITLES = [
-  'Basket Random', 'Basket Bros', 'Subway Surfers', 'Drift Hunters', 'Terraria',
-  'Plants vs Zombies', 'Fortnite', 'Minecraft 26.2', 'Undertale', 'Survivor.io'
-];
+const CURATED = ['Basket Random', 'Basket Bros', 'Drift Hunters', 'Minecraft 26.2', 'Capybara Clicker'];
+const TOP_TITLES = ['Basket Random','Basket Bros','Subway Surfers','Drift Hunters','Terraria','Plants vs Zombies','Fortnite','Minecraft 26.2','Undertale','Survivor.io'];
 const ROW_LIMIT = 24;
 
 // ──────────────────────────────────────────────
 // THUMBNAILS
-//
-// Drop an image in a `thumbs/` folder next to index.html and it appears on
-// every instance of the game (grid, category rows, search, Top 5, Favorites,
-// Jump back in, and hero tiles). The filename is the game's link path with
-// slashes turned into dashes:
-//   assignment/aus        → thumbs/assignment-aus.png
-//   assignment/basket     → thumbs/assignment-basket.webp
-// Supported: .png .jpg .jpeg .webp .gif. Missing files keep the letter tile.
-//
-// Each game is probed once. Any card that asks for its thumbnail while the
-// probe is still running is queued and filled as soon as the result arrives,
-// so cards built before, during, or after the lookup all get the image.
 // ──────────────────────────────────────────────
 const THUMB_DIR = 'thumbs/';
-const THUMB_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif', 'webp'];
-const thumbState = new Map(); // link -> { status: 'pending' | 'hit' | 'miss', url, waiting: [] }
+const THUMB_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif'];
+const thumbState = new Map();
 
 function thumbKey(link) {
   return link
-    .replace(/^https?:\/\//i, '')          // drop protocol only, keep the domain
-    .replace(/^\.?\/+/, '')                // drop leading ./ or /
-    .replace(/\/+$/, '')                   // drop trailing slash
-    .replace(/[\/\\]+/g, '-')              // slashes → dashes
-    .replace(/[^a-zA-Z0-9._-]/g, '');      // strip anything unsafe
+    .replace(/^https?:\/\//i, '')
+    .replace(/^\.?\/+/, '')
+    .replace(/\/+$/, '')
+    .replace(/[\/\\]+/g, '-')
+    .replace(/[^a-zA-Z0-9._-]/g, '');
 }
 
 function probeThumb(link, s) {
   const base = THUMB_DIR + thumbKey(link);
   let i = 0;
-
   const finish = url => {
     s.status = url ? 'hit' : 'miss';
     s.url = url;
-    const queued = s.waiting;
-    s.waiting = [];
+    const queued = s.waiting; s.waiting = [];
     queued.forEach(cb => cb(url));
   };
-
   const next = () => {
     if (i >= THUMB_EXTS.length) { finish(null); return; }
     const url = base + '.' + THUMB_EXTS[i++];
@@ -2259,12 +1998,9 @@ function probeThumb(link, s) {
     img.onerror = next;
     img.src = url;
   };
-
   next();
 }
 
-// Calls cb(url) with the image URL, or cb(null) if none exists.
-// Runs immediately when the answer is already known.
 function withThumb(link, cb) {
   let s = thumbState.get(link);
   if (!s) {
@@ -2285,13 +2021,24 @@ function showThumbImg(el, url) {
   el.appendChild(img);
 }
 
-// Works for card thumbs and hero tiles alike. The letter stays until an image arrives.
 function applyThumb(el, a) {
   withThumb(a.link, url => { if (url) showThumbImg(el, url); });
 }
 
 // ──────────────────────────────────────────────
-// STORAGE KEYS & HELPERS
+// THEMES
+// ──────────────────────────────────────────────
+const THEMES = [
+  { id: 'midnight', name: 'Midnight', desc: 'Cool and calm', bg: '#0b0c0e', accent: '#3b82f6' },
+  { id: 'slate',    name: 'Slate',    desc: 'Warm and neutral', bg: '#131210', accent: '#f59e0b' },
+  { id: 'forest',   name: 'Forest',   desc: 'Deep and mossy', bg: '#0d1210', accent: '#22c55e' },
+  { id: 'sunset',   name: 'Sunset',   desc: 'Warm and peachy', bg: '#140d0d', accent: '#f97316' },
+  { id: 'rose',     name: 'Rose',     desc: 'Soft and dreamy', bg: '#120c10', accent: '#f472b6' },
+  { id: 'ocean',    name: 'Ocean',    desc: 'Deep and teal',   bg: '#0a1214', accent: '#14b8a6' },
+];
+
+// ──────────────────────────────────────────────
+// STORAGE
 // ──────────────────────────────────────────────
 const LS = {
   config: 'obl_v9_config',
@@ -2317,13 +2064,18 @@ function escHtml(s) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ──────────────────────────────────────────────
+// EXCLUDES + LOOKUP
+// ──────────────────────────────────────────────
+const EXCLUDE_CATEGORIES = ['Utility'];
+const isPlayable = a => !!a && !EXCLUDE_CATEGORIES.includes(a.category);
+
 const titleIndex = new Map(assignments.map((a, i) => [a.title, i]));
 const byTitle = new Map(assignments.map(a => [a.title, a]));
-const isPlayable = a => !!a && !EXCLUDE_CATEGORIES.includes(a.category);
 const findGame = t => { const a = byTitle.get(t); return isPlayable(a) ? a : null; };
 
 // ──────────────────────────────────────────────
-// PROFILE (play history)
+// PROFILE
 // ──────────────────────────────────────────────
 let profile = { plays: {}, days: [], today: { date: '', counts: {} } };
 let favs = [];
@@ -2346,13 +2098,11 @@ function recordPlay(title) {
   e.count += 1;
   e.last = Date.now();
   profile.plays[title] = e;
-
   const t = todayStr();
   if (!profile.days.includes(t)) profile.days.push(t);
   profile.days = profile.days.slice(-120);
   if (profile.today.date !== t) profile.today = { date: t, counts: {} };
   profile.today.counts[title] = (profile.today.counts[title] || 0) + 1;
-
   saveProfile();
   frozenRecs = null;
   renderAll();
@@ -2366,21 +2116,10 @@ function clearPlayHistory() {
   toast('Play history cleared');
 }
 
-function streakDays() {
-  const set = new Set(profile.days);
-  const d = new Date();
-  let n = 0;
-  if (!set.has(todayStr(d))) d.setDate(d.getDate() - 1);
-  while (set.has(todayStr(d))) { n++; d.setDate(d.getDate() - 1); }
-  return n;
-}
-
 // ──────────────────────────────────────────────
 // FAVORITES
 // ──────────────────────────────────────────────
-function loadFavs() {
-  favs = load(LS.favs, []).filter(t => findGame(t));
-}
+function loadFavs() { favs = load(LS.favs, []).filter(t => findGame(t)); }
 function isFav(t) { return favs.includes(t); }
 
 function toggleFav(title, btn) {
@@ -2424,19 +2163,11 @@ function burst(x, y) {
 
 // ──────────────────────────────────────────────
 // RECOMMENDATION ENGINE
-//
-// Learns from play history and favorites.
-//   1. Genre affinity: share of recency-weighted play in each category.
-//   2. Similar titles: word overlap with games you've played or favorited.
-//   3. Novelty: a bonus for categories you haven't touched (Discovery).
-//   4. Popularity: a small nudge toward the weekly favorites.
-// Variety keeps any one category from dominating the picks.
 // ──────────────────────────────────────────────
 const ENGINE_STOP = new Set([
   'the','of','and','a','an','in','to','vs','for','with',
   'edition','version','new','world','game','lite','alt','pro','classic'
 ]);
-const EXCLUDE_CATEGORIES = ['Utility'];
 const HALF_LIFE = { fast: 4, balanced: 14, slow: 30 };
 const DISCOVERY = {
   favorites: { novelty: 0.00 },
@@ -2458,25 +2189,6 @@ function jaccard(a, b) {
   let inter = 0;
   a.forEach(t => { if (b.has(t)) inter++; });
   return inter / (a.size + b.size - inter);
-}
-
-function copyAlt(url) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(
-      () => toast('Copied to clipboard'),
-      () => toast('Copy failed')
-    );
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = url;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); toast('Copied to clipboard'); }
-    catch (e) { toast('Copy failed'); }
-    document.body.removeChild(ta);
-  }
 }
 
 function buildTasteProfile(now = Date.now()) {
@@ -2593,11 +2305,11 @@ function currentRecs() {
 // CONFIG & DEFAULTS
 // ──────────────────────────────────────────────
 const DEFAULTS = {
+  theme: 'midnight',
   accent: '#3b82f6',
   bg: '#0b0c0e',
   font: 'Fredoka',
   calm: false,
-  panic: { enabled: true, key: '`', url: 'https://www.google.com' },
   engine: {
     pace: 'balanced',
     discovery: 'balanced',
@@ -2643,7 +2355,6 @@ let cardNodes = [];
 let rowScrolls = new Map();
 let rowRefs = {};
 let searchDebounceTimer = null;
-let capturingPanic = false;
 const loadedFonts = new Set(['Fredoka']);
 
 function loadConfig() {
@@ -2652,8 +2363,7 @@ function loadConfig() {
   const merged = {
     ...JSON.parse(JSON.stringify(DEFAULTS)),
     ...s,
-    engine: { ...DEFAULTS.engine, ...(s.engine || {}) },
-    panic: { ...DEFAULTS.panic, ...(s.panic || {}) }
+    engine: { ...DEFAULTS.engine, ...(s.engine || {}) }
   };
   if (legacy[merged.font]) merged.font = legacy[merged.font];
   cfg = merged;
@@ -2675,22 +2385,14 @@ function setEngine(patch) {
   populateSettingsUI();
 }
 
-function setPanic(patch) {
-  cfg.panic = { ...cfg.panic, ...patch };
+function applyTheme(id) {
+  const t = THEMES.find(x => x.id === id) || THEMES[0];
+  cfg.theme = t.id;
+  cfg.bg = t.bg;
+  cfg.accent = t.accent;
   saveConfig();
+  applyConfig(false);
   populateSettingsUI();
-}
-
-function setPanicUrl(v) {
-  try {
-    const u = new URL(v.trim());
-    if (!/^https?:$/.test(u.protocol)) throw new Error('bad protocol');
-    setPanic({ url: u.href });
-    toast('Safe page saved');
-  } catch (e) {
-    toast('Enter a valid http(s) address');
-    populateSettingsUI();
-  }
 }
 
 function applyConfig(save = true) {
@@ -2788,51 +2490,15 @@ function renderFontGrid(q) {
 }
 
 // ──────────────────────────────────────────────
-// PANIC KEY
-// ──────────────────────────────────────────────
-function keyLabel(k) {
-  if (k === ' ') return 'Space';
-  return k.length === 1 ? k.toUpperCase() : k;
-}
-
-function keyMatches(e, k) {
-  if (!k) return false;
-  if (k.length === 1) return e.key.length === 1 && e.key.toLowerCase() === k.toLowerCase();
-  return e.key === k;
-}
-
-function isTyping(el) {
-  if (!el) return false;
-  const tag = el.tagName;
-  return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
-}
-
-function startPanicCapture() {
-  capturingPanic = true;
-  const b = document.getElementById('panicKeyBtn');
-  b.textContent = 'Press a key…';
-  b.classList.add('listening');
-  toast('Press the key you want (Esc to cancel)');
-}
-
-function triggerPanic() {
-  openedTabs.forEach(t => { try { t.close(); } catch (e) {} });
-  openedTabs = [];
-  window.location.replace(cfg.panic.url || 'https://www.google.com');
-}
-
-// ──────────────────────────────────────────────
-// GAME LAUNCH — fetch HTML → inject into about:blank
+// GAME LAUNCH
 // ──────────────────────────────────────────────
 async function launchGame(link, title) {
   recordPlay(title);
 
   let absUrl;
-  if (link.startsWith('http://') || link.startsWith('https://')) {
-    absUrl = link;
-  } else if (link.startsWith('/')) {
-    absUrl = window.location.origin + link;
-  } else {
+  if (link.startsWith('http://') || link.startsWith('https://')) absUrl = link;
+  else if (link.startsWith('/')) absUrl = window.location.origin + link;
+  else {
     const base = window.location.href.replace(/\/[^/]*$/, '/');
     absUrl = base + link;
   }
@@ -2842,8 +2508,7 @@ async function launchGame(link, title) {
     'https://studyclient.vercel.app',
     'https://studyclient.fly.dev',
   ];
-  const isExempt = EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0);
-  if (isExempt) { window.location.href = absUrl; return; }
+  if (EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0)) { window.location.href = absUrl; return; }
   if (IN_TEMUNET) { window.location.href = absUrl; return; }
 
   const cloakTitle = 'Home - Classroom';
@@ -2852,63 +2517,32 @@ async function launchGame(link, title) {
   const gameTab = window.open('about:blank', '_blank');
   if (!gameTab) { toast('Popup blocked — enable popups for this site'); return; }
   openedTabs.push(gameTab);
-
-  writeLoading(gameTab, title, cloakTitle);
+  writeLoading(gameTab, title);
 
   try {
     const res = await fetch(absUrl, { credentials: 'same-origin' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     let html = await res.text();
-
     html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
-    html = html.replace(
-      /(<head[^>]*>)/i,
-      `$1\n<base href="${gameBase}"/>\n<title>Home - Classroom</title>\n<link rel="icon" href="${GC_ICON}"/>`
-    );
-    if (!/<head/i.test(html)) {
-      html = `<head><base href="${gameBase}"/><title>Home - Classroom</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
-    }
-
+    html = html.replace(/(<head[^>]*>)/i, `$1\n<base href="${gameBase}"/>\n<title>${cloakTitle}</title>\n<link rel="icon" href="${GC_ICON}"/>`);
+    if (!/<head/i.test(html)) html = `<head><base href="${gameBase}"/><title>${cloakTitle}</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
     gameTab.document.open();
     gameTab.document.write(html);
     gameTab.document.close();
-
     setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch (e) {} }, 300);
     setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch (e) {} }, 1200);
   } catch (err) {
     gameTab.document.open();
-    gameTab.document.write(`<!DOCTYPE html><html>
-<head>
-  <title>Home - Classroom</title>
-  <link rel="icon" href="${GC_ICON}"/>
-  <style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style>
-</head>
-<body>
-  <iframe src="${escHtml(absUrl)}" allowfullscreen allow="fullscreen"></iframe>
-</body></html>`);
+    gameTab.document.write(`<!DOCTYPE html><html><head><title>${cloakTitle}</title><link rel="icon" href="${GC_ICON}"/><style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style></head><body><iframe src="${escHtml(absUrl)}" allowfullscreen allow="fullscreen"></iframe></body></html>`);
     gameTab.document.close();
   }
 }
 
 const GC_ICON = '/favicon-32x32.png';
 
-function writeLoading(tab, title, cloakTitle) {
+function writeLoading(tab, title) {
   tab.document.open();
-  tab.document.write(`<!DOCTYPE html><html>
-<head>
-  <title>Home - Classroom</title>
-  <link rel="icon" href="${GC_ICON}"/>
-  <style>
-    body{background:#0a0a0a;color:#555;font-family:monospace;font-size:13px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;gap:10px;}
-    .spinner{width:20px;height:20px;border:2px solid #1e1e1e;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
-</head>
-<body>
-  <div class="spinner"></div>
-  <div>Loading ${escHtml(title)}…</div>
-</body></html>`);
+  tab.document.write(`<!DOCTYPE html><html><head><title>Home - Classroom</title><link rel="icon" href="${GC_ICON}"/><style>body{background:#0a0a0a;color:#555;font-family:monospace;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;gap:10px;}.spinner{width:20px;height:20px;border:2px solid #1e1e1e;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>Loading ${escHtml(title)}…</div></body></html>`);
   tab.document.close();
 }
 
@@ -2923,14 +2557,16 @@ function surprise() {
 // GREETING
 // ──────────────────────────────────────────────
 function renderGreet() {
-  const h = new Date().getHours();
-  const hi = h < 5 ? 'Still up?' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Late night session';
-  document.getElementById('greetHi').textContent = hi;
+  // Always a warm, simple greeting — no time-of-day, no streaks.
+  document.getElementById('greetHi').innerHTML =
+    '<i class="fa-regular fa-hand"></i> Good morning';
 }
 
 // ──────────────────────────────────────────────
 // HERO
 // ──────────────────────────────────────────────
+let lastHeroTitle = null;
+
 function renderHero() {
   const hero = document.getElementById('hero');
   const body = hero.querySelector('.hero-body');
@@ -2945,26 +2581,28 @@ function renderHero() {
   const recs = currentRecs();
   tilesEl.innerHTML = '';
 
-  // Reset the swap animation on the text body
-  body.classList.remove('swap');
-  void body.offsetWidth;
-  body.classList.add('swap');
-
-  // ── Empty state ──────────────────────────────────────────
   if (!recs.length) {
     artWrap.classList.remove('has-image');
     artImg.removeAttribute('src');
-
     titleEl.textContent = 'Your picks start here';
     titleEl.classList.add('placeholder');
     metaEl.textContent = 'Recommendations';
     subEl.textContent = 'Play something to get recommendations! Every game you launch sharpens what we suggest.';
     playBtn.style.display = 'none';
+    lastHeroTitle = null;
     return;
   }
 
-  // ── Primary pick text ────────────────────────────────────
   const top = recs[0];
+
+  // Only re-trigger the swap animation when the pick actually changed.
+  if (lastHeroTitle !== top.a.title) {
+    body.classList.remove('swap');
+    void body.offsetWidth;
+    body.classList.add('swap');
+    lastHeroTitle = top.a.title;
+  }
+
   titleEl.textContent = top.a.title;
   titleEl.classList.remove('placeholder');
   metaEl.textContent = (cfg.engine.showMatch ? `${top.matchPct}% match · ` : '') + top.a.category;
@@ -2975,22 +2613,14 @@ function renderHero() {
   playBtn.style.display = '';
   playBtn.onclick = () => launchGame(top.a.link, top.a.title);
 
-  // ── Hero background art (crossfade via preload) ──────────
   withThumb(top.a.link, url => {
-    if (!url) {
-      artWrap.classList.remove('has-image');
-      return;
-    }
+    if (!url) { artWrap.classList.remove('has-image'); return; }
     const pre = new Image();
-    pre.onload = () => {
-      artImg.src = url;
-      artWrap.classList.add('has-image');
-    };
+    pre.onload = () => { artImg.src = url; artWrap.classList.add('has-image'); };
     pre.onerror = () => artWrap.classList.remove('has-image');
     pre.src = url;
   });
 
-  // ── Secondary tiles ──────────────────────────────────────
   const tiles = recs.slice(1, 6);
   tiles.forEach((r, i) => {
     const b = document.createElement('button');
@@ -3003,12 +2633,9 @@ function renderHero() {
     tilesEl.appendChild(b);
   });
 
-  // ── Warm the thumbnail cache for the other tiles ─────────
-  // Runs after the primary so the hero art resolves first.
   tiles.forEach(r => withThumb(r.a.link, () => {}));
 }
 
-// hero follows the cursor a little
 function bindHeroParallax() {
   const hero = document.getElementById('hero');
   const art = document.getElementById('heroArt');
@@ -3023,7 +2650,7 @@ function bindHeroParallax() {
 }
 
 // ──────────────────────────────────────────────
-// SIDEBAR (category strip in header)
+// SIDEBAR
 // ──────────────────────────────────────────────
 function buildSidebar() {
   const nav = document.getElementById('sidebar');
@@ -3057,6 +2684,7 @@ function createCard(a) {
   card.dataset.cat = a.category;
   card.dataset.title = a.title;
   card.dataset.link = a.link;
+  card.title = a.title;   // ← full-name tooltip on hover
   card.addEventListener('click', () => launchGame(a.link, a.title));
 
   const thumb = document.createElement('div');
@@ -3097,7 +2725,6 @@ function refreshHearts() {
   });
 }
 
-// Every assignment has one persistent card node for the grid and category rows.
 function buildGridOnce() {
   const grid = document.getElementById('gameGrid');
   cardNodes = assignments.map(a => createCard(a));
@@ -3161,16 +2788,12 @@ function buildRows() {
   });
 }
 
-// Resolves CURATED against the catalog. Anything that doesn't match is
-// skipped and logged to the console, so a typo shows up in devtools.
 function curatedGames() {
-  return CURATED
-    .map(t => {
-      const a = findGame(t);
-      if (!a) console.warn('Curated title not found:', t);
-      return a;
-    })
-    .filter(Boolean);
+  return CURATED.map(t => {
+    const a = findGame(t);
+    if (!a) console.warn('Curated title not found:', t);
+    return a;
+  }).filter(Boolean);
 }
 
 function renderTop5() {
@@ -3191,6 +2814,7 @@ function renderTop5() {
 function renderFavRow() {
   const sc = rowRefs.fav.scroll;
   sc.replaceChildren();
+  rowRefs.fav.el.classList.toggle('has-items', favs.length > 0);
   if (!favs.length) {
     sc.innerHTML = `<div class="empty-row"><i class="fa-solid fa-heart"></i> Tap the heart on any game to add it here.</div>`;
     return;
@@ -3250,16 +2874,10 @@ function applyFilters(animate = false) {
   grid.style.display = rowMode ? 'none' : '';
   header.style.display = rowMode ? 'none' : '';
 
-  if (rowMode) {
-    renderRows();
-    return;
-  }
+  if (rowMode) { renderRows(); return; }
 
   grid.classList.remove('animate');
-  if (animate) {
-    void grid.offsetWidth;
-    grid.classList.add('animate');
-  }
+  if (animate) { void grid.offsetWidth; grid.classList.add('animate'); }
 
   const set = new Set(selectionIndices(currentCat));
   let visibleCount = 0;
@@ -3299,7 +2917,7 @@ function renderAll() {
 }
 
 // ──────────────────────────────────────────────
-// INBOX — update alerts and new game alerts
+// INBOX
 // ──────────────────────────────────────────────
 function loadInbox() {
   const s = load(LS.inbox, null) || {};
@@ -3319,24 +2937,29 @@ function makeNewsItem(n) {
 function syncInbox() {
   const fresh = [];
 
-  if (inbox.newsSeen === null) {
-    newsData.slice(0, 2).forEach(n => fresh.push(makeNewsItem(n)));
-  } else {
-    newsData
-      .filter(n => !inbox.newsSeen.includes(n.title))
-      .forEach(n => fresh.push(makeNewsItem(n)));
-  }
+  // Only ever surface the two newest news items. The Updates modal
+  // is the full log — the inbox is just a nudge.
+  const newestNews = newsData.slice(0, 2);
+  const seenNews = new Set(Array.isArray(inbox.newsSeen) ? inbox.newsSeen : []);
+  newestNews.forEach(n => {
+    if (!seenNews.has(n.title)) fresh.push(makeNewsItem(n));
+  });
+
+  // Mark everything as seen so we never re-surface old items.
   inbox.newsSeen = newsData.map(n => n.title);
 
+  // New-game detection — only fire for titles we've genuinely never seen.
   const current = assignments.filter(isPlayable).map(a => a.title);
   if (inbox.knownTitles === null) {
     inbox.knownTitles = current;
   } else {
+    const known = new Set(inbox.knownTitles);
     const aff = buildTasteProfile().catAffinity;
     current
-      .filter(t => !inbox.knownTitles.includes(t))
+      .filter(t => !known.has(t))
       .forEach(t => {
         const a = findGame(t);
+        if (!a) return;
         const matches = (aff.get(a.category) || 0) > 0.2;
         fresh.push({
           id: 'game:' + t,
@@ -3357,6 +2980,26 @@ function syncInbox() {
   saveInbox();
 }
 
+// v9.1.1 — one-time inbox cleanup. Wipes the changelog dump that
+// earlier versions accidentally pushed into the inbox.
+(function cleanupInboxOnce() {
+  const KEY = 'obl_inbox_cleanup_v911';
+  if (localStorage.getItem(KEY)) return;
+  try {
+    const s = load(LS.inbox, null);
+    if (s && Array.isArray(s.items)) {
+      // Drop every 'news:' item except the two newest by date.
+      const newsItems = s.items
+        .filter(i => i.type === 'update' && String(i.id).startsWith('news:'))
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+      const keepIds = new Set(newsItems.slice(0, 2).map(i => i.id));
+      s.items = s.items.filter(i => i.type !== 'update' || keepIds.has(i.id));
+      localStorage.setItem(LS.inbox, JSON.stringify(s));
+    }
+    localStorage.setItem(KEY, '1');
+  } catch (e) {}
+})();
+
 function updateInboxBadge() {
   const n = inbox.items.filter(i => !i.read).length;
   const b = document.getElementById('inboxBadge');
@@ -3366,10 +3009,21 @@ function updateInboxBadge() {
 
 function renderInbox() {
   const list = document.getElementById('inboxList');
-  if (!inbox.items.length) {
+
+  // Newest first, regardless of insertion order.
+  const sorted = [...inbox.items].sort((a, b) => {
+    const da = String(a.date || '');
+    const db = String(b.date || '');
+    if (da !== db) return db.localeCompare(da);
+    // Same day — news beats games so updates aren't buried.
+    if (a.type !== b.type) return a.type === 'update' ? -1 : 1;
+    return 0;
+  });
+
+  if (!sorted.length) {
     list.innerHTML = `<div class="empty-row"><i class="fa-solid fa-envelope-open"></i> You're all caught up.</div>`;
   } else {
-    list.innerHTML = inbox.items.map(it => `
+    list.innerHTML = sorted.map(it => `
       <div class="inbox-item ${it.read ? '' : 'unread'}" data-id="${escHtml(it.id)}" data-type="${it.type}">
         <div class="inbox-ico"><i class="${it.type === 'game' ? 'fa-solid fa-gamepad' : 'fa-solid fa-bell'}"></i></div>
         <div class="inbox-body">
@@ -3381,9 +3035,7 @@ function renderInbox() {
         ${it.read ? '' : '<span class="unread-dot"></span>'}
       </div>`).join('');
 
-    list.querySelectorAll('.inbox-item').forEach(el => {
-      el.onclick = () => markRead(el.dataset.id);
-    });
+    list.querySelectorAll('.inbox-item').forEach(el => { el.onclick = () => markRead(el.dataset.id); });
     list.querySelectorAll('.inbox-play').forEach(b => {
       b.onclick = e => {
         e.stopPropagation();
@@ -3417,13 +3069,10 @@ function clearInbox() {
   toast('Inbox cleared');
 }
 
-function openInbox() {
-  renderInbox();
-  openModal('inboxModal');
-}
+function openInbox() { renderInbox(); openModal('inboxModal'); }
 
 // ──────────────────────────────────────────────
-// UPDATES LIST + UPDATE POPUP
+// UPDATES
 // ──────────────────────────────────────────────
 function renderUpdatesList() {
   document.getElementById('updatesList').innerHTML = newsData.map(n => `
@@ -3476,7 +3125,7 @@ function onSearchInput(v) {
 }
 
 // ──────────────────────────────────────────────
-// MODALS & GLOBAL EVENTS
+// MODALS
 // ──────────────────────────────────────────────
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) {
@@ -3487,7 +3136,6 @@ function closeModal(id) {
 function bindGlobal() {
   document.addEventListener('click', e => {
     if (e.target.classList && e.target.classList.contains('modal-bg')) closeModal(e.target.id);
-
     const seg = e.target.closest && e.target.closest('.seg button');
     if (seg) {
       const group = seg.parentElement.dataset.group;
@@ -3499,25 +3147,8 @@ function bindGlobal() {
   });
 
   document.addEventListener('keydown', e => {
-    if (capturingPanic) {
-      e.preventDefault();
-      capturingPanic = false;
-      if (e.key !== 'Escape') setPanic({ key: e.key });
-      const b = document.getElementById('panicKeyBtn');
-      b.classList.remove('listening');
-      populateSettingsUI();
-      return;
-    }
-
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-bg.open').forEach(m => closeModal(m.id));
-      return;
-    }
-
-    if (!cfg.panic.enabled || isTyping(e.target)) return;
-    if (keyMatches(e, cfg.panic.key)) {
-      e.preventDefault();
-      triggerPanic();
     }
   });
 
@@ -3546,6 +3177,23 @@ function setChecked(id, val) {
   if (el) el.checked = !!val;
 }
 
+function renderThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = THEMES.map((t, i) => `
+    <button class="theme-tile ${cfg.theme === t.id ? 'active' : ''}" data-theme="${t.id}" style="animation-delay:${i * 40}ms" type="button">
+      <div class="theme-swatches">
+        <span class="theme-swatch" style="background:${t.bg}"></span>
+        <span class="theme-swatch" style="background:${lighten(t.bg, 22)}"></span>
+        <span class="theme-swatch" style="background:${t.accent}"></span>
+      </div>
+      <div class="theme-name">${escHtml(t.name)}</div>
+      <div class="theme-desc">${escHtml(t.desc)}</div>
+    </button>`).join('');
+  grid.querySelectorAll('.theme-tile').forEach(b => {
+    b.onclick = () => applyTheme(b.dataset.theme);
+  });
+}
+
 function populateSettingsUI() {
   const row = document.getElementById('swatchRow');
   row.innerHTML = '';
@@ -3559,8 +3207,9 @@ function populateSettingsUI() {
   });
 
   document.getElementById('colorPicker').value = cfg.accent;
-  document.getElementById('bgPicker').value = cfg.bg;
   document.getElementById('fontNow').textContent = cfg.font;
+
+  renderThemeGrid();
 
   document.querySelectorAll('.seg[data-group]').forEach(seg => {
     const g = seg.dataset.group;
@@ -3575,47 +3224,24 @@ function populateSettingsUI() {
   setChecked('engMatch', e.showMatch);
   setChecked('engReasons', e.showReasons);
   setChecked('calmMode', cfg.calm);
-  setChecked('panicEnable', cfg.panic.enabled);
 
   const f = document.getElementById('engFocus');
   f.value = e.focus;
   previewFocus(e.focus);
-
-  const pk = document.getElementById('panicKeyBtn');
-  if (!capturingPanic) pk.textContent = keyLabel(cfg.panic.key);
-  document.getElementById('panicUrl').value = cfg.panic.url;
 }
 
 // ──────────────────────────────────────────────
-// GAME SAVE SYSTEM — .OBLSAVE export / import
-//
-// Captures everything this page's own JS can legally reach:
-//   - localStorage (this origin)  ← includes play history, favorites, inbox, settings
-//   - sessionStorage (this origin)
-//   - cookies visible to this document (non-HttpOnly only)
-//   - every IndexedDB database on this origin, including all object stores
-//   - the experimental "Shared Storage" API, if the browser exposes one
-//
-// IMPORTANT LIMITATION: browsers isolate storage per-origin. Games hosted on
-// a different domain than this site are sandboxed away from this page's
-// storage. Games served from this same domain are covered.
+// GAME SAVE
 // ──────────────────────────────────────────────
-
 async function collectAllIndexedDB() {
   const result = {};
   if (!('indexedDB' in window)) return result;
   let dbList = [];
-  try {
-    if (indexedDB.databases) dbList = await indexedDB.databases();
-  } catch (e) {}
+  try { if (indexedDB.databases) dbList = await indexedDB.databases(); } catch (e) {}
   for (const dbInfo of dbList) {
     const name = dbInfo.name;
     if (!name) continue;
-    try {
-      result[name] = await dumpIndexedDB(name);
-    } catch (e) {
-      result[name] = { error: String(e) };
-    }
+    try { result[name] = await dumpIndexedDB(name); } catch (e) { result[name] = { error: String(e) }; }
   }
   return result;
 }
@@ -3627,15 +3253,10 @@ function dumpIndexedDB(dbName) {
     req.onsuccess = () => {
       const db = req.result;
       const storeNames = Array.from(db.objectStoreNames);
-      if (storeNames.length === 0) {
-        db.close();
-        resolve({ version: db.version, stores: {} });
-        return;
-      }
+      if (storeNames.length === 0) { db.close(); resolve({ version: db.version, stores: {} }); return; }
       const tx = db.transaction(storeNames, 'readonly');
       const stores = {};
       let remaining = storeNames.length;
-
       storeNames.forEach(storeName => {
         const store = tx.objectStore(storeName);
         const keyPath = store.keyPath;
@@ -3644,10 +3265,8 @@ function dumpIndexedDB(dbName) {
         const cursorReq = store.openCursor();
         cursorReq.onsuccess = (e) => {
           const cursor = e.target.result;
-          if (cursor) {
-            entries.push({ key: cursor.key, value: cursor.value });
-            cursor.continue();
-          } else {
+          if (cursor) { entries.push({ key: cursor.key, value: cursor.value }); cursor.continue(); }
+          else {
             stores[storeName] = { keyPath, autoIncrement, entries };
             remaining--;
             if (remaining === 0) { db.close(); resolve({ version: db.version, stores }); }
@@ -3676,7 +3295,6 @@ function restoreIndexedDB(dbName, dbDump) {
   return new Promise((resolve) => {
     const storeNames = Object.keys(dbDump.stores || {});
     const openReq = indexedDB.open(dbName, dbDump.version || 1);
-
     openReq.onupgradeneeded = () => {
       const db = openReq.result;
       storeNames.forEach(storeName => {
@@ -3689,7 +3307,6 @@ function restoreIndexedDB(dbName, dbDump) {
         }
       });
     };
-
     openReq.onsuccess = () => {
       const db = openReq.result;
       const existingStores = storeNames.filter(s => db.objectStoreNames.contains(s));
@@ -3708,7 +3325,6 @@ function restoreIndexedDB(dbName, dbDump) {
       tx.oncomplete = () => { db.close(); resolve(); };
       tx.onerror = () => { db.close(); resolve(); };
     };
-
     openReq.onerror = () => resolve();
   });
 }
@@ -3760,29 +3376,24 @@ async function exportSave() {
     setSaveStatus('Gathering save data…');
     await sleep(900);
     const localStorageData = collectLocalStorage();
-
     setSaveStatus('Processing save data 0/3...');
     await sleep(180);
     const sessionStorageData = collectSessionStorage();
-
     setSaveStatus('Processing save data 1/3...');
     await sleep(180);
     const cookiesData = collectCookies();
-
     setSaveStatus('Processing save data 2/3...');
     await sleep(180);
     const indexedDBData = await collectAllIndexedDB();
-
     setSaveStatus('Processing save data 3/3...');
     await sleep(180);
     const sharedStorageData = await collectSharedStorage();
-
     setSaveStatus('Packing data...');
     await sleep(600);
 
     const payload = {
       format: 'OBLSAVE',
-      version: 2,
+      version: 3,
       exportedAt: new Date().toISOString(),
       origin: window.location.origin,
       localStorage: localStorageData,
@@ -3793,7 +3404,6 @@ async function exportSave() {
     };
 
     const blob = new Blob([JSON.stringify(payload)], { type: 'application/octet-stream' });
-
     setSaveStatus('Initializing export…');
     await sleep(600);
 
@@ -3831,6 +3441,12 @@ async function importSave(event) {
       return;
     }
 
+    // Accept v1, v2, and v3. All share the same shape; v3 is just versioned.
+    const v = Number(data.version) || 1;
+    if (v > 3) {
+      setSaveStatus(`This save was made with a newer version (v${v}) and may not import cleanly.`);
+    }
+
     if (data.localStorage) {
       Object.keys(data.localStorage).forEach(k => {
         try { localStorage.setItem(k, data.localStorage[k]); } catch (e) {}
@@ -3856,7 +3472,6 @@ async function importSave(event) {
       }
     }
 
-    // Reload everything from restored storage so the UI updates immediately
     loadProfile();
     loadFavs();
     loadConfig();
@@ -3910,6 +3525,7 @@ function init() {
   loadConfig();
   applyConfig(false);
 
+  buildAltRoutes();
   buildSidebar();
   buildGridOnce();
   buildRows();

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Game Tester — OBL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+<style>
+:root {
+  --bg: #0b0c0e;
+  --surface: #121418;
+  --surface2: #181b21;
+  --surface3: #20242c;
+  --border: #1d2129;
+  --border2: #2b303a;
+  --text: #f2f4f7;
+  --muted: rgba(242,244,247,.6);
+  --muted2: rgba(242,244,247,.36);
+  --accent: #3b82f6;
+  --accent-rgb: 59,130,246;
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --info: #38bdf8;
+  --radius: 12px;
+  --font-main: 'Fredoka', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --spring: cubic-bezier(.34,1.45,.5,1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-main); min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  padding: 24px;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+header.top {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+h1 {
+  font-size: 26px; font-weight: 700; letter-spacing: -.3px;
+  display: flex; align-items: center; gap: 10px;
+}
+h1 i { color: var(--accent); }
+.sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px; margin-bottom: 16px;
+}
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row.tight { gap: 8px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-main); font-size: 13px; font-weight: 600;
+  padding: 9px 15px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; color: var(--text);
+  background: var(--surface2);
+  transition: background .15s, border-color .15s, transform .2s var(--spring), color .15s;
+}
+.btn:hover { background: var(--surface3); transform: translateY(-1px); }
+.btn:active { transform: scale(.96); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: var(--border2); }
+.btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+.btn i { font-size: 12px; }
+
+input[type="text"], input[type="number"], textarea, select {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; color: var(--text);
+  font-family: var(--font-main); font-size: 13px;
+  padding: 9px 12px; outline: none; width: 100%;
+  transition: border-color .15s, box-shadow .15s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .18);
+}
+textarea {
+  font-family: var(--font-mono); font-size: 12px;
+  min-height: 140px; resize: vertical; line-height: 1.5;
+}
+
+label.field {
+  display: block; margin-bottom: 6px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
+  color: var(--muted);
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.stats {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  padding: 14px 16px; margin-bottom: 16px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.stat { display: flex; align-items: baseline; gap: 6px; }
+.stat-num { font-size: 22px; font-weight: 700; }
+.stat-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--muted);
+}
+.stat-num.ok   { color: var(--ok); }
+.stat-num.bad  { color: var(--bad); }
+.stat-num.warn { color: var(--warn); }
+.stat-num.info { color: var(--info); }
+
+.progress {
+  height: 6px; background: var(--surface3); border-radius: 999px;
+  overflow: hidden; margin: 4px 0 16px;
+}
+.progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), .6));
+  transition: width .25s var(--ease);
+}
+
+.results { display: flex; flex-direction: column; gap: 6px; }
+
+.result {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px;
+  animation: rowIn .25s var(--ease) both;
+  transition: border-color .2s, transform .2s var(--spring);
+}
+.result:hover { border-color: var(--border2); transform: translateX(2px); }
+@keyframes rowIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.badge {
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  flex-shrink: 0; min-width: 76px; text-align: center;
+  font-family: var(--font-mono);
+}
+.badge.ok      { background: rgba(74,222,128,.15);  color: var(--ok); }
+.badge.bad     { background: rgba(248,113,113,.15); color: var(--bad); }
+.badge.warn    { background: rgba(251,191,36,.15);  color: var(--warn); }
+.badge.info    { background: rgba(56,189,248,.15);  color: var(--info); }
+.badge.pending { background: var(--surface3);       color: var(--muted); }
+
+.result-body { flex: 1; min-width: 0; }
+.result-title { font-size: 14px; font-weight: 600; }
+.result-link {
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  word-break: break-all; margin-top: 2px;
+}
+.result-note {
+  font-size: 11px; color: var(--muted); margin-top: 4px;
+  font-family: var(--font-mono);
+}
+.result-note b { color: var(--text); font-weight: 600; }
+
+.result-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--surface3); border: 1px solid var(--border2);
+  color: var(--muted); cursor: pointer; font-size: 12px;
+  display: grid; place-items: center;
+  transition: color .15s, border-color .15s, transform .2s var(--spring);
+}
+.icon-btn:hover { color: var(--text); border-color: var(--accent); }
+.icon-btn:active { transform: scale(.9); }
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  font-size: 12px; font-weight: 600;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--muted); cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.chip:hover { color: var(--text); }
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.empty {
+  color: var(--muted); font-size: 14px;
+  padding: 40px; text-align: center;
+  border: 1px dashed var(--border2); border-radius: 12px;
+}
+
+.hint {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  margin-top: 8px;
+}
+.hint b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1><i class="fa-solid fa-flask-vial"></i> Game Tester</h1>
+      <div class="sub">Probe every assignment for 404s, redirects, and offline hosts.</div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="grid-2">
+      <div>
+        <label class="field">Paste the assignment array (or leave blank to fetch <code>assignments.json</code>)</label>
+        <textarea id="input" placeholder='Paste the full `const assignments = [...]` block, or just the raw JSON array.'></textarea>
+        <div class="hint">
+          Accepts either the raw JS array literal or plain JSON. Links are resolved against <b>this page's</b> origin.
+        </div>
+      </div>
+      <div>
+        <label class="field">Options</label>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div class="row tight">
+            <div style="flex:1">
+              <label class="field">Timeout (ms)</label>
+              <input id="timeout" type="number" value="8000" min="1000" step="500"/>
+            </div>
+            <div style="flex:1">
+              <label class="field">Concurrency</label>
+              <input id="concurrency" type="number" value="4" min="1" max="12"/>
+            </div>
+          </div>
+          <div class="row tight">
+            <div style="flex:1">
+              <label class="field">Method</label>
+              <select id="method">
+                <option value="HEAD">HEAD (fast, may not be allowed)</option>
+                <option value="GET" selected>GET (accurate, slower)</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <label class="field">Filter</label>
+              <select id="catFilter">
+                <option value="">All categories</option>
+              </select>
+            </div>
+          </div>
+          <div class="row tight" style="margin-top:2px">
+            <button class="btn primary" id="runBtn"><i class="fa-solid fa-play"></i> Run tests</button>
+            <button class="btn ghost" id="stopBtn" disabled><i class="fa-solid fa-stop"></i> Stop</button>
+            <button class="btn ghost" id="copyBtn"><i class="fa-solid fa-copy"></i> Copy report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-num" id="sTotal">0</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-num info" id="sProgress">0</span><span class="stat-label">Tested</span></div>
+    <div class="stat"><span class="stat-num ok" id="sOk">0</span><span class="stat-label">OK</span></div>
+    <div class="stat"><span class="stat-num warn" id="sWarn">0</span><span class="stat-label">Redirect</span></div>
+    <div class="stat"><span class="stat-num bad" id="sBad">0</span><span class="stat-label">404 / Offline</span></div>
+    <div class="stat"><span class="stat-num" id="sTime">—</span><span class="stat-label">Elapsed</span></div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="bar"></div></div>
+
+  <div class="filters" id="filters">
+    <div class="chip active" data-filter="all">All</div>
+    <div class="chip" data-filter="ok">OK</div>
+    <div class="chip" data-filter="warn">Redirects</div>
+    <div class="chip" data-filter="bad">404 / Offline</div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="empty">Paste the assignment list and press <b>Run tests</b>.</div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let games = [];
+let results = [];     // { game, status: 'pending'|'ok'|'warn'|'bad', code, note, url }
+let running = false;
+let stopRequested = false;
+let startedAt = 0;
+let activeFilter = 'all';
+
+const $ = id => document.getElementById(id);
+
+// ──────────────────────────────────────────────
+// PARSING
+// ──────────────────────────────────────────────
+// Accepts:
+//   const assignments = [ {title:"x", link:"y", category:"z"}, ... ];
+// or:
+//   [ { "title": "x", "link": "y", "category": "z" }, ... ]
+function parseAssignments(raw) {
+  if (!raw) return [];
+  let text = raw.trim();
+
+  // Strip leading "const X = " / "let X = " / "var X = " / "window.X = "
+  text = text.replace(/^(?:const|let|var|window\.\w+)\s*=\s*/i, '');
+
+  // Strip a trailing semicolon if present
+  text = text.replace(/;\s*$/, '');
+
+  // If it doesn't start with a bracket, try to locate the array literal
+  if (!/^\s*\[/.test(text)) {
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end !== -1) text = text.slice(start, end + 1);
+  }
+
+  // Prefer JSON.parse, fall back to a permissive eval-like extraction
+  try {
+    const parsed = JSON.parse(text);
+    return normalize(parsed);
+  } catch (e) { /* fall through */ }
+
+  // Fallback: extract each `{ ... }` object with a regex and pull fields
+  const out = [];
+  const objRe = /\{[^{}]*\}/g;
+  let m;
+  while ((m = objRe.exec(text)) !== null) {
+    const obj = m[0];
+    const title = matchField(obj, 'title');
+    const link = matchField(obj, 'link');
+    const category = matchField(obj, 'category');
+    if (title && link) out.push({ title, link, category: category || '' });
+  }
+  return normalize(out);
+}
+
+function matchField(obj, key) {
+  const re = new RegExp(key + '\\s*:\\s*([\'"])((?:\\\\.|(?!\\1).)*)\\1');
+  const m = obj.match(re);
+  return m ? m[2].replace(/\\(["'\\])/g, '$1') : '';
+}
+
+function normalize(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .filter(a => a && typeof a === 'object' && a.title && a.link)
+    .map(a => ({
+      title: String(a.title),
+      link: String(a.link),
+      category: String(a.category || '')
+    }));
+}
+
+// ──────────────────────────────────────────────
+// URL RESOLUTION
+// ──────────────────────────────────────────────
+function resolveUrl(link) {
+  if (/^https?:\/\//i.test(link)) return link;
+  if (link.startsWith('/')) return location.origin + link;
+  // relative to this page
+  const base = location.href.replace(/\/[^/]*$/, '/');
+  return new URL(link, base).href;
+}
+
+// ──────────────────────────────────────────────
+// ONE PROBE
+// ──────────────────────────────────────────────
+async function probe(game, timeoutMs, method) {
+  const url = resolveUrl(game.link);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let result;
+  try {
+    const res = await fetch(url, {
+      method,
+      signal: controller.signal,
+      redirect: 'follow',
+      credentials: 'omit',
+      cache: 'no-store'
+    });
+    clearTimeout(timer);
+
+    const finalUrl = res.url || url;
+    const redirected = finalUrl.replace(/\/$/, '') !== url.replace(/\/$/, '');
+
+    if (res.status === 404) {
+      result = { status: 'bad', code: 404, note: 'Not found', url, finalUrl };
+    } else if (res.status >= 500) {
+      result = { status: 'bad', code: res.status, note: 'Server error', url, finalUrl };
+    } else if (res.status >= 400) {
+      result = { status: 'bad', code: res.status, note: 'Client error', url, finalUrl };
+    } else if (redirected) {
+      result = {
+        status: 'warn',
+        code: res.status,
+        note: `Redirected → ${finalUrl}`,
+        url,
+        finalUrl
+      };
+    } else {
+      result = { status: 'ok', code: res.status, note: 'OK', url, finalUrl };
+    }
+  } catch (err) {
+    clearTimeout(timer);
+    const msg = err && err.name === 'AbortError'
+      ? `Timed out after ${timeoutMs}ms`
+      : (err && err.message) || 'Network error';
+    result = { status: 'bad', code: 0, note: msg, url, finalUrl: url };
+  }
+  return result;
+}
+
+// ──────────────────────────────────────────────
+// RENDER
+// ──────────────────────────────────────────────
+function renderResults() {
+  const wrap = $('results');
+  const filtered = results.filter(r => {
+    if (activeFilter === 'all') return true;
+    return r.status === activeFilter;
+  });
+
+  if (!results.length) {
+    wrap.innerHTML = '<div class="empty">Paste the assignment list and press <b>Run tests</b>.</div>';
+    return;
+  }
+  if (!filtered.length) {
+    wrap.innerHTML = '<div class="empty">No results in this filter yet.</div>';
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(r => {
+    const g = r.game;
+    const badgeClass = r.status;
+    const badgeText =
+      r.status === 'ok' ? 'OK' :
+      r.status === 'warn' ? 'REDIRECT' :
+      r.status === 'bad' ? (r.code === 0 ? 'OFFLINE' : String(r.code)) :
+      'PENDING';
+    const note = r.note ? `<div class="result-note">${escapeHtml(r.note)}</div>` : '';
+    const code = r.code ? `<b>${r.code}</b>` : '';
+    return `
+      <div class="result" data-title="${escapeHtml(g.title)}">
+        <span class="badge ${badgeClass}">${badgeText}</span>
+        <div class="result-body">
+          <div class="result-title">${escapeHtml(g.title)} <span style="color:var(--muted); font-weight:400;">· ${escapeHtml(g.category || '—')}</span></div>
+          <div class="result-link">${escapeHtml(g.link)}</div>
+          ${note || (code ? `<div class="result-note">HTTP <b>${r.code}</b></div>` : '')}
+        </div>
+        <div class="result-actions">
+          <button class="icon-btn" title="Open" data-open="${escapeHtml(resolveUrl(g.link))}"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+          <button class="icon-btn" title="Copy URL" data-copy="${escapeHtml(resolveUrl(g.link))}"><i class="fa-solid fa-copy"></i></button>
+          <button class="icon-btn" title="Re-test" data-retest="${escapeHtml(g.title)}"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+      </div>`;
+  }).join('');
+
+  wrap.querySelectorAll('[data-open]').forEach(b => {
+    b.onclick = () => window.open(b.dataset.open, '_blank', 'noopener');
+  });
+  wrap.querySelectorAll('[data-copy]').forEach(b => {
+    b.onclick = () => {
+      navigator.clipboard && navigator.clipboard.writeText(b.dataset.copy)
+        .then(() => flash(b, 'fa-check'), () => flash(b, 'fa-xmark'));
+    };
+  });
+  wrap.querySelectorAll('[data-retest]').forEach(b => {
+    b.onclick = () => retestOne(b.dataset.retest);
+  });
+}
+
+function flash(btn, iconClass) {
+  const old = btn.innerHTML;
+  btn.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+  setTimeout(() => { btn.innerHTML = old; }, 900);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function updateStats() {
+  const total = results.length;
+  const done = results.filter(r => r.status !== 'pending').length;
+  const ok = results.filter(r => r.status === 'ok').length;
+  const warn = results.filter(r => r.status === 'warn').length;
+  const bad = results.filter(r => r.status === 'bad').length;
+
+  $('sTotal').textContent = total;
+  $('sProgress').textContent = done;
+  $('sOk').textContent = ok;
+  $('sWarn').textContent = warn;
+  $('sBad').textContent = bad;
+  $('bar').style.width = total ? Math.round((done / total) * 100) + '%' : '0%';
+}
+
+// ──────────────────────────────────────────────
+// RUNNER (simple concurrency pool)
+// ──────────────────────────────────────────────
+async function runTests() {
+  if (running) return;
+  const raw = $('input').value.trim();
+
+  let list = [];
+  if (raw) {
+    list = parseAssignments(raw);
+  } else {
+    // Fall back to fetching a JSON file if one is provided
+    try {
+      const res = await fetch('assignments.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('assignments.json not found');
+      const json = await res.json();
+      list = normalize(json);
+    } catch (e) {
+      alert('No input provided, and could not fetch assignments.json.\n\nPaste the assignment array into the text box first.');
+      return;
+    }
+  }
+
+  if (!list.length) {
+    alert('Could not find any {title, link, category} objects in the input.');
+    return;
+  }
+
+  const catFilter = $('catFilter').value;
+  if (catFilter) list = list.filter(a => a.category === catFilter);
+
+  running = true;
+  stopRequested = false;
+  startedAt = Date.now();
+  results = list.map(game => ({ game, status: 'pending', code: 0, note: '' }));
+  renderResults();
+  updateStats();
+
+  $('runBtn').disabled = true;
+  $('stopBtn').disabled = false;
+
+  const timeoutMs = Math.max(1000, Number($('timeout').value) || 8000);
+  const concurrency = Math.max(1, Math.min(12, Number($('concurrency').value) || 4));
+  const method = $('method').value;
+
+  const elapsedTimer = setInterval(() => {
+    const secs = ((Date.now() - startedAt) / 1000).toFixed(1);
+    $('sTime').textContent = secs + 's';
+  }, 100);
+
+  let cursor = 0;
+  const workers = Array.from({ length: concurrency }, () => workerLoop());
+
+  async function workerLoop() {
+    while (!stopRequested) {
+      const i = cursor++;
+      if (i >= results.length) return;
+      const r = results[i];
+      const probeResult = await probe(r.game, timeoutMs, method);
+      // If user hit stop mid-flight, discard the outcome silently.
+      if (stopRequested) return;
+      Object.assign(r, probeResult);
+      // Re-render only the row, not the whole list, to keep scroll position.
+      patchRow(r);
+      updateStats();
+    }
+  }
+
+  await Promise.all(workers);
+
+  clearInterval(elapsedTimer);
+  running = false;
+  $('runBtn').disabled = false;
+  $('stopBtn').disabled = true;
+
+  const secs = ((Date.now() - startedAt) / 1000).toFixed(1);
+  $('sTime').textContent = secs + 's';
+  renderResults();
+}
+
+// Replaces just the row for a single result, preserving scroll position.
+function patchRow(r) {
+  const wrap = $('results');
+  const idx = results.indexOf(r);
+  if (idx === -1) return;
+  // If a filter hides this row, do nothing.
+  if (activeFilter !== 'all' && activeFilter !== r.status) return;
+
+  // Simplest reliable approach: rebuild the list but remember scrollY.
+  const scrollY = window.scrollY;
+  const wrapScroll = wrap.scrollTop;
+  renderResults();
+  window.scrollTo(0, scrollY);
+  wrap.scrollTop = wrapScroll;
+}
+
+async function retestOne(title) {
+  const r = results.find(x => x.game.title === title);
+  if (!r) return;
+  r.status = 'pending'; r.code = 0; r.note = '';
+  patchRow(r);
+  updateStats();
+  const timeoutMs = Math.max(1000, Number($('timeout').value) || 8000);
+  const method = $('method').value;
+  const res = await probe(r.game, timeoutMs, method);
+  Object.assign(r, res);
+  patchRow(r);
+  updateStats();
+}
+
+// ──────────────────────────────────────────────
+// REPORT
+// ──────────────────────────────────────────────
+function buildReport() {
+  const lines = [];
+  lines.push('# OBL game tester report');
+  lines.push('# Generated ' + new Date().toISOString());
+  lines.push('# Origin: ' + location.origin);
+  lines.push('# Total: ' + results.length);
+  lines.push('');
+  const order = { bad: 0, warn: 1, ok: 2, pending: 3 };
+  [...results]
+    .sort((a, b) => (order[a.status] - order[b.status]) || a.game.title.localeCompare(b.game.title))
+    .forEach(r => {
+      const code = r.code ? String(r.code).padStart(3, ' ') : '  —';
+      const note = r.note ? '  // ' + r.note : '';
+      lines.push(`${r.status.toUpperCase().padEnd(7)} ${code}  ${r.game.title}  (${r.game.link})${note}`);
+    });
+  return lines.join('\n');
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+$('runBtn').onclick = runTests;
+$('stopBtn').onclick = () => {
+  stopRequested = true;
+  $('stopBtn').disabled = true;
+};
+$('copyBtn').onclick = () => {
+  if (!results.length) return;
+  const text = buildReport();
+  navigator.clipboard && navigator.clipboard.writeText(text)
+    .then(() => flash($('copyBtn'), 'fa-check'))
+    .catch(() => alert('Copy failed'));
+};
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.onclick = () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.filter;
+    renderResults();
+  };
+});
+
+// Populate category filter from pasted input live
+$('input').addEventListener('input', () => {
+  const list = parseAssignments($('input').value);
+  const cats = [...new Set(list.map(a => a.category).filter(Boolean))].sort();
+  const sel = $('catFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All categories</option>' +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if (cats.includes(cur)) sel.value = cur;
+});
+
+// Optional: preload from assignments.json if it exists
+fetch('assignments.json', { cache: 'no-store' })
+  .then(r => r.ok ? r.json() : null)
+  .then(json => {
+    if (!json) return;
+    const list = normalize(json);
+    if (!list.length) return;
+    $('input').value = JSON.stringify(list, null, 2);
+    $('input').dispatchEvent(new Event('input'));
+  })
+  .catch(() => { /* fine — user will paste */ });
+</script>
+</body>
+</html>
