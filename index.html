@@ -1000,7 +1000,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.1</div>
+        <div class="modal-sub">Oogly Boogly Version 9.1.1</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1516,7 +1516,6 @@ const assignments = [
   { title:"Minecraft 1.20.6", link:"assignment/eagler1206", category:"Action" },
   { title:"Minecraft 1.14.4", link:"assignment/eagler1144", category:"Action" },
   { title:"Minecraft Alpha 1.0.6", link:"assignment/eagler106a", category:"Action" },
-  { title:"Minesweeper+ (2.1)", link:"assignment/msw/MinesweeperPlus", category:"Action" },
   { title:"Basketball FRVR", link:"assignment/basket", category:"Action" },
   { title:"Going Balls", link:"assignment/goingb", category:"Action" },
   { title:"Sushi Roll", link:"assignment/suroll", category:"Action" },
@@ -1536,10 +1535,8 @@ const assignments = [
   { title:"War Strike", link:"assignment/warstrike/", category:"Action" },
   { title:"2048", link:"assignment/2048/", category:"Puzzle" },
   { title:"99 Nights in Forest", link:"assignment/99nitf", category:"Action" },
-  { title:"Ace Combat Advanced", link:"assignment/aceadv", category:"Action" },
   { title:"Alpine Linux Emulator", link:"/assignment/alpineconsole", category:"Utility" },
   { title:"Alpine Linux Desktop Emulator", link:"/assignment/alpinelinuxwgui/", category:"Utility" },
-  { title:"Animal Crossing", link:"assignment/animalc", category:"Action" },
   { title:"ASCII Space", link:"assignment/asciispace", category:"Action" },
   { title:"Asteroids", link:"assignment/asteroids/", category:"Arcade" },
   { title:"Bit Planes", link:"assignment/bitp", category:"Action" },
@@ -1630,7 +1627,6 @@ const assignments = [
   { title:"Papa's Freezeria", link:"assignment/pf", category:"Action" },
   { title:"Pokemon Leaf Green", link:"assignment/pgreen", category:"Arcade" },
   { title:"Pixel Client 1.12.2", link:"assignment/pixelc1122", category:"Action" },
-  { title:"People Playground", link:"assignment/playg", category:"Action" },
   { title:"Pokemon Dark Violet", link:"assignment/poke-dv", category:"Arcade" },
   { title:"Pokemon Platinum", link:"assignment/poke-pt", category:"Arcade" },
   { title:"Pokemon X & Y", link:"assignment/poke-xy", category:"Arcade" },
@@ -1702,6 +1698,11 @@ const assignments = [
 ];
 
 const newsData = [
+  {
+    date: "2026-10-11",
+    title: "v9.1.1 fixes 80 assignments",
+    body: "v9.1.1 is an incremental update that includes fixes for over 80 of your favorite assignments, so they are maintained usable!"
+  },
   {
     date: "2026-10-11",
     title: "v9.1 brings theme presets and card tooltips",
@@ -1885,15 +1886,16 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.1',
+  version: '9.1.1',
   date: '2026-10-11',
-  title: 'Oogly Boogly v9.1 is here!',
+  title: 'Oogly Boogly v9.1.1 is here!',
   items: [
     '<b>Themes</b> Six hand-picked theme presets to recolor the entire site in one click.',
     '<b>Card tooltips</b> Hover any game card to see its full name.',
     '<b>More animations</b> Buttons bounce, cards lift, hearts beat, and the whole place feels cozier.',
     '<b>Greeting</b> Simpler, warmer, and always says good morning.',
     '<b>Simplified settings</b> The Panic section has been removed to keep things tidy.',
+    '<b>Assignment fixes</b> Over 80 assignments have been fixed to ensure they remain playable and enjoyable.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
