@@ -17,20 +17,20 @@
 
 /* ─────────────────────────────────────────────
    THEMES
-   Each theme overrides bg + accent; derived surfaces
-   are computed in JS via lighten(). Add a theme by
-   dropping a new entry in THEMES below.
    ───────────────────────────────────────────── */
 :root {
   --bg: #0b0c0e;
+  --bg-rgb: 11, 12, 14;
   --surface: #121418;
   --surface2: #181b21;
   --surface3: #20242c;
   --border: #1d2129;
   --border2: #2b303a;
-  --text: #f2f4f7;
-  --muted: rgba(242,244,247,.6);
-  --muted2: rgba(242,244,247,.36);
+  --text: #f4ecdd;
+  --text-soft: #e8ddc9;
+  --muted: rgba(244,236,221,.62);
+  --muted2: rgba(244,236,221,.38);
+  --muted-strong: rgba(244,236,221,.82);
   --accent: #3b82f6;
   --accent-rgb: 59,130,246;
   --heart: #f472b6;
@@ -58,7 +58,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Soft grain for coziness */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -81,14 +80,24 @@ header, .layout, .toast { position: relative; z-index: 1; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(14px) scale(.94); } to { opacity: 1; transform: none; } }
 @keyframes heartPop{ 0% { transform: scale(1); } 35% { transform: scale(1.5); } 65% { transform: scale(.85); } 100% { transform: scale(1); } }
 @keyframes bob     { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-@keyframes wiggle  { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
 @keyframes spark   { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
 @keyframes waveHi  { 0% { transform: rotate(0); } 20% { transform: rotate(16deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(12deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(0); } }
 @keyframes heartBeat { 0%,100% { transform: scale(1); } 25% { transform: scale(1.12); } 60% { transform: scale(.96); } }
-@keyframes tileNudge { 0% { transform: translateY(0) rotate(0); } 100% { transform: translateY(-4px) rotate(-3deg); } }
 @keyframes swatchPop { 0% { transform: scale(1); } 45% { transform: scale(1.28); } 100% { transform: scale(1.18); } }
 @keyframes arrowPulse { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
 @keyframes railIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+@keyframes steamRise { 0% { opacity: .55; transform: translateY(0); } 60% { opacity: 0; transform: translateY(-3px); } 100% { opacity: 0; transform: translateY(-3px); } }
+
+/* ───── PIXEL ART ───── */
+.pixel-icon {
+  shape-rendering: crispEdges;
+  display: inline-block;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.pixel-icon .steam-1 { animation: steamRise 2.4s ease-in-out infinite; }
+.pixel-icon .steam-2 { animation: steamRise 2.4s ease-in-out .8s infinite; }
+.pixel-icon .steam-3 { animation: steamRise 2.4s ease-in-out 1.6s infinite; }
 
 /* ───── HEADER ───── */
 header {
@@ -105,15 +114,6 @@ header {
   font-size: 19px; font-weight: 700; letter-spacing: -.2px;
   color: var(--text); white-space: nowrap; cursor: pointer; user-select: none;
 }
-.logo::before {
-  content: ''; width: 26px; height: 26px; border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), .55));
-  animation: spinIn .8s var(--spring) both;
-  transition: transform .35s var(--spring), box-shadow .25s;
-  box-shadow: 0 6px 14px rgba(var(--accent-rgb), .3);
-}
-.logo:hover::before { transform: rotate(90deg) scale(1.1); box-shadow: 0 8px 20px rgba(var(--accent-rgb), .5); }
-.logo span { color: var(--muted); font-weight: 400; }
 
 #sidebar {
   display: flex; align-items: center; gap: 4px;
@@ -168,8 +168,8 @@ header {
   color: var(--muted);
   font-family: var(--font-main); font-size: 10px; font-weight: 600;
   cursor: pointer;
-  opacity: 0;
-  animation: railIn .4s var(--spring) forwards;
+  opacity: 1;
+  animation: railIn .4s var(--spring) backwards;
   transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring), box-shadow .25s;
 }
 .tool-btn:nth-child(1) { animation-delay: .05s; }
@@ -181,6 +181,7 @@ header {
 .tool-btn:nth-child(7) { animation-delay: .35s; }
 .tool-btn:nth-child(8) { animation-delay: .40s; }
 .tool-btn:nth-child(9) { animation-delay: .45s; }
+.tool-btn:nth-child(10) { animation-delay: .50s; }
 .tool-btn i { font-size: 16px; transition: transform .35s var(--spring); }
 .tool-btn:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--cozy-shadow); }
 .tool-btn:hover i { transform: scale(1.22) rotate(-6deg); }
@@ -206,7 +207,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .greet-text { flex: 1; min-width: 200px; }
 .greet-hi { font-size: 26px; font-weight: 700; letter-spacing: -.3px; display: inline-flex; align-items: center; gap: 10px; }
-.greet-hi i { color: var(--accent); font-size: 22px; animation: waveHi 1.4s var(--ease) .3s 1; transform-origin: 70% 80%; }
+.greet-hi .pixel-icon { margin-right: 2px; }
 
 /* ───── HERO ───── */
 .hero {
@@ -245,10 +246,10 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .hero-art.has-image::after {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(90deg,
-    rgba(11,12,14,.94) 0%,
-    rgba(11,12,14,.78) 40%,
-    rgba(11,12,14,.35) 70%,
-    rgba(11,12,14,.12) 100%);
+    rgba(var(--bg-rgb), .94) 0%,
+    rgba(var(--bg-rgb), .78) 40%,
+    rgba(var(--bg-rgb), .35) 70%,
+    rgba(var(--bg-rgb), .12) 100%);
   pointer-events: none; z-index: 1;
 }
 .hero-art::before { z-index: 2; }
@@ -275,7 +276,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .hero-title { font-size: 50px; font-weight: 700; letter-spacing: -1px; line-height: 1.05; margin-bottom: 8px; }
 .hero-title.placeholder { font-size: 36px; }
 .hero-meta { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 10px; }
-.hero-sub { font-size: 15px; color: rgba(242,244,247,.78); line-height: 1.5; margin-bottom: 20px; max-width: 460px; }
+.hero-sub { font-size: 15px; color: var(--muted-strong); line-height: 1.5; margin-bottom: 20px; max-width: 460px; }
 
 .play-btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -345,12 +346,12 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .row-scroll::-webkit-scrollbar { display: none; }
 .row-scroll .card { flex: 0 0 180px; }
 .empty-row {
-  display: flex; align-items: center; gap: 10px; width: 100%;
+  display: flex; align-items: center; gap: 12px; width: 100%;
   color: var(--muted); font-size: 14px; font-weight: 500;
   padding: 22px; border: 1px dashed var(--border2); border-radius: 14px;
-  background: rgba(255,255,255,.015);
+  background: rgba(244,236,221,.02);
 }
-.empty-row i { color: var(--heart); }
+.empty-row .pixel-icon { opacity: .85; }
 
 /* ───── SECTION HEADER (grid) ───── */
 .section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; animation: rise .4s var(--ease) both; }
@@ -362,7 +363,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   gap: 12px; padding: 6px 4px;
 }
 .grid.animate .card:not(.is-hidden) { animation: cardIn .5s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 30ms); }
-.no-results { color: var(--muted); font-size: 15px; font-weight: 500; text-align: center; padding: 48px; grid-column: 1/-1; animation: fadeIn .4s both; }
+.no-results { color: var(--muted); font-size: 15px; font-weight: 500; text-align: center; padding: 48px; grid-column: 1/-1; animation: fadeIn .4s both; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.no-results .pixel-icon { opacity: .6; }
 
 /* ───── CARDS ───── */
 .card {
@@ -397,16 +399,19 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .card-title {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   padding: 10px 13px;
-  background: rgba(18, 20, 24, .28);
+  background: rgba(var(--bg-rgb), .32);
   -webkit-backdrop-filter: blur(6px) saturate(130%);
   backdrop-filter: blur(6px) saturate(130%);
-  border-top: 1px solid rgba(255, 255, 255, .10);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  border-top: 1px solid rgba(244,236,221,.10);
+  box-shadow: inset 0 1px 0 rgba(244,236,221,.05);
   font-size: 14px; font-weight: 600; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background .25s, border-color .25s;
 }
-.card:hover .card-title { background: rgba(24, 27, 33, .38); border-top-color: rgba(255, 255, 255, .18); }
+.card:hover .card-title {
+  background: rgba(var(--bg-rgb), .48);
+  border-top-color: rgba(244,236,221,.18);
+}
 .card-cat { display: none; }
 .card-arrow {
   position: absolute; left: 50%; top: 42%; z-index: 2;
@@ -490,6 +495,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(var(--accent-rgb), .38); }
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--border2); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: transparent; color: #f87171; border-color: rgba(248,113,113,.35); }
+.btn-danger:hover { background: rgba(248,113,113,.08); border-color: #f87171; color: #fca5a5; }
 .btn-block { width: 100%; }
 .btn-sm { padding: 7px 12px; font-size: 13px; }
 
@@ -506,10 +513,23 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 /* ───── UPDATE POPUP ───── */
 .update-modal { width: 420px; }
 .update-hero {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+  animation: rise .5s var(--ease) both;
+}
+.update-hero > i {
+  flex-shrink: 0;
   width: 54px; height: 54px; border-radius: 16px;
   background: rgba(var(--accent-rgb), .15); color: var(--accent);
   display: grid; place-items: center; font-size: 22px;
-  margin-bottom: 16px; animation: spinIn .8s var(--spring) both;
+  animation: spinIn .8s var(--spring) both;
+}
+.update-hero-label {
+  font-size: 18px; font-weight: 700; letter-spacing: -.2px;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  animation: rise .5s var(--ease) .15s forwards;
 }
 .update-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .pill {
@@ -539,13 +559,12 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .update-list li b { color: var(--text); font-weight: 600; }
 
-/* updates list */
 .news-row { padding: 14px 0; border-bottom: 1px solid var(--border); animation: rise .4s var(--ease) backwards; }
 .news-row:last-child { border-bottom: none; }
 .news-row-title { font-size: 14px; font-weight: 600; margin: 5px 0; line-height: 1.35; }
 .news-row-body { font-size: 13px; color: var(--muted); line-height: 1.55; }
 
-/* inbox */
+/* ───── INBOX ───── */
 .inbox-actions { display: flex; gap: 8px; margin-bottom: 14px; }
 .inbox-item {
   position: relative; display: flex; gap: 12px; align-items: flex-start;
@@ -569,7 +588,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .inbox-play { flex-shrink: 0; align-self: center; }
 .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
 
-/* font picker */
+/* ───── FONT PICKER ───── */
 .font-modal { width: 540px; }
 .font-tools { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
 .font-grid {
@@ -591,7 +610,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .custom-font { display: flex; gap: 8px; margin-top: 12px; }
 .custom-font .text-in { flex: 1; }
 
-/* settings */
+/* ───── SETTINGS ───── */
 .settings { width: 560px; }
 .set-section { margin-bottom: 24px; }
 .set-heading {
@@ -604,11 +623,17 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .set-row:last-child { border-bottom: none; }
 .set-text { min-width: 0; }
-.set-label { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+.set-label { font-size: 15px; font-weight: 600; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
 .set-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
 .set-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rec-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  padding: 2px 7px; border-radius: 999px;
+  background: rgba(var(--accent-rgb), .15); color: var(--accent);
+  border: 1px solid rgba(var(--accent-rgb), .25);
+}
 
-/* Theme picker grid */
 .theme-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -633,7 +658,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .theme-swatches { display: flex; gap: 4px; margin-bottom: 8px; }
 .theme-swatch {
   width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.15);
+  border: 1px solid rgba(244,236,221,.15);
   transition: transform .25s var(--spring);
 }
 .theme-tile:hover .theme-swatch { transform: scale(1.08); }
@@ -668,31 +693,21 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .seg button.active { background: var(--surface3); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
 .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
-/* Locked switch: reads as off, dimmed, refuses hover */
 .switch input:disabled + .slider {
   opacity: .45;
   cursor: not-allowed;
   background: var(--surface3) !important;
   border-color: var(--border) !important;
 }
-
-/* Force the knob to the left (off) position, neutral gray */
 .switch input:disabled + .slider::before {
   transform: translateX(0) !important;
   background: var(--muted2) !important;
 }
-
-/* Kill focus ring and hover styling */
-.switch input:disabled:focus-visible + .slider {
-  box-shadow: none;
-}
-
-/* Keep the not-allowed cursor on the whole control */
+.switch input:disabled:focus-visible + .slider { box-shadow: none; }
 .switch input:disabled,
 .switch input:disabled + .slider,
-.switch input:disabled + .slider::before {
-  cursor: not-allowed;
-}
+.switch input:disabled + .slider::before { cursor: not-allowed; }
+
 .slider {
   position: absolute; inset: 0; cursor: pointer;
   background: var(--surface3); border: 1px solid var(--border2); border-radius: 999px;
@@ -709,6 +724,14 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .switch input:focus-visible + .slider { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .3); }
 .range { width: 160px; accent-color: var(--accent); }
 .range-val { font-family: var(--font-mono); font-size: 11px; color: var(--muted); min-width: 110px; text-align: right; }
+.key-cap {
+  min-width: 64px; padding: 7px 12px; border-radius: 9px; cursor: pointer;
+  background: var(--surface2); border: 1px solid var(--border2); color: var(--text);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  transition: border-color .2s, transform .2s var(--spring), color .2s;
+}
+.key-cap:hover { border-color: var(--accent); transform: translateY(-1px); }
+.key-cap.listening { border-color: var(--heart); color: var(--heart); animation: glow 1.2s infinite; }
 .settings-foot { display: flex; justify-content: center; margin-top: 4px; }
 .link-btn {
   background: none; border: none; cursor: pointer;
@@ -717,7 +740,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .link-btn:hover { color: var(--text); transform: translateY(-1px); }
 
-/* about / save */
+/* ───── ABOUT / SAVE ───── */
 .about-p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
 .save-status { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; min-height: 16px; }
 .save-notice {
@@ -745,88 +768,6 @@ input[type="file"] { display: none; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; transition: background .2s; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
 
-/* ───── ALT MONITOR ───── */
-.alt-monitor { width: 720px; }
-.alt-recommended {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 18px; margin-bottom: 14px;
-  background: linear-gradient(135deg, rgba(var(--accent-rgb),.12), rgba(var(--accent-rgb),.04));
-  border: 1px solid rgba(var(--accent-rgb),.35);
-  border-radius: 14px;
-  position: relative; overflow: hidden;
-  animation: rise .5s var(--ease) both;
-}
-.alt-recommended::before {
-  content: ''; position: absolute; right: -40px; top: -40px;
-  width: 140px; height: 140px; border-radius: 50%;
-  background: rgba(var(--accent-rgb), .08);
-  animation: float 8s ease-in-out infinite;
-}
-.alt-rec-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 11px; border-radius: 999px;
-  background: var(--accent); color: #fff;
-  font-size: 11px; font-weight: 700; letter-spacing: .3px;
-  flex-shrink: 0;
-}
-.alt-rec-domain { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; word-break: break-all; }
-.alt-stats {
-  display: flex; align-items: center; gap: 18px;
-  padding: 14px 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 14px; flex-wrap: wrap;
-}
-.alt-stat { display: flex; align-items: baseline; gap: 6px; }
-.alt-stat-num { font-size: 22px; font-weight: 700; }
-.alt-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
-.alt-stat-num.alt-online { color: #4ade80; }
-.alt-stat-num.alt-blocked { color: #fbbf24; }
-.alt-stats .btn { margin-left: auto; }
-.alt-generator {
-  display: flex; gap: 10px; flex-wrap: wrap;
-  padding: 16px; margin-bottom: 18px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 14px;
-}
-.alt-field { flex: 1; min-width: 140px; }
-.alt-field-btn { flex: 0; }
-.alt-field label { display: block; margin-bottom: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
-.alt-field select, .alt-field input {
-  width: 100%; height: 38px; padding: 0 12px;
-  background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 10px; color: var(--text);
-  font-family: var(--font-main); font-size: 13px;
-  outline: none; transition: border-color .15s;
-}
-.alt-field select:focus, .alt-field input:focus { border-color: var(--accent); }
-.alt-routes { display: flex; flex-direction: column; gap: 10px; }
-.alt-group {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 14px 16px;
-  animation: rise .35s var(--ease) backwards;
-  transition: border-color .2s, box-shadow .25s;
-}
-.alt-group:hover { border-color: var(--border2); box-shadow: var(--cozy-shadow); }
-.alt-group-rec { border-color: rgba(var(--accent-rgb),.4); background: linear-gradient(135deg, rgba(var(--accent-rgb),.06), var(--surface2)); }
-.alt-group-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.alt-group-domain { font-family: var(--font-mono); font-size: 13px; color: var(--muted); word-break: break-all; display: flex; align-items: center; }
-.alt-group-rec .alt-group-domain { color: var(--text); font-weight: 600; }
-.alt-health { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-.alt-health.checking { background: var(--surface3); color: var(--muted); }
-.alt-health.online   { background: rgba(74,222,128,.15); color: #4ade80; }
-.alt-health.offline  { background: rgba(248,113,113,.15); color: #f87171; }
-.alt-health.blocked  { background: rgba(251,191,36,.15); color: #fbbf24; }
-.alt-group-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; }
-.alt-link {
-  padding: 8px 11px; border-radius: 10px;
-  border: 1px solid var(--border); background: rgba(255,255,255,.02);
-  cursor: pointer; transition: border-color .15s, background .15s, transform .15s var(--spring);
-  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
-  word-break: break-all;
-}
-.alt-link:hover { border-color: var(--accent); color: var(--text); background: rgba(255,255,255,.05); transform: translateY(-1px); }
-.alt-iframe-check { display: none; }
-
 /* ───── CALM MODE ───── */
 html.calm *, html.calm *::before, html.calm *::after {
   animation: none !important; transition: none !important;
@@ -849,18 +790,13 @@ html.calm *, html.calm *::before, html.calm *::after {
     flex-direction: row; justify-content: flex-start; overflow-x: auto;
     padding: 8px 10px; border-right: none; border-bottom: 1px solid var(--border);
   }
-.tool-btn {
-  width: 52px;
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  padding: 9px 0;
-  background: none; border: 1px solid transparent; border-radius: 11px;
-  color: var(--muted);
-  font-family: var(--font-main); font-size: 10px; font-weight: 600;
-  cursor: pointer;
-  opacity: 1;                                 /* ← visible by default */
-  animation: railIn .4s var(--spring) backwards;  /* ← was `forwards` */
-  animation-fill-mode: backwards;
-  transition: color .15s, background .15s, border-color .15s, transform .2s var(--spring), box-shadow .25s;
+  .tool-btn { width: 52px; min-width: 52px; }
+  main { padding: 14px; }
+  .hero { height: 230px; padding: 22px; }
+  .hero-title { font-size: 32px; }
+  .hero-sub { display: none; }
+  .row-scroll .card { flex-basis: 150px; }
+  .set-row { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 480px) {
   .modal { padding: 20px; }
@@ -885,17 +821,14 @@ html.calm *, html.calm *::before, html.calm *::after {
 
 <div class="layout">
   <aside class="rail">
+    <button class="tool-btn" title="Home" onclick="goHome()">
+      <i class="fa-solid fa-house"></i><span>Home</span>
+    </button>
     <button class="tool-btn" title="Roll the dice" onclick="surprise()">
       <i class="fa-solid fa-dice"></i><span>Surprise</span>
     </button>
     <button class="tool-btn" title="Request a game" onclick="requestGame()">
       <i class="fa-solid fa-plus"></i><span>Request</span>
-    </button>
-    <button class="tool-btn" id="installBtn" title="Install Oogly Boogly as an app" onclick="installApp()" hidden>
-      <i class="fa-solid fa-download"></i><span>Install</span>
-    </button>
-    <button class="tool-btn" title="Unblock Assistant" onclick="openAltMonitor()">
-      <i class="fa-solid fa-shield-halved"></i><span>Unblock</span>
     </button>
     <button class="tool-btn" title="Inbox" onclick="openInbox()">
       <span class="rail-ico"><i class="fa-solid fa-inbox"></i><span class="rail-badge" id="inboxBadge" hidden>0</span></span>
@@ -918,7 +851,20 @@ html.calm *, html.calm *::before, html.calm *::after {
   <main>
     <div class="greet">
       <div class="greet-text">
-        <div class="greet-hi" id="greetHi"><i class="fa-regular fa-hand"></i> Good morning</div>
+        <div class="greet-hi" id="greetHi">
+          <svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+            <rect x="2" y="12" width="12" height="1" fill="rgba(244,236,221,.35)"/>
+            <rect x="3" y="6" width="9" height="6" fill="var(--accent)"/>
+            <rect x="3" y="6" width="9" height="1" fill="rgba(255,255,255,.25)"/>
+            <rect x="4" y="7" width="7" height="1" fill="rgba(0,0,0,.35)"/>
+            <rect x="12" y="8" width="2" height="3" fill="var(--accent)"/>
+            <rect x="13" y="8" width="1" height="3" fill="rgba(0,0,0,.25)"/>
+            <rect class="steam-1" x="5" y="2" width="1" height="2" fill="rgba(244,236,221,.55)"/>
+            <rect class="steam-2" x="8" y="1" width="1" height="2" fill="rgba(244,236,221,.55)"/>
+            <rect class="steam-3" x="11" y="3" width="1" height="1" fill="rgba(244,236,221,.4)"/>
+          </svg>
+          Good morning
+        </div>
       </div>
     </div>
 
@@ -949,7 +895,10 @@ html.calm *, html.calm *::before, html.calm *::after {
 <!-- UPDATE POPUP -->
 <div class="modal-bg" id="updateModal">
   <div class="modal update-modal">
-    <div class="update-hero"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+    <div class="update-hero">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <span class="update-hero-label">Oogly Boogly Update</span>
+    </div>
     <div class="update-meta">
       <span class="pill" id="updVersion"></span>
       <span class="muted-date" id="updDate"></span>
@@ -1000,7 +949,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.1.1</div>
+        <div class="modal-sub">Oogly Boogly Version 9.1.2</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1073,12 +1022,28 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-label">Reduced motion</div>
           <div class="set-desc">Turns off animations and motion across the site</div>
         </div>
-    <div class="set-control">
-      <label class="switch">
-      <input type="checkbox" id="calmMode" disabled onchange="setCfg({calm: this.checked}); populateSettingsUI();"/>
-    <span class="slider"></span>
-  </label>
-</div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="calmMode" disabled onchange="setCfg({calm: this.checked}); populateSettingsUI();"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="set-section">
+      <div class="set-heading">Game launching</div>
+      <div class="set-row">
+        <div class="set-text">
+          <div class="set-label">
+            Blank Cloaking
+            <span class="rec-pill"><i class="fa-solid fa-star" style="font-size:8px"></i> Recommended</span>
+          </div>
+          <div class="set-desc">Launch in an 'about:blank' tab for better privacy.</div>
+        </div>
+        <div class="set-control">
+          <label class="switch"><input type="checkbox" id="cloakEnabled" onchange="setLaunchCfg({cloak: this.checked})"/><span class="slider"></span></label>
+        </div>
       </div>
     </section>
 
@@ -1283,205 +1248,7 @@ html.calm *, html.calm *::before, html.calm *::after {
 
 <div class="toast" id="toast"></div>
 
-<!-- ALT MONITOR -->
-<div class="modal-bg" id="altMonitorModal">
-  <div class="modal alt-monitor">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">Alt Monitor</div>
-        <div class="modal-sub">Check which alternates are online, blocked, or offline</div>
-      </div>
-      <button class="modal-close" onclick="closeModal('altMonitorModal')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-
-    <div class="alt-recommended">
-      <div class="alt-rec-badge"><i class="fa-solid fa-star"></i> Preferred</div>
-      <div class="alt-rec-domain">blooketgame.lovable.app</div>
-    </div>
-
-    <div class="alt-stats">
-      <div class="alt-stat"><span class="alt-stat-num" id="altNodeCount">19</span><span class="alt-stat-label">Alternates</span></div>
-      <div class="alt-stat"><span class="alt-stat-num alt-online" id="altOnlineCount">0</span><span class="alt-stat-label">Online</span></div>
-      <div class="alt-stat"><span class="alt-stat-num alt-blocked" id="altBlockedCount">0</span><span class="alt-stat-label">Blocked</span></div>
-      <button class="btn btn-primary btn-sm" onclick="refreshAllAlts()"><i class="fa-solid fa-rotate"></i> Re-check all</button>
-    </div>
-
-    <div class="alt-generator">
-      <div class="alt-field">
-        <label>Target</label>
-        <select id="altDomain">
-          <option>blooketgame.lovable.app</option>
-          <option>teststudy.vercel.app</option>
-          <option>ooglylearning.vercel.app</option>
-          <option>ooglygames.vercel.app</option>
-          <option>ooglygames1.netlify.app</option>
-          <option>ooglygames2.netlify.app</option>
-          <option>ooglygames3.netlify.app</option>
-          <option>oogly.dev</option>
-          <option>basement.sbs</option>
-        </select>
-      </div>
-      <div class="alt-field">
-        <label>Mask</label>
-        <select id="altType">
-          <option>?math=</option>
-          <option>?school=</option>
-          <option>?study=</option>
-          <option>?mode=</option>
-          <option>#</option>
-        </select>
-      </div>
-      <div class="alt-field">
-        <label>Extension</label>
-        <input id="altKw" placeholder="geometryassignment"/>
-      </div>
-      <div class="alt-field alt-field-btn">
-        <label>&nbsp;</label>
-        <button class="btn btn-primary btn-sm" onclick="runAltTest()"><i class="fa-solid fa-flask"></i> Run test</button>
-      </div>
-    </div>
-
-    <div id="altRoutes" class="alt-routes"></div>
-  </div>
-</div>
-
 <script>
-// ──────────────────────────────────────────────
-// ALT MONITOR DOMAIN LIST (used both to build
-// the routes UI and to power the health checks)
-// ──────────────────────────────────────────────
-const ALT_DOMAINS = [
-  { domain: 'blooketgame.lovable.app', recommended: true },
-  { domain: 'teststudy.vercel.app' },
-  { domain: 'ooglylearning.vercel.app' },
-  { domain: 'ooglygames.vercel.app' },
-  { domain: 'ooglygames1.netlify.app' },
-  { domain: 'ooglygames2.netlify.app' },
-  { domain: 'ooglygames3.netlify.app' },
-  { domain: 'oogly.dev' },
-  { domain: 'basement.sbs' },
-  { domain: '1.oogly.dev' },
-  { domain: '1.basement.sbs' },
-  { domain: '2.oogly.dev' },
-  { domain: '2.basement.sbs' },
-  { domain: '3.oogly.dev' },
-  { domain: '3.basement.sbs' },
-  { domain: '4.oogly.dev' },
-  { domain: '4.basement.sbs' },
-  { domain: '5.oogly.dev' },
-  { domain: '5.basement.sbs' },
-];
-
-function buildAltRoutes() {
-  const wrap = document.getElementById('altRoutes');
-  wrap.innerHTML = ALT_DOMAINS.map((entry, i) => {
-    const id = 'altH' + i;
-    const star = entry.recommended
-      ? '<i class="fa-solid fa-star" style="color: var(--accent); margin-right: 6px; font-size: 11px;"></i>'
-      : '';
-    const d = entry.domain;
-    return `
-      <div class="alt-group${entry.recommended ? ' alt-group-rec' : ''}">
-        <div class="alt-group-head">
-          <div class="alt-group-domain">${star}${d}</div>
-          <div id="${id}" class="alt-health checking">Checking</div>
-        </div>
-        <div class="alt-group-links">
-          <div class="alt-link" data-url="https://${d}">${d}</div>
-          <div class="alt-link" data-url="https://${d}?mode=edu">${d}?mode=edu</div>
-          <div class="alt-link" data-url="https://${d}#home">${d}#home</div>
-        </div>
-      </div>`;
-  }).join('');
-
-  wrap.querySelectorAll('.alt-link').forEach(el => {
-    el.addEventListener('click', () => window.open(el.dataset.url, '_blank', 'noopener'));
-  });
-}
-
-const ALT_BLOCKED_KEYWORDS = ['goguardian', 'blocked', 'restricted', 'access denied'];
-
-function checkAltHealth(domain, id) {
-  const statusEl = document.getElementById(id);
-  if (!statusEl) return;
-  statusEl.className = 'alt-health checking';
-  statusEl.textContent = 'Checking';
-
-  const iframe = document.createElement('iframe');
-  iframe.className = 'alt-iframe-check';
-  iframe.src = `https://${domain}/?${Date.now()}`;
-
-  let checked = false;
-
-  const timeoutId = setTimeout(() => {
-    if (checked) return;
-    checked = true;
-    statusEl.className = 'alt-health offline';
-    statusEl.textContent = 'Offline';
-    updateAltCounts();
-    try { document.body.removeChild(iframe); } catch (e) {}
-  }, 4000);
-
-  iframe.onload = function () {
-    if (checked) return;
-    checked = true;
-    clearTimeout(timeoutId);
-    let isBlocked = false;
-    try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      const bodyText = doc.body ? doc.body.innerText.toLowerCase() : '';
-      isBlocked = ALT_BLOCKED_KEYWORDS.some(kw => bodyText.includes(kw));
-      if (doc.title && doc.title.toLowerCase().includes('blocked')) isBlocked = true;
-    } catch (e) { isBlocked = false; }
-    statusEl.className = 'alt-health ' + (isBlocked ? 'blocked' : 'online');
-    statusEl.textContent = isBlocked ? 'Blocked' : 'Online';
-    updateAltCounts();
-    try { document.body.removeChild(iframe); } catch (e) {}
-  };
-
-  iframe.onerror = function () {
-    if (checked) return;
-    checked = true;
-    clearTimeout(timeoutId);
-    statusEl.className = 'alt-health offline';
-    statusEl.textContent = 'Offline';
-    updateAltCounts();
-    try { document.body.removeChild(iframe); } catch (e) {}
-  };
-
-  document.body.appendChild(iframe);
-}
-
-function updateAltCounts() {
-  const o = document.getElementById('altOnlineCount');
-  const b = document.getElementById('altBlockedCount');
-  if (o) o.textContent = document.querySelectorAll('.alt-health.online').length;
-  if (b) b.textContent = document.querySelectorAll('.alt-health.blocked').length;
-}
-
-function refreshAllAlts() {
-  document.querySelectorAll('#altRoutes .alt-group').forEach((group, i) => {
-    const domain = group.querySelector('.alt-group-domain').textContent.replace(/^\s+/, '').trim();
-    checkAltHealth(domain, 'altH' + i);
-  });
-}
-
-function runAltTest() {
-  const d = document.getElementById('altDomain').value;
-  const t = document.getElementById('altType').value;
-  const k = document.getElementById('altKw').value || 'curriculum';
-  window.open(`https://${d}${t}${k}`, '_blank', 'noopener');
-}
-
-let altMonitorOpened = false;
-function openAltMonitor() {
-  openModal('altMonitorModal');
-  if (!altMonitorOpened) {
-    altMonitorOpened = true;
-    setTimeout(refreshAllAlts, 200);
-  }
-}
-
 // ──────────────────────────────────────────────
 // TEMU NET DETECTION
 // ──────────────────────────────────────────────
@@ -1518,7 +1285,7 @@ const assignments = [
   { title:"Going Balls", link:"assignment/goingb", category:"Action" },
   { title:"Sushi Roll", link:"assignment/suroll", category:"Action" },
   { title:"Turbo Stars", link:"assignment/tstar", category:"Action" },
-  { title:"Drift Hunters Pro", link:"assignment/dhpro", category:"Action" },
+  { title:"War Strike", link:"assignment/dhpro", category:"Action" },
   { title:"Moto X3M", link:"assignment/motox3m", category:"Action" },
   { title:"Among Us", link:"assignment/aus", category:"Action" },
   { title:"State.io", link:"assignment/stateio", category:"Action" },
@@ -1530,7 +1297,6 @@ const assignments = [
   { title:"Man from The Window", link:"assignment/mitw", category:"Action" },
   { title:"9007199254740992 (2048 Spinoff)", link:"assignment/2048mod", category:"Puzzle" },
   { title:"Highway Traffic", link:"./hwtrafficexam/", category:"Action" },
-  { title:"War Strike", link:"assignment/warstrike/", category:"Action" },
   { title:"2048", link:"assignment/2048/", category:"Puzzle" },
   { title:"99 Nights in Forest", link:"assignment/99nitf", category:"Action" },
   { title:"Alpine Linux Emulator", link:"/assignment/alpineconsole", category:"Utility" },
@@ -1696,203 +1462,57 @@ const assignments = [
 ];
 
 const newsData = [
-  {
-    date: "2026-10-11",
-    title: "v9.1.1 fixes 80 assignments",
-    body: "v9.1.1 is an incremental update that includes fixes for over 80 of your favorite assignments, so they are maintained usable!"
-  },
-  {
-    date: "2026-10-11",
-    title: "v9.1 brings theme presets and card tooltips",
-    body: "v9.1 adds a full theme selector with six hand-picked presets, hover tooltips on every game card, and a heap of microanimations to make the whole thing feel cozier."
-  },
-  {
-    date: "2026-10-11",
-    title: "v9.0.2 introduces a new assignment",
-    body: "v9.0.2 introduces City Idle, a new math assignment where you add numbers and multiply to make buildings and grow your city."
-  },
-  {
-    date: "2026-10-10",
-    title: "v9.0.1 introduces a few minor tweaks to the v9.0 design",
-    body: "v9.0.1 introduces minor tweaks to the sidebar panel, recommended game card, and game cards themselves to make the experience more unified."
-  },
-  {
-    date: "2026-10-09",
-    title: "v9.0 introduces a major design overhaul",
-    body: "v9.0 introduces a major design overhaul, replacing the grid-card layout used since v6.0 with a way more user friendly, thumbnail-based categorized, modern layout with flexibility and animation built in."
-  },
-  {
-    date: "2026-10-08",
-    title: "Update v8.1.25 finally makes Mr. Mine work properly (ur welcome liam)",
-    body: "v8.1.25 finally makes Mr. Mine work properly, as has been long requested by someone (... liam), and so now it works yippee."
-  },
-  {
-    date: "2026-10-01",
-    title: "Update v8.1.24 does some small stuff behinds the scenes.",
-    body: "v8.1.24 implements small stuff behind the scenes to... make the experience better."
-  },
-  {
-    date: "2026-09-30",
-    title: "Update v8.1.23 changes the site name to OBL (for bl0ck reasons)",
-    body: "v8.1.23 changes the site name to OBL (for bl0ck reasons)."
-  },
-  {
-    date: "2026-09-29",
-    title: "Update v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title.",
-    body: "v8.1.22 fixes a few assignments that may have caused them to render the wrong tab title. This update also messes with Mr. Mine (still broken just for u liam)."
-  },
-  {
-    date: "2026-09-29",
-    title: "Update v8.1.21 adds Mr. Mine.",
-    body: "v8.1.21 adds Mr. Mine, a new assignment about mining and exploring treasure and whatever (guess what liam it doesnt actually work)."
-  },
-  {
-    date: "2026-09-29",
-    title: "Update v8.1.20 applies fixes to Bit Planes.",
-    body: "v8.1.20 addresses issues found in Bit Planes, that would prevent the game from running correctly. It should now properly load, start a game, and play!"
-  },
-  {
-    date: "2026-09-29",
-    title: "Update v8.1.19 fixes StudyClient",
-    body: "v8.1.19 fixes how Study Client communicates, attempting to fix previous issues present in v8.1.18."
-  },
-  {
-    date: "2026-09-28",
-    title: "Update v8.1.18 speeds up certain aspects of the website",
-    body: "v8.1.18 improves the speed of OBLSAVE game data exporting significantly, and changes some text for better readability and clearness."
-  },
-  {
-    date: "2026-09-27",
-    title: "Update v8.1.17 separates TemuKit into Study Client and TemuTube.",
-    body: "v8.1.17 separates TemuKit into Study Client and TemuTube, allowing for easier navigation, a better viewing experience, and improved overall functionality."
-  },
-  {
-    date: "2026-09-26",
-    title: "Update v8.1.15 adds 4 new M1n3cr@ft versions",
-    body: "v8.1.15 adds 4 new versions of M1n3cr@ft, including the long awaited v26.2!"
-  },
-  {
-    date: "2026-09-26",
-    title: "Update v8.1.14 adds support for playing games via Study Client.",
-    body: "v8.1.14 changes how games are played when Study Client is in use, allowing Study Client to launch them properly."
-  },
-  {
-    date: "2026-09-23",
-    title: "Update v8.1.13 adds the brand new Temu Kit!",
-    body: "v8.1.13 adds Temu Kit, a new way to access YT and the internet."
-  },
-  {
-    date: "2026-08-29",
-    title: "Update v8.1.12 updates 1 assignment (Doom)!",
-    body: "v8.1.12 updates Doom to work properly."
-  },
-  {
-    date: "2026-08-28",
-    title: "Update v8.1.11 is a small yet fun update as it adds 5 new assignments!",
-    body: "v8.1.11 adds 5 new assignments and includes several quality improvements."
-  },
-  {
-    date: "2026-08-21",
-    title: "Update v8.1.10 fixes issues.",
-    body: "v8.1.10 just fixes stuff."
-  },
-  {
-    date: "2026-08-18",
-    title: "Update v8.1.9 adds 2 new assignments.",
-    body: "v8.1.9 adds two new assignments for you to try, and a fix."
-  },
-  {
-    date: "2026-08-06",
-    title: "Update v8.1.8 updates some small things behind the scenes for a better experience.",
-    body: "v8.1.8 now includes new small enhancements to make your experience better, faster, and more reliable."
-  },
-  {
-    date: "2026-08-02",
-    title: "Update v8.1.7 is a small incremental update to fix one issue, and update the OBL Chat systems.",
-    body: "v8.1.7 updates the OBL Chat systems, bringing service back, and fixing an issue."
-  },
-  {
-    date: "2026-07-31",
-    title: "Update v8.1.6 is a small update that adds some new assignments, and quality improvements.",
-    body: "v8.1.6 is an incremental update to add new assignments, and new quality enhancements for the user experience."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update v8.1.5 is a small update that adds 7 new assignments.",
-    body: "v8.1.5 is an enhancement of v8.1.4 with 7 new assignments, fixes for issues, and QoL improvements."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update v8.1.4 is a small emergency fix release.",
-    body: "v8.1.4 is an incremental update to v8.1.3 which fixes issues with the frontend launcher, and 2 assignments being missing."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update v8.1.3 fixes issues with certain assignments not loading correctly.",
-    body: "v8.1.3 is an incremental update to v8.1.2 which fixes issues in certain assignments, and also adds some new assignments."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update v8.1.2 is here.",
-    body: "v8.1.2 is an incremental update to v8.1.1 which fixes a critical issue with an assignment that wasn't loading correctly."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update v8.1.1 is now available.",
-    body: "v8.1.1 is a small incremental update to v8.1 which adds more detailed info about what is happening during the save process, and fixes an issue."
-  },
-  {
-    date: "2026-07-26",
-    title: "Update 8.1 is live!",
-    body: "v8.1 adds some new assignments for you to try, and fixes to the system."
-  },
-  {
-    date: "2026-07-25",
-    title: "Fully updated interface with numerous new assignments, fixes, and a global game save system*!",
-    body: "v8.0 brings a redesigned interface, deeper customization options, dozens of new assignments, and a new Game Save tool that backs up your progress to a single .OBLSAVE file."
-  },
-  {
-    date: "2026-05-18",
-    title: "Add lots of Papa's games- i mean assignments!",
-    body: "We have added several new assignments from the Papa's Series!"
-  },
-  {
-    date: "2026-04-28",
-    title: "Updated Plane Clicker!",
-    body: "Plane Clicker now has updated aircraft, new upgrades, power ups, and more!"
-  },
-  {
-    date: "2026-04-27",
-    title: "Added 7 new assignments & fix some old ones.",
-    body: "Try them out now!"
-  },
-  {
-    date: "2026-04-25",
-    title: "OB Chat is now available.",
-    body: "You can now chat with others on OB Chat!"
-  },
-  {
-    date: "2026-04-25",
-    title: "OBL adds new assignments!",
-    body: "OBL has added new 5 new assignments to play, ad-free!"
-  },
-  {
-    date: "2026-04-24",
-    title: "OBL is released!",
-    body: "OBL is now live, with 100s of assignments you can easily do online, and for free! Anytime!"
-  },
+  { date: "2026-10-12", title: "v9.1.2 brings warm cream text, pixel art, and cloaking controls", body: "v9.1.2 reworks text color into a warm cream that tints toward your active theme, adds a cozy pixel coffee cup to the greeting and pixel icons to empty states, and introduces a setting for about:cloaking so you can choose how g@m35 launch." },
+  { date: "2026-10-11", title: "v9.1.1 fixes 80 assignments", body: "v9.1.1 is an incremental update that includes fixes for over 80 of your favorite assignments, so they are maintained usable!" },
+  { date: "2026-10-11", title: "v9.1 brings theme presets and card tooltips", body: "v9.1 adds a full theme selector with six hand-picked presets, hover tooltips on every game card, and a heap of microanimations to make the whole thing feel cozier." },
+  { date: "2026-10-11", title: "v9.0.2 introduces a new assignment", body: "v9.0.2 introduces City Idle, a new math assignment where you add numbers and multiply to make buildings and grow your city." },
+  { date: "2026-10-10", title: "v9.0.1 introduces a few minor tweaks to the v9.0 design", body: "v9.0.1 introduces minor tweaks to the sidebar panel, recommended game card, and game cards themselves to make the experience more unified." },
+  { date: "2026-10-09", title: "v9.0 introduces a major design overhaul", body: "v9.0 introduces a major design overhaul, replacing the grid-card layout used since v6.0 with a way more user friendly, thumbnail-based categorized, modern layout with flexibility and animation built in." },
+  { date: "2026-10-08", title: "Update v8.1.25 finally makes Mr. Mine work properly (ur welcome liam)", body: "v8.1.25 finally makes Mr. Mine work properly, as has been long requested by someone (... liam), and so now it works yippee." },
+  { date: "2026-10-01", title: "Update v8.1.24 does some small stuff behinds the scenes.", body: "v8.1.24 implements small stuff behind the scenes to... make the experience better." },
+  { date: "2026-09-30", title: "Update v8.1.23 changes the site name to OBL (for bl0ck reasons)", body: "v8.1.23 changes the site name to OBL (for bl0ck reasons)." },
+  { date: "2026-09-29", title: "Update v8.1.22 provides a simple fix to a few assignments that may have caused them to render the wrong tab title.", body: "v8.1.22 fixes a few assignments that may have caused them to render the wrong tab title. This update also messes with Mr. Mine (still broken just for u liam)." },
+  { date: "2026-09-29", title: "Update v8.1.21 adds Mr. Mine.", body: "v8.1.21 adds Mr. Mine, a new assignment about mining and exploring treasure and whatever (guess what liam it doesnt actually work)." },
+  { date: "2026-09-29", title: "Update v8.1.20 applies fixes to Bit Planes.", body: "v8.1.20 addresses issues found in Bit Planes, that would prevent the game from running correctly. It should now properly load, start a game, and play!" },
+  { date: "2026-09-29", title: "Update v8.1.19 fixes StudyClient", body: "v8.1.19 fixes how Study Client communicates, attempting to fix previous issues present in v8.1.18." },
+  { date: "2026-09-28", title: "Update v8.1.18 speeds up certain aspects of the website", body: "v8.1.18 improves the speed of OBLSAVE game data exporting significantly, and changes some text for better readability and clearness." },
+  { date: "2026-09-27", title: "Update v8.1.17 separates TemuKit into Study Client and TemuTube.", body: "v8.1.17 separates TemuKit into Study Client and TemuTube, allowing for easier navigation, a better viewing experience, and improved overall functionality." },
+  { date: "2026-09-26", title: "Update v8.1.15 adds 4 new M1n3cr@ft versions", body: "v8.1.15 adds 4 new versions of M1n3cr@ft, including the long awaited v26.2!" },
+  { date: "2026-09-26", title: "Update v8.1.14 adds support for playing games via Study Client.", body: "v8.1.14 changes how games are played when Study Client is in use, allowing Study Client to launch them properly." },
+  { date: "2026-09-23", title: "Update v8.1.13 adds the brand new Temu Kit!", body: "v8.1.13 adds Temu Kit, a new way to access YT and the internet." },
+  { date: "2026-08-29", title: "Update v8.1.12 updates 1 assignment (Doom)!", body: "v8.1.12 updates Doom to work properly." },
+  { date: "2026-08-28", title: "Update v8.1.11 is a small yet fun update as it adds 5 new assignments!", body: "v8.1.11 adds 5 new assignments and includes several quality improvements." },
+  { date: "2026-08-21", title: "Update v8.1.10 fixes issues.", body: "v8.1.10 just fixes stuff." },
+  { date: "2026-08-18", title: "Update v8.1.9 adds 2 new assignments.", body: "v8.1.9 adds two new assignments for you to try, and a fix." },
+  { date: "2026-08-06", title: "Update v8.1.8 updates some small things behind the scenes for a better experience.", body: "v8.1.8 now includes new small enhancements to make your experience better, faster, and more reliable." },
+  { date: "2026-08-02", title: "Update v8.1.7 is a small incremental update to fix one issue, and update the OBL Chat systems.", body: "v8.1.7 updates the OBL Chat systems, bringing service back, and fixing an issue." },
+  { date: "2026-07-31", title: "Update v8.1.6 is a small update that adds some new assignments, and quality improvements.", body: "v8.1.6 is an incremental update to add new assignments, and new quality enhancements for the user experience." },
+  { date: "2026-07-26", title: "Update v8.1.5 is a small update that adds 7 new assignments.", body: "v8.1.5 is an enhancement of v8.1.4 with 7 new assignments, fixes for issues, and QoL improvements." },
+  { date: "2026-07-26", title: "Update v8.1.4 is a small emergency fix release.", body: "v8.1.4 is an incremental update to v8.1.3 which fixes issues with the frontend launcher, and 2 assignments being missing." },
+  { date: "2026-07-26", title: "Update v8.1.3 fixes issues with certain assignments not loading correctly.", body: "v8.1.3 is an incremental update to v8.1.2 which fixes issues in certain assignments, and also adds some new assignments." },
+  { date: "2026-07-26", title: "Update v8.1.2 is here.", body: "v8.1.2 is an incremental update to v8.1.1 which fixes a critical issue with an assignment that wasn't loading correctly." },
+  { date: "2026-07-26", title: "Update v8.1.1 is now available.", body: "v8.1.1 is a small incremental update to v8.1 which adds more detailed info about what is happening during the save process, and fixes an issue." },
+  { date: "2026-07-26", title: "Update 8.1 is live!", body: "v8.1 adds some new assignments for you to try, and fixes to the system." },
+  { date: "2026-07-25", title: "Fully updated interface with numerous new assignments, fixes, and a global game save system*!", body: "v8.0 brings a redesigned interface, deeper customization options, dozens of new assignments, and a new Game Save tool that backs up your progress to a single .OBLSAVE file." },
+  { date: "2026-05-18", title: "Add lots of Papa's games- i mean assignments!", body: "We have added several new assignments from the Papa's Series!" },
+  { date: "2026-04-28", title: "Updated Plane Clicker!", body: "Plane Clicker now has updated aircraft, new upgrades, power ups, and more!" },
+  { date: "2026-04-27", title: "Added 7 new assignments & fix some old ones.", body: "Try them out now!" },
+  { date: "2026-04-25", title: "OB Chat is now available.", body: "You can now chat with others on OB Chat!" },
+  { date: "2026-04-25", title: "OBL adds new assignments!", body: "OBL has added new 5 new assignments to play, ad-free!" },
+  { date: "2026-04-24", title: "OBL is released!", body: "OBL is now live, with 100s of assignments you can easily do online, and for free! Anytime!" },
 ];
 
 const UPDATE = {
-  version: '9.1.1',
-  date: '2026-10-11',
-  title: 'Oogly Boogly v9.1.1 is here!',
+  version: '9.1.2',
+  date: '2026-10-12',
+  title: 'Oogly Boogly v9.1.2 is here!',
   items: [
-    '<b>Themes</b> Six hand-picked theme presets to recolor the entire site in one click.',
-    '<b>Card tooltips</b> Hover any game card to see its full name.',
-    '<b>More animations</b> Buttons bounce, cards lift, hearts beat, and the whole place feels cozier.',
-    '<b>Greeting</b> Simpler, warmer, and always says good morning.',
-    '<b>Simplified settings</b> The Panic section has been removed to keep things tidy.',
+    '<b>Warm cream text</b> All text now uses a soft pastel cream that tints toward your active theme — no more harsh white.',
+    '<b>Theme-tinted glass</b> Card titles and hero gradients borrow their color from your theme instead of staying neutral black.',
+    '<b>Themes</b> Six hand-picked presets — Midnight, Slate, Forest, Sunset, Rose, Ocean — recolor the entire site in one click.',
+    '<b>Card tooltips</b> Hover any game card to see its full name, no more guessing at truncated titles.',
+    '<b>Pixel art</b> A cozy pixel coffee cup greets you each morning, and empty favorites, inbox, and search results now show pixel icons.',
+    '<b>Cloaking toggle</b> Game launching now respects a Setting for about:cloaking, on by default and marked recommended.',
     '<b>Assignment fixes</b> Over 80 assignments have been fixed to ensure they remain playable and enjoyable.',
   ]
 };
@@ -2026,6 +1646,53 @@ function applyThumb(el, a) {
 }
 
 // ──────────────────────────────────────────────
+// PIXEL ART HELPERS
+// ──────────────────────────────────────────────
+function pixelHeart(size = 22) {
+  return `
+    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect x="2" y="3" width="4" height="2" fill="var(--heart)"/>
+      <rect x="10" y="3" width="4" height="2" fill="var(--heart)"/>
+      <rect x="1" y="5" width="14" height="3" fill="var(--heart)"/>
+      <rect x="2" y="8" width="12" height="2" fill="var(--heart)"/>
+      <rect x="4" y="10" width="8" height="2" fill="var(--heart)"/>
+      <rect x="6" y="12" width="4" height="1" fill="var(--heart)"/>
+    </svg>`;
+}
+function pixelEnvelope(size = 22) {
+  return `
+    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect x="1" y="4" width="14" height="9" fill="var(--accent)"/>
+      <rect x="1" y="4" width="14" height="1" fill="rgba(0,0,0,.25)"/>
+      <rect x="2" y="5" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="3" y="6" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="4" y="7" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="5" y="8" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="6" y="9" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="7" y="9" width="2" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="9" y="8" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="10" y="7" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="11" y="6" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+      <rect x="12" y="5" width="1" height="1" fill="rgba(0,0,0,.4)"/>
+    </svg>`;
+}
+function pixelMagnifier(size = 26) {
+  return `
+    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect x="5" y="3" width="6" height="1" fill="var(--accent)"/>
+      <rect x="3" y="4" width="1" height="6" fill="var(--accent)"/>
+      <rect x="12" y="4" width="1" height="6" fill="var(--accent)"/>
+      <rect x="5" y="10" width="6" height="1" fill="var(--accent)"/>
+      <rect x="4" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect x="11" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect x="4" y="9" width="1" height="1" fill="var(--accent)"/>
+      <rect x="11" y="9" width="1" height="1" fill="var(--accent)"/>
+      <rect x="10" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect x="12" y="12" width="2" height="2" fill="var(--accent)"/>
+    </svg>`;
+}
+
+// ──────────────────────────────────────────────
 // THEMES
 // ──────────────────────────────────────────────
 const THEMES = [
@@ -2065,6 +1732,36 @@ function escHtml(s) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ──────────────────────────────────────────────
+// COLOR HELPERS
+// ──────────────────────────────────────────────
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const b = parseInt(hex, 16);
+  return [(b >> 16) & 255, (b >> 8) & 255, b & 255];
+}
+function rgbCss(rgb) { return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`; }
+function mixRgb(a, b, t) {
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t),
+  ];
+}
+function creamForTheme(bgHex, accentHex) {
+  const bgRgb = hexToRgb(bgHex);
+  const accentRgb = hexToRgb(accentHex);
+  const bgWarmth = (bgRgb[0] + bgRgb[1]) / 2 - bgRgb[2];
+  const warmBase = [246, 234, 214];
+  const coolBase = [232, 234, 224];
+  const baseT = Math.min(1, Math.max(0, (bgWarmth + 20) / 40));
+  const base = mixRgb(coolBase, warmBase, baseT);
+  const text = mixRgb(base, accentRgb, 0.12);
+  const textSoft = mixRgb(base, accentRgb, 0.20);
+  return { text, textSoft };
+}
+
+// ──────────────────────────────────────────────
 // EXCLUDES + LOOKUP
 // ──────────────────────────────────────────────
 const EXCLUDE_CATEGORIES = ['Utility'];
@@ -2086,7 +1783,6 @@ let openedTabs = [];
 function freshProfile() {
   return { plays: {}, days: [], today: { date: '', counts: {} } };
 }
-
 function loadProfile() {
   const p = load(LS.engine, null);
   profile = p && p.plays ? { ...freshProfile(), ...p } : freshProfile();
@@ -2183,7 +1879,6 @@ function tokenize(title) {
       .filter(t => t.length > 1 && !/^\d+$/.test(t) && !ENGINE_STOP.has(t))
   );
 }
-
 function jaccard(a, b) {
   if (!a.size || !b.size) return 0;
   let inter = 0;
@@ -2207,7 +1902,6 @@ function buildTasteProfile(now = Date.now()) {
     entries.push({ title, category: a.category, tokens: tokenize(title), weight: w, source: 'play' });
     seen.add(title);
   }
-
   if (e.favBoost) {
     favs.forEach(t => {
       if (seen.has(t)) return;
@@ -2216,7 +1910,6 @@ function buildTasteProfile(now = Date.now()) {
       entries.push({ title: t, category: a.category, tokens: tokenize(t), weight: 0.9, source: 'fav' });
     });
   }
-
   const total = entries.reduce((s, p) => s + p.weight, 0) || 1;
   const catAffinity = new Map();
   entries.forEach(p => catAffinity.set(p.category, (catAffinity.get(p.category) || 0) + p.weight / total));
@@ -2240,10 +1933,8 @@ function getRecommendations(limit) {
 
   for (const a of assignments) {
     if (!isPlayable(a) || played.has(a.title) || favSet.has(a.title)) continue;
-
     const catScore = taste.catAffinity.get(a.category) || 0;
     const cand = tokenize(a.title);
-
     let fr = 0, best = null, bestC = 0;
     for (const p of taste.plays) {
       const j = jaccard(cand, p.tokens);
@@ -2252,7 +1943,6 @@ function getRecommendations(limit) {
       fr += c;
       if (c > bestC) { bestC = c; best = p; }
     }
-
     const franchise = Math.min(1, (fr / taste.total) * 2);
     const base = wCat * catScore + wFr * franchise;
     const novelty = catScore === 0 ? d.novelty : 0;
@@ -2268,7 +1958,6 @@ function getRecommendations(limit) {
     } else {
       reason = 'Something new to explore';
     }
-
     scored.push({
       a, title: a.title, category: a.category,
       score: base + novelty + pop,
@@ -2276,7 +1965,6 @@ function getRecommendations(limit) {
       reason
     });
   }
-
   scored.sort((x, y) => (y.score - x.score) || x.title.localeCompare(y.title));
   if (!e.variety) return scored.slice(0, limit);
 
@@ -2305,11 +1993,14 @@ function currentRecs() {
 // CONFIG & DEFAULTS
 // ──────────────────────────────────────────────
 const DEFAULTS = {
-  theme: 'midnight',
-  accent: '#3b82f6',
-  bg: '#0b0c0e',
+  theme: 'sunset',
+  accent: '#f97316',
+  bg: '#140d0d',
   font: 'Fredoka',
   calm: false,
+  launch: {
+    cloak: true
+  },
   engine: {
     pace: 'balanced',
     discovery: 'balanced',
@@ -2363,6 +2054,7 @@ function loadConfig() {
   const merged = {
     ...JSON.parse(JSON.stringify(DEFAULTS)),
     ...s,
+    launch: { ...DEFAULTS.launch, ...(s.launch || {}) },
     engine: { ...DEFAULTS.engine, ...(s.engine || {}) }
   };
   if (legacy[merged.font]) merged.font = legacy[merged.font];
@@ -2375,6 +2067,13 @@ function setCfg(patch) {
   Object.assign(cfg, patch);
   saveConfig();
   applyConfig(false);
+}
+
+function setLaunchCfg(patch) {
+  cfg.launch = { ...cfg.launch, ...patch };
+  saveConfig();
+  populateSettingsUI();
+  toast(patch.cloak === false ? 'Cloaking disabled' : 'Cloaking enabled ✓');
 }
 
 function setEngine(patch) {
@@ -2398,15 +2097,22 @@ function applyTheme(id) {
 function applyConfig(save = true) {
   const r = document.documentElement;
   r.style.setProperty('--accent', cfg.accent);
-  const hex = cfg.accent.replace('#', '');
-  const bi = parseInt(hex, 16);
-  r.style.setProperty('--accent-rgb', `${(bi >> 16) & 255},${(bi >> 8) & 255},${bi & 255}`);
+  const bi = hexToRgb(cfg.accent);
+  r.style.setProperty('--accent-rgb', `${bi[0]},${bi[1]},${bi[2]}`);
   r.style.setProperty('--bg', cfg.bg);
   r.style.setProperty('--surface', lighten(cfg.bg, 8));
   r.style.setProperty('--surface2', lighten(cfg.bg, 14));
   r.style.setProperty('--surface3', lighten(cfg.bg, 22));
   r.style.setProperty('--border', lighten(cfg.bg, 16));
   r.style.setProperty('--border2', lighten(cfg.bg, 28));
+  const bgRgb = hexToRgb(cfg.bg);
+  r.style.setProperty('--bg-rgb', `${bgRgb[0]}, ${bgRgb[1]}, ${bgRgb[2]}`);
+  const cream = creamForTheme(cfg.bg, cfg.accent);
+  r.style.setProperty('--text', rgbCss(cream.text));
+  r.style.setProperty('--text-soft', rgbCss(cream.textSoft));
+  r.style.setProperty('--muted', `rgba(${cream.text.join(',')}, .62)`);
+  r.style.setProperty('--muted2', `rgba(${cream.text.join(',')}, .38)`);
+  r.style.setProperty('--muted-strong', `rgba(${cream.text.join(',')}, .82)`);
   r.style.setProperty('--font-main', `'${cfg.font}', system-ui, sans-serif`);
   r.classList.toggle('calm', !!cfg.calm);
   if (save) saveConfig();
@@ -2489,12 +2195,79 @@ function renderFontGrid(q) {
   });
 }
 
+
 // ──────────────────────────────────────────────
 // GAME LAUNCH
+//
+// Two modes:
+//   cloak: true  → open about:blank, fetch the game HTML, inject a
+//                  <base>, a cloaked <title>, and a cloak script that
+//                  keeps the tab title pinned while the game runs.
+//   cloak: false → just window.open(absUrl)
+//
+// The cloak script is what makes it work without modding any game file.
 // ──────────────────────────────────────────────
+const CLOAK_TITLE = 'Home - Classroom';
+const GC_ICON = '/favicon-32x32.png';
+
+function buildCloakScript() {
+  // Injected into every cloaked game document. It:
+  //   - pins document.title to the cloak title
+  //   - replaces the favicon
+  //   - hides the real location path via a shallow pushState shim (best-effort)
+  //   - re-runs the pin on a short interval to survive SPA title churn
+  return `<script>
+    (function(){
+      var CLOAK = ${JSON.stringify(CLOAK_TITLE)};
+      var ICON = ${JSON.stringify(GC_ICON)};
+      function pinTitle() {
+        try { if (document.title !== CLOAK) document.title = CLOAK; } catch(e){}
+      }
+      function pinIcon() {
+        try {
+          var link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+          link.rel = 'icon'; link.href = ICON;
+          if (!link.parentNode) document.head.appendChild(link);
+        } catch(e){}
+      }
+      pinTitle(); pinIcon();
+      // Keep the title pinned even if the game tries to change it.
+      try {
+        var t = document.querySelector('title');
+        if (t) {
+          var mo = new MutationObserver(pinTitle);
+          mo.observe(t, { childList: true, characterData: true, subtree: true });
+        }
+      } catch(e){}
+      setInterval(pinTitle, 500);
+      window.addEventListener('load', pinTitle);
+      window.addEventListener('pageshow', pinTitle);
+    })();
+  <\/script>`;
+}
+
+function buildGameHtml(html, gameBase, title) {
+  // Strip any existing <title> so ours wins.
+  html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
+
+  const injectedHead =
+    '<base href="' + gameBase + '"/>' +
+    '<title>' + CLOAK_TITLE + '</title>' +
+    '<link rel="icon" href="' + GC_ICON + '"/>' +
+    buildCloakScript();
+
+  if (/<head[^>]*>/i.test(html)) {
+    html = html.replace(/(<head[^>]*>)/i, '$1' + injectedHead);
+  } else {
+    html = '<head>' + injectedHead + '</head>' + html;
+  }
+  return html;
+}
+
 async function launchGame(link, title) {
   recordPlay(title);
 
+  // Resolve to an absolute URL.
   let absUrl;
   if (link.startsWith('http://') || link.startsWith('https://')) absUrl = link;
   else if (link.startsWith('/')) absUrl = window.location.origin + link;
@@ -2503,15 +2276,26 @@ async function launchGame(link, title) {
     absUrl = base + link;
   }
 
+  // Exempt origins always go direct.
   const EXEMPT_URLS = [
     'https://exactpath.lovable.app',
     'https://studyclient.vercel.app',
     'https://studyclient.fly.dev',
   ];
-  if (EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0)) { window.location.href = absUrl; return; }
+  if (EXEMPT_URLS.some(prefix => absUrl.indexOf(prefix) === 0)) {
+    window.location.href = absUrl; return;
+  }
   if (IN_TEMUNET) { window.location.href = absUrl; return; }
 
-  const cloakTitle = 'Home - Classroom';
+  // ── Cloak OFF → raw open ──
+  if (!cfg.launch.cloak) {
+    const tab = window.open(absUrl, '_blank', 'noopener');
+    if (!tab) toast('Popup blocked — enable popups for this site');
+    else openedTabs.push(tab);
+    return;
+  }
+
+  // ── Cloak ON → fetch, rewrite, inject ──
   const gameBase = absUrl.endsWith('/') ? absUrl : absUrl.substring(0, absUrl.lastIndexOf('/') + 1);
 
   const gameTab = window.open('about:blank', '_blank');
@@ -2521,28 +2305,40 @@ async function launchGame(link, title) {
 
   try {
     const res = await fetch(absUrl, { credentials: 'same-origin' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     let html = await res.text();
-    html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
-    html = html.replace(/(<head[^>]*>)/i, `$1\n<base href="${gameBase}"/>\n<title>${cloakTitle}</title>\n<link rel="icon" href="${GC_ICON}"/>`);
-    if (!/<head/i.test(html)) html = `<head><base href="${gameBase}"/><title>${cloakTitle}</title><link rel="icon" href="${GC_ICON}"/></head>` + html;
+    html = buildGameHtml(html, gameBase, title);
     gameTab.document.open();
     gameTab.document.write(html);
     gameTab.document.close();
-    setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch (e) {} }, 300);
-    setTimeout(() => { try { gameTab.document.title = cloakTitle; } catch (e) {} }, 1200);
+    // Re-pin the title on the tab for a few frames in case the game
+    // sets it after our script runs.
+    setTimeout(() => { try { gameTab.document.title = CLOAK_TITLE; } catch (e) {} }, 300);
+    setTimeout(() => { try { gameTab.document.title = CLOAK_TITLE; } catch (e) {} }, 1200);
   } catch (err) {
+    // Fallback: iframe inside a cloaked shell. Same cloak script still applies.
     gameTab.document.open();
-    gameTab.document.write(`<!DOCTYPE html><html><head><title>${cloakTitle}</title><link rel="icon" href="${GC_ICON}"/><style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style></head><body><iframe src="${escHtml(absUrl)}" allowfullscreen allow="fullscreen"></iframe></body></html>`);
+    gameTab.document.write(
+      '<!DOCTYPE html><html><head>' +
+      '<title>' + CLOAK_TITLE + '</title>' +
+      '<link rel="icon" href="' + GC_ICON + '"/>' +
+      buildCloakScript() +
+      '<style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:#000}iframe{width:100%;height:100%;border:none;display:block}</style>' +
+      '</head><body><iframe src="' + escHtml(absUrl) + '" allowfullscreen allow="fullscreen"></iframe></body></html>'
+    );
     gameTab.document.close();
   }
 }
 
-const GC_ICON = '/favicon-32x32.png';
-
 function writeLoading(tab, title) {
   tab.document.open();
-  tab.document.write(`<!DOCTYPE html><html><head><title>Home - Classroom</title><link rel="icon" href="${GC_ICON}"/><style>body{background:#0a0a0a;color:#555;font-family:monospace;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;gap:10px;}.spinner{width:20px;height:20px;border:2px solid #1e1e1e;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div>Loading ${escHtml(title)}…</div></body></html>`);
+  tab.document.write(
+    '<!DOCTYPE html><html><head>' +
+    '<title>' + CLOAK_TITLE + '</title>' +
+    '<link rel="icon" href="' + GC_ICON + '"/>' +
+    '<style>body{background:#0a0a0a;color:#555;font-family:monospace;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;gap:10px;}.spinner{width:20px;height:20px;border:2px solid #1e1e1e;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite;}@keyframes spin{to{transform:rotate(360deg)}}</style>' +
+    '</head><body><div class="spinner"></div><div>Loading ' + escHtml(title) + '…</div></body></html>'
+  );
   tab.document.close();
 }
 
@@ -2553,13 +2349,15 @@ function surprise() {
   launchGame(a.link, a.title);
 }
 
+function goHome() {
+  window.location.href = '/';
+}
+
 // ──────────────────────────────────────────────
 // GREETING
 // ──────────────────────────────────────────────
 function renderGreet() {
-  // Always a warm, simple greeting — no time-of-day, no streaks.
-  document.getElementById('greetHi').innerHTML =
-    '<i class="fa-regular fa-hand"></i> Good morning';
+  // The coffee SVG is already in the HTML — nothing to re-render.
 }
 
 // ──────────────────────────────────────────────
@@ -2595,7 +2393,6 @@ function renderHero() {
 
   const top = recs[0];
 
-  // Only re-trigger the swap animation when the pick actually changed.
   if (lastHeroTitle !== top.a.title) {
     body.classList.remove('swap');
     void body.offsetWidth;
@@ -2632,7 +2429,6 @@ function renderHero() {
     applyThumb(b, r.a);
     tilesEl.appendChild(b);
   });
-
   tiles.forEach(r => withThumb(r.a.link, () => {}));
 }
 
@@ -2666,7 +2462,6 @@ function buildSidebar() {
   });
   updateCatTitles();
 }
-
 function updateCatTitles() {
   document.querySelectorAll('.cat-btn').forEach(b => {
     const c = b.dataset.cat;
@@ -2684,7 +2479,7 @@ function createCard(a) {
   card.dataset.cat = a.category;
   card.dataset.title = a.title;
   card.dataset.link = a.link;
-  card.title = a.title;   // ← full-name tooltip on hover
+  card.title = a.title;
   card.addEventListener('click', () => launchGame(a.link, a.title));
 
   const thumb = document.createElement('div');
@@ -2730,7 +2525,7 @@ function buildGridOnce() {
   cardNodes = assignments.map(a => createCard(a));
   const noRes = document.createElement('div');
   noRes.className = 'no-results';
-  noRes.textContent = 'No assignments found.';
+  noRes.innerHTML = pixelMagnifier(36) + '<span>No assignments found.</span>';
   noRes.style.display = 'none';
   grid._noResultsEl = noRes;
 }
@@ -2816,7 +2611,7 @@ function renderFavRow() {
   sc.replaceChildren();
   rowRefs.fav.el.classList.toggle('has-items', favs.length > 0);
   if (!favs.length) {
-    sc.innerHTML = `<div class="empty-row"><i class="fa-solid fa-heart"></i> Tap the heart on any game to add it here.</div>`;
+    sc.innerHTML = `<div class="empty-row">${pixelHeart(22)}<span>Tap the heart on any game to add it here.</span></div>`;
     return;
   }
   favs.map(t => findGame(t)).filter(Boolean).forEach((a, i) => {
@@ -2895,10 +2690,11 @@ function applyFilters(animate = false) {
   });
 
   grid.appendChild(grid._noResultsEl);
-  grid._noResultsEl.textContent = currentCat === 'Favorites' && !favs.length && !hasQuery
-    ? 'No favorites yet. Tap the heart on any game.'
-    : 'No assignments found.';
-  grid._noResultsEl.style.display = visibleCount === 0 ? 'block' : 'none';
+  const noFav = currentCat === 'Favorites' && !favs.length && !hasQuery;
+  grid._noResultsEl.innerHTML = noFav
+    ? pixelHeart(28) + '<span>No favorites yet. Tap the heart on any game.</span>'
+    : pixelMagnifier(36) + '<span>No assignments found.</span>';
+  grid._noResultsEl.style.display = visibleCount === 0 ? 'flex' : 'none';
 
   const titles = { All: 'All Assignments', Favorites: 'Favorites' };
   document.getElementById('sectionTitle').textContent = titles[currentCat] || currentCat;
@@ -2906,7 +2702,6 @@ function applyFilters(animate = false) {
 }
 
 function renderAll() {
-  renderGreet();
   renderHero();
   renderJump();
   renderTop5();
@@ -2927,78 +2722,44 @@ function loadInbox() {
     newsSeen: Array.isArray(s.newsSeen) ? s.newsSeen : null
   };
 }
-
 function saveInbox() { save(LS.inbox, inbox); }
-
 function makeNewsItem(n) {
   return { id: 'news:' + n.title, type: 'update', title: n.title, body: n.body, date: n.date, read: false };
 }
-
 function syncInbox() {
   const fresh = [];
-
-  // Only ever surface the two newest news items. The Updates modal
-  // is the full log — the inbox is just a nudge.
   const newestNews = newsData.slice(0, 2);
   const seenNews = new Set(Array.isArray(inbox.newsSeen) ? inbox.newsSeen : []);
-  newestNews.forEach(n => {
-    if (!seenNews.has(n.title)) fresh.push(makeNewsItem(n));
-  });
-
-  // Mark everything as seen so we never re-surface old items.
+  newestNews.forEach(n => { if (!seenNews.has(n.title)) fresh.push(makeNewsItem(n)); });
   inbox.newsSeen = newsData.map(n => n.title);
 
-  // New-game detection — only fire for titles we've genuinely never seen.
   const current = assignments.filter(isPlayable).map(a => a.title);
   if (inbox.knownTitles === null) {
     inbox.knownTitles = current;
   } else {
     const known = new Set(inbox.knownTitles);
     const aff = buildTasteProfile().catAffinity;
-    current
-      .filter(t => !known.has(t))
-      .forEach(t => {
-        const a = findGame(t);
-        if (!a) return;
-        const matches = (aff.get(a.category) || 0) > 0.2;
-        fresh.push({
-          id: 'game:' + t,
-          type: 'game',
-          title: t,
-          body: `New ${a.category} game just landed${matches ? ' · matches your taste' : ''}.`,
-          date: todayStr(),
-          read: false
-        });
+    current.filter(t => !known.has(t)).forEach(t => {
+      const a = findGame(t);
+      if (!a) return;
+      const matches = (aff.get(a.category) || 0) > 0.2;
+      fresh.push({
+        id: 'game:' + t,
+        type: 'game',
+        title: t,
+        body: `New ${a.category} game just landed${matches ? ' · matches your taste' : ''}.`,
+        date: todayStr(),
+        read: false
       });
+    });
     inbox.knownTitles = current;
   }
-
   if (fresh.length) {
     const ids = new Set(fresh.map(f => f.id));
     inbox.items = [...fresh, ...inbox.items.filter(i => !ids.has(i.id))].slice(0, 60);
   }
   saveInbox();
 }
-
-// v9.1.1 — one-time inbox cleanup. Wipes the changelog dump that
-// earlier versions accidentally pushed into the inbox.
-(function cleanupInboxOnce() {
-  const KEY = 'obl_inbox_cleanup_v911';
-  if (localStorage.getItem(KEY)) return;
-  try {
-    const s = load(LS.inbox, null);
-    if (s && Array.isArray(s.items)) {
-      // Drop every 'news:' item except the two newest by date.
-      const newsItems = s.items
-        .filter(i => i.type === 'update' && String(i.id).startsWith('news:'))
-        .sort((a, b) => String(b.date).localeCompare(String(a.date)));
-      const keepIds = new Set(newsItems.slice(0, 2).map(i => i.id));
-      s.items = s.items.filter(i => i.type !== 'update' || keepIds.has(i.id));
-      localStorage.setItem(LS.inbox, JSON.stringify(s));
-    }
-    localStorage.setItem(KEY, '1');
-  } catch (e) {}
-})();
 
 function updateInboxBadge() {
   const n = inbox.items.filter(i => !i.read).length;
@@ -3009,19 +2770,16 @@ function updateInboxBadge() {
 
 function renderInbox() {
   const list = document.getElementById('inboxList');
-
-  // Newest first, regardless of insertion order.
   const sorted = [...inbox.items].sort((a, b) => {
     const da = String(a.date || '');
     const db = String(b.date || '');
     if (da !== db) return db.localeCompare(da);
-    // Same day — news beats games so updates aren't buried.
     if (a.type !== b.type) return a.type === 'update' ? -1 : 1;
     return 0;
   });
 
   if (!sorted.length) {
-    list.innerHTML = `<div class="empty-row"><i class="fa-solid fa-envelope-open"></i> You're all caught up.</div>`;
+    list.innerHTML = `<div class="empty-row">${pixelEnvelope(22)}<span>You're all caught up.</span></div>`;
   } else {
     list.innerHTML = sorted.map(it => `
       <div class="inbox-item ${it.read ? '' : 'unread'}" data-id="${escHtml(it.id)}" data-type="${it.type}">
@@ -3047,28 +2805,24 @@ function renderInbox() {
   }
   updateInboxBadge();
 }
-
 function markRead(id) {
   const it = inbox.items.find(x => x.id === id);
   if (it) it.read = true;
   saveInbox();
   renderInbox();
 }
-
 function markAllRead() {
   inbox.items.forEach(i => { i.read = true; });
   saveInbox();
   renderInbox();
   toast('All caught up');
 }
-
 function clearInbox() {
   inbox.items = [];
   saveInbox();
   renderInbox();
   toast('Inbox cleared');
 }
-
 function openInbox() { renderInbox(); openModal('inboxModal'); }
 
 // ──────────────────────────────────────────────
@@ -3082,7 +2836,6 @@ function renderUpdatesList() {
       <div class="news-row-body">${escHtml(n.body)}</div>
     </div>`).join('');
 }
-
 function renderUpdate() {
   document.getElementById('updVersion').textContent = 'v' + UPDATE.version;
   document.getElementById('updDate').textContent = UPDATE.date;
@@ -3091,15 +2844,12 @@ function renderUpdate() {
     .map(t => `<li><i class="fa-solid fa-check"></i><span>${t}</span></li>`)
     .join('');
 }
-
 function maybeShowUpdate() {
   if (localStorage.getItem(UPDATE_KEY) !== UPDATE.version) openModal('updateModal');
 }
-
 function markUpdateSeen() {
   try { localStorage.setItem(UPDATE_KEY, UPDATE.version); } catch (e) {}
 }
-
 function clearUpdateCache() {
   try { localStorage.removeItem(UPDATE_KEY); } catch (e) {}
   toast('Successfully cleared update cache!');
@@ -3115,7 +2865,6 @@ function filterCat(cat) {
   });
   applyFilters(true);
 }
-
 function onSearchInput(v) {
   clearTimeout(searchDebounceTimer);
   searchDebounceTimer = setTimeout(() => {
@@ -3146,12 +2895,6 @@ function bindGlobal() {
     }
   });
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-bg.open').forEach(m => closeModal(m.id));
-    }
-  });
-
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) renderAll();
   });
@@ -3167,11 +2910,9 @@ function focusLabel(v) {
   if (v > 65) return 'Favors categories';
   return 'Balanced';
 }
-
 function previewFocus(v) {
   document.getElementById('engFocusVal').textContent = focusLabel(Number(v));
 }
-
 function setChecked(id, val) {
   const el = document.getElementById(id);
   if (el) el.checked = !!val;
@@ -3224,6 +2965,7 @@ function populateSettingsUI() {
   setChecked('engMatch', e.showMatch);
   setChecked('engReasons', e.showReasons);
   setChecked('calmMode', cfg.calm);
+  setChecked('cloakEnabled', cfg.launch.cloak);
 
   const f = document.getElementById('engFocus');
   f.value = e.focus;
@@ -3245,7 +2987,6 @@ async function collectAllIndexedDB() {
   }
   return result;
 }
-
 function dumpIndexedDB(dbName) {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(dbName);
@@ -3281,7 +3022,6 @@ function dumpIndexedDB(dbName) {
     };
   });
 }
-
 async function restoreAllIndexedDB(dumpObj) {
   if (!('indexedDB' in window) || !dumpObj) return;
   for (const dbName of Object.keys(dumpObj)) {
@@ -3290,7 +3030,6 @@ async function restoreAllIndexedDB(dumpObj) {
     await restoreIndexedDB(dbName, dbDump);
   }
 }
-
 function restoreIndexedDB(dbName, dbDump) {
   return new Promise((resolve) => {
     const storeNames = Object.keys(dbDump.stores || {});
@@ -3328,7 +3067,6 @@ function restoreIndexedDB(dbName, dbDump) {
     openReq.onerror = () => resolve();
   });
 }
-
 function collectLocalStorage() {
   const out = {};
   for (let i = 0; i < localStorage.length; i++) {
@@ -3337,7 +3075,6 @@ function collectLocalStorage() {
   }
   return out;
 }
-
 function collectSessionStorage() {
   const out = {};
   for (let i = 0; i < sessionStorage.length; i++) {
@@ -3346,7 +3083,6 @@ function collectSessionStorage() {
   }
   return out;
 }
-
 function collectCookies() {
   if (!document.cookie) return {};
   const out = {};
@@ -3359,7 +3095,6 @@ function collectCookies() {
   });
   return out;
 }
-
 async function collectSharedStorage() {
   try {
     if ('sharedStorage' in window && window.sharedStorage.entries) {
@@ -3370,7 +3105,6 @@ async function collectSharedStorage() {
   } catch (e) {}
   return {};
 }
-
 async function exportSave() {
   try {
     setSaveStatus('Gathering save data…');
@@ -3402,7 +3136,6 @@ async function exportSave() {
       indexedDB: indexedDBData,
       sharedStorage: sharedStorageData
     };
-
     const blob = new Blob([JSON.stringify(payload)], { type: 'application/octet-stream' });
     setSaveStatus('Initializing export…');
     await sleep(600);
@@ -3424,29 +3157,23 @@ async function exportSave() {
     toast('Export failed');
   }
 }
-
 async function importSave(event) {
   const file = event.target.files[0];
   if (!file) return;
-
   setSaveStatus('Reading file…');
   try {
     const text = await file.text();
     const data = JSON.parse(text);
-
     if (data.format !== 'OBLSAVE') {
       setSaveStatus('This does not look like a valid .OBLSAVE file.');
       toast('Invalid save file');
       event.target.value = '';
       return;
     }
-
-    // Accept v1, v2, and v3. All share the same shape; v3 is just versioned.
     const v = Number(data.version) || 1;
     if (v > 3) {
       setSaveStatus(`This save was made with a newer version (v${v}) and may not import cleanly.`);
     }
-
     if (data.localStorage) {
       Object.keys(data.localStorage).forEach(k => {
         try { localStorage.setItem(k, data.localStorage[k]); } catch (e) {}
@@ -3471,7 +3198,6 @@ async function importSave(event) {
         try { await window.sharedStorage.set(k, data.sharedStorage[k]); } catch (e) {}
       }
     }
-
     loadProfile();
     loadFavs();
     loadConfig();
@@ -3496,7 +3222,6 @@ async function importSave(event) {
   }
   event.target.value = '';
 }
-
 function setSaveStatus(msg) {
   const el = document.getElementById('saveStatus');
   if (el) el.textContent = msg;
@@ -3525,7 +3250,6 @@ function init() {
   loadConfig();
   applyConfig(false);
 
-  buildAltRoutes();
   buildSidebar();
   buildGridOnce();
   buildRows();
@@ -3537,7 +3261,6 @@ function init() {
   renderUpdatesList();
   renderInbox();
   populateSettingsUI();
-  renderGreet();
   renderAll();
   bindGlobal();
   updateInstallButton();
