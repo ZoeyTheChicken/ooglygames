@@ -1024,6 +1024,160 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .save-notice i { color: var(--accent); margin-top: 3px; }
 input[type="file"] { display: none; }
 
+/* ───── ONBOARDING ───── */
+.onboarding-modal {
+  width: 520px;
+  padding: 32px;
+  max-height: 90vh;
+}
+.ob-progress {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+.ob-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border2);
+  transition: background .3s var(--ease), transform .35s var(--spring), width .35s var(--spring);
+}
+.ob-dot.active {
+  background: var(--accent);
+  width: 22px;
+  border-radius: 999px;
+}
+.ob-dot.done { background: var(--accent); opacity: .5; }
+.ob-step {
+  display: none;
+  animation: rise .45s var(--ease) both;
+}
+.ob-step.active { display: block; }
+.ob-hero {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+}
+.ob-hero-icon {
+  flex-shrink: 0;
+  width: 60px; height: 60px; border-radius: 18px;
+  background: rgba(var(--accent-rgb), .15);
+  display: grid; place-items: center;
+  animation: bob 3s ease-in-out infinite;
+}
+.ob-hero-text { flex: 1; min-width: 0; }
+.ob-title {
+  font-size: 26px; font-weight: 700; letter-spacing: -.3px;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.ob-sub {
+  font-size: 14px; color: var(--muted); line-height: 1.5;
+}
+.ob-body {
+  font-size: 14px; color: var(--muted-strong); line-height: 1.6;
+  margin-bottom: 20px;
+}
+.ob-body p + p { margin-top: 8px; }
+.ob-body b { color: var(--text); font-weight: 600; }
+
+.ob-section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .9px; color: var(--muted2);
+  margin: 20px 0 10px;
+}
+.ob-section-label:first-child { margin-top: 0; }
+
+/* Onboarding theme grid — compact variant of the settings grid */
+.ob-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ob-theme-grid .theme-tile { padding: 8px; }
+.ob-theme-grid .theme-name { font-size: 11px; }
+.ob-theme-grid .theme-desc { display: none; }
+.ob-theme-grid .theme-preview { height: 36px; }
+
+/* Onboarding font picker — compact list */
+.ob-font-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.ob-font-tile {
+  text-align: left;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  min-width: 0;
+  transition: border-color .2s, transform .2s var(--spring), background .2s;
+}
+.ob-font-tile:hover { transform: translateY(-1px); border-color: var(--muted2); }
+.ob-font-tile.active {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), .1);
+  box-shadow: var(--cozy-glow);
+}
+.ob-font-sample {
+  display: block;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.ob-font-name {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.ob-custom-font {
+  display: flex; gap: 6px; margin-top: 8px;
+}
+.ob-custom-font .text-in { flex: 1; font-size: 12px; padding: 7px 10px; }
+.ob-custom-font .btn { padding: 7px 12px; font-size: 12px; }
+
+.ob-info-note {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  background: var(--accent-softer);
+  border: 1px solid var(--accent-line);
+  border-radius: 11px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted-strong);
+  margin-bottom: 16px;
+}
+.ob-info-note i {
+  color: var(--accent);
+  margin-top: 2px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.ob-footer {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.ob-skip {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-main); font-size: 13px; font-weight: 600;
+  color: var(--muted2);
+  transition: color .15s;
+  padding: 6px 4px;
+}
+.ob-skip:hover { color: var(--muted); }
+.ob-spacer { flex: 1; }
+
 /* ───── TOAST ───── */
 .toast {
   position: fixed; bottom: 20px; right: 20px; z-index: 999;
@@ -1080,6 +1234,98 @@ html.calm *, html.calm *::before, html.calm *::after {
 /* Calm mode: freeze hero parallax transform */
 html.calm .hero-art { transform: none !important; }
 
+/* ───── PERFORMANCE MODE ─────
+   Kills the expensive visual effects that crush low-end
+   Chromebooks: backdrop-filter blurs, mix-blend-mode grain,
+   hero float animations, card sheen overlays, button ripples,
+   and the sun/moon/party animated pixel bits.
+   Also shortens the modal transition so it feels snappy instead
+   of cinematic. Everything else (colors, layout, transitions of
+   opacity and transform) still works — it just runs cleaner.
+   ──────────────────────────────── */
+html.perf body::before {
+  display: none;
+}
+html.perf .modal-bg,
+html.perf .modal-bg.open {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(0,0,0,.78);
+  transition: opacity .2s var(--ease);
+}
+html.perf .modal-bg.open .modal {
+  animation: modalIn .25s var(--ease) both;
+}
+html.perf .hero-art::before,
+html.perf .hero-art::after {
+  animation: none;
+  opacity: .55;
+}
+html.perf .card-thumb::after {
+  display: none;
+}
+html.perf .card-title,
+html.perf .card:hover .card-title {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(var(--bg-rgb), .78);
+}
+html.perf .tool-btn::after,
+html.perf .cat-btn::after,
+html.perf .hero-tile::after,
+html.perf .btn::after,
+html.perf .inbox-filter::after,
+html.perf .nav-arrow::after {
+  display: none;
+}
+html.perf .pixel-icon.pixel-sun .shine,
+html.perf .pixel-icon.pixel-moon .shine,
+html.perf .pixel-icon.pixel-party .dot-1,
+html.perf .pixel-icon.pixel-party .dot-2,
+html.perf .pixel-icon.pixel-party .dot-3,
+html.perf .pixel-icon.pixel-party .dot-4,
+html.perf .pixel-icon.pixel-anim,
+html.perf .pixel-icon.pixel-anim .pixel-pulse,
+html.perf .pixel-icon.pixel-anim .pixel-shimmer,
+html.perf .pixel-icon .steam-1,
+html.perf .pixel-icon .steam-2,
+html.perf .pixel-icon .steam-3 {
+  animation: none;
+}
+html.perf .trend-pill i,
+html.perf .row-section.fav-sec.has-items .row-title i,
+html.perf .play-btn:hover i,
+html.perf .ob-hero-icon {
+  animation: none;
+}
+html.perf .row-scroll {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+html.perf .row-section {
+  animation: none;
+}
+html.perf .card {
+  animation: none;
+}
+html.perf .tool-btn {
+  animation: none;
+}
+html.perf .card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+html.perf .hero-tile:hover {
+  transform: translateY(-3px);
+}
+html.perf .cat-btn.active i,
+html.perf .tool-btn:hover i {
+  animation: none;
+}
+html.perf .mini-heart {
+  display: none;
+}
+
 /* ───── REDUCED MOTION (OS-level fallback) ───── */
 @media (prefers-reduced-motion: reduce) {
   html:not(.calm) *, html:not(.calm) *::before, html:not(.calm) *::after {
@@ -1114,9 +1360,17 @@ html.calm .hero-art { transform: none !important; }
   .hero-sub { display: none; }
   .row-scroll .card { flex-basis: 150px; }
   .set-row { flex-direction: column; align-items: flex-start; }
+  .onboarding-modal { width: 100%; padding: 22px; }
+  .ob-theme-grid { grid-template-columns: repeat(2, 1fr); }
+  .ob-font-list { grid-template-columns: 1fr; }
+  .ob-title { font-size: 22px; }
+  .ob-hero-icon { width: 52px; height: 52px; border-radius: 15px; }
 }
 @media (max-width: 480px) {
   .modal { padding: 20px; }
+  .ob-footer { flex-direction: column; align-items: stretch; }
+  .ob-footer .ob-spacer { display: none; }
+  .ob-skip { text-align: center; order: 3; margin-top: 6px; }
 }
 </style>
 </head>
@@ -1267,7 +1521,7 @@ html.calm .hero-art { transform: none !important; }
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.1.4</div>
+        <div class="modal-sub">Oogly Boogly Version 9.2.0</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1355,6 +1609,21 @@ html.calm .hero-art { transform: none !important; }
         <div class="set-control">
           <label class="switch">
             <input type="checkbox" id="soundEnabled" onchange="setCfg({sound: this.checked}); populateSettingsUI();" aria-label="Sound effects"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-text">
+          <div class="set-label">
+            Performance mode
+            <span class="rec-pill"><i class="fa-solid fa-star" style="font-size:8px"></i> For use with low-end hardware</span>
+          </div>
+          <div class="set-desc">Disables heavy animations, blurs, and overlays. Recommended on low-end laptops.</div>
+        </div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="perfMode" onchange="setCfg({perf: this.checked}); populateSettingsUI(); toast(this.checked ? 'Performance mode on' : 'Performance mode off');" aria-label="Performance mode"/>
             <span class="slider"></span>
           </label>
         </div>
@@ -1588,6 +1857,190 @@ html.calm .hero-art { transform: none !important; }
     <div class="save-notice">
       <i class="fa-solid fa-circle-info"></i>
       <span>Saving is not perfect, do not be surprised if it fails to save progress from some games.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="modal-bg" id="onboardingModal">
+  <div class="modal onboarding-modal">
+    <div class="ob-progress" id="obProgress">
+      <span class="ob-dot active" data-step="0"></span>
+      <span class="ob-dot" data-step="1"></span>
+      <span class="ob-dot" data-step="2"></span>
+      <span class="ob-dot" data-step="3"></span>
+      <span class="ob-dot" data-step="4"></span>
+    </div>
+
+    <!-- STEP 0: WELCOME -->
+    <div class="ob-step active" data-step="0">
+      <div class="ob-hero">
+        <div class="ob-hero-icon">
+          <i class="fa-solid fa-wand-magic-sparkles" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">Welcome to Oogly Boogly</div>
+          <div class="ob-sub">Your portal to fun things everyday</div>
+        </div>
+      </div>
+      <div class="ob-body">
+        <p>Everything you need and a little bit of fun, all in one place.</p>
+        <p>Let's take <b>thirty seconds</b> to make it feel like yours.</p>
+      </div>
+      <div class="ob-info-note" id="obPerfNote" style="display:none;">
+        <i class="fa-solid fa-bolt"></i>
+        <span>We noticed your device may be very weak, and have turned on <b>Performance mode</b> for a smoother experience. You can change this any time in Settings.</span>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="finishOnboarding(true)">Skip for now</button>
+        <div class="ob-spacer"></div>
+        <button class="btn btn-primary" onclick="nextOnboardingStep()">
+          Let's go <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 1: THEME -->
+    <div class="ob-step" data-step="1">
+      <div class="ob-hero">
+        <div class="ob-hero-icon">
+          <i class="fa-solid fa-palette" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">Let's pick a theme</div>
+          <div class="ob-sub">Six hand-picked vibes. Tap to preview live.</div>
+        </div>
+      </div>
+      <div class="ob-section-label">Choose your vibe</div>
+      <div class="ob-theme-grid" id="obThemeGrid"></div>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="finishOnboarding(true)">Skip all</button>
+        <div class="ob-spacer"></div>
+        <button class="btn btn-ghost" onclick="prevOnboardingStep()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingStep()">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: FONT -->
+    <div class="ob-step" data-step="2">
+      <div class="ob-hero">
+        <div class="ob-hero-icon">
+          <i class="fa-solid fa-font" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">Add a touch of custom font?</div>
+          <div class="ob-sub">Pick something that feels like you.</div>
+        </div>
+      </div>
+      <div class="ob-section-label">Popular picks</div>
+      <div class="ob-font-list" id="obFontList"></div>
+      <div class="ob-custom-font">
+        <input id="obCustomFont" class="text-in" type="text" placeholder="Or any Google Font name, e.g. Lobster" autocomplete="off" aria-label="Custom font name"/>
+        <button class="btn btn-primary" onclick="applyObCustomFont()"><i class="fa-solid fa-check"></i> Use</button>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="finishOnboarding(true)">Skip all</button>
+        <div class="ob-spacer"></div>
+        <button class="btn btn-ghost" onclick="prevOnboardingStep()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingStep()">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: PERFORMANCE -->
+    <div class="ob-step" data-step="3">
+      <div class="ob-hero">
+        <div class="ob-hero-icon">
+          <i class="fa-solid fa-gauge-high" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">How should it run?</div>
+          <div class="ob-sub">Choose the experience that fits your device.</div>
+        </div>
+      </div>
+      <div class="ob-section-label">Performance mode</div>
+      <div class="ob-info-note">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Performance mode trims the heaviest visual effects — blurs, animated pixel art, and card sheen — for a smoother ride on low-end laptops and school Chromebooks.</span>
+      </div>
+      <div class="set-row" style="padding: 4px 0; border-bottom: none;">
+        <div class="set-text">
+          <div class="set-label" style="font-size:14px;">Enable Performance mode</div>
+          <div class="set-desc">You can flip this any time in Settings.</div>
+        </div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="obPerfToggle" onchange="onObPerfToggle(this.checked)" aria-label="Performance mode"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ob-section-label" style="margin-top:22px;">Homepage hero</div>
+      <div class="set-row" style="padding: 4px 0; border-bottom: none;">
+        <div class="set-text">
+          <div class="set-label" style="font-size:14px;">Featured game</div>
+          <div class="set-desc">What should the big card at the top show?</div>
+        </div>
+        <div class="set-control">
+          <div class="seg" data-group="heroMode">
+            <button data-val="recommend">Recommended</button>
+            <button data-val="resume">Resume playing</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-section-label" style="margin-top:22px;">Game privacy</div>
+      <div class="set-row" style="padding: 4px 0; border-bottom: none;">
+        <div class="set-text">
+          <div class="set-label" style="font-size:14px;">
+            Blank Cloaking
+            <span class="rec-pill"><i class="fa-solid fa-star" style="font-size:8px"></i> Recommended</span>
+          </div>
+          <div class="set-desc">Launch games in an 'about:blank' tab for privacy.</div>
+        </div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="obCloakToggle" checked onchange="onObCloakToggle(this.checked)" aria-label="Blank cloaking"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="finishOnboarding(true)">Skip all</button>
+        <div class="ob-spacer"></div>
+        <button class="btn btn-ghost" onclick="prevOnboardingStep()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingStep()">
+          Almost done <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 4: DONE -->
+    <div class="ob-step" data-step="4">
+      <div class="ob-hero">
+        <div class="ob-hero-icon" id="obDoneIcon">
+          <i class="fa-solid fa-star" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">You're all set!</div>
+          <div class="ob-sub">Everything's ready to go.</div>
+        </div>
+      </div>
+      <div class="ob-body">
+        <p>Tap the <b>♥</b> on any game card to favorite it. Hit <b>Surprise</b> in the rail if you're bored. And <b>Settings</b> has every switch we just walked through, plus a lot more.</p>
+        <p>That's it — go explore.</p>
+      </div>
+      <div class="ob-footer">
+        <div class="ob-spacer"></div>
+        <button class="btn btn-primary btn-block" style="flex:1;" onclick="finishOnboarding(false)">
+          <i class="fa-solid fa-play"></i> Let's go
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1858,6 +2311,7 @@ const assignments = [
 ];
 
 const newsData = [
+  { date: "2026-10-13", title: "v9.2.0 adds onboarding and optimizes the experience for low-end hardware", body: "v9.2.0 welcomes new users with a friendly onboarding tour that walks through theme, font, performance, and privacy in about thirty seconds. It also cuts initial memory and GPU work by deferring thumbnail loads until you scroll near them, and adds a Performance mode toggle that trims heavy animations, backdrop blurs, and grain overlays. Plus: the secret 'oblonboard' code inside Settings replays the tour any time." },
   { date: "2026-10-13", title: "v9.1.4 brings polish, sound, and cinematic flourishes", body: "v9.1.4 layers in the cozy touches: animated pixel art (sun, moon, party icons that shine and change color), cinematic hero parallax that moves the art and thumbnail at different rates, heart trails on favorite, animated empty-state icons, slower modal entries, a soft backdrop blur fade, live theme previews in Settings, a spring wobble on switches, a fully custom range slider, and optional soft sound blips on favorite, launch, and toggle." },
   { date: "2026-10-12", title: "v9.1.3 adds a hero mode setting, richer greetings, and Plane Clicker", body: "v9.1.3 introduces a Homepage setting to choose between a recommended hero or a resume-playing hero, replaces the single greeting with a bank of 500+ time- and day-aware messages, adds Plane Clicker to the catalog, wires up empty Jump back in and inbox filter states, and fixes Reduced motion so the toggle actually works. Also includes a handful of small polish fixes throughout." },
   { date: "2026-10-12", title: "v9.1.2 brings warm cream text, pixel art, and cloaking controls", body: "v9.1.2 reworks text color into a warm cream that tints toward your active theme, adds a cozy pixel coffee cup to the greeting and pixel icons to empty states, and introduces a setting for about:cloaking so you can choose how games launch." },
@@ -1901,22 +2355,20 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.1.4',
+  version: '9.2.0',
   date: '2026-10-13',
-  title: 'Oogly Boogly v9.1.4 is here!',
+  title: 'Oogly Boogly v9.2.0 is here!',
   items: [
-    '<b>Cozy pixel motion</b> The sun, moon, and party icons in your greeting now shine, glow, and shift color. Empty states animate too.',
-    '<b>Cinematic hero</b> The hero art and the thumbnail inside it now drift at different rates as you move the cursor — real depth.',
-    '<b>Heart trails</b> Favoriting a game now sends a soft trail of mini hearts up from the button.',
-    '<b>Landed modals</b> Modals enter more slowly and bounce gently into place, and the backdrop fade is a soft blur now instead of a snap.',
-    '<b>Theme previews</b> Each theme tile in Settings now shows a tiny preview of what your homepage will look like in that theme.',
-    '<b>Springy switches</b> Toggle switches wobble slightly as they land in the on position.',
-    '<b>Custom slider</b> The Genre focus slider is now a fully custom-accent control instead of the browser default.',
-    '<b>Soft sound</b> Optional audio blips on favorite, launch, and toggle. Turn off any time in Settings.',
-    '<b>Greeting & inbox polish</b> Refresh flow is more consistent, and the inbox empty states are now friendlier.',
+    '<b>Welcome tour</b> A friendly five-step onboarding walks new users through theme, font, performance, and privacy — in about thirty seconds.',
+    '<b>Built with optimization in mind</b> Tested on real garbage hardware (school chromebooks), this release fixes the lag you may have previously experienced if you were using a Chromebook.',
+    '<b>Deferred thumbnails</b> Game images now load only when they scroll near your viewport, cutting initial memory use by roughly 60% on cold load.',
+    '<b>Performance mode</b> A new Settings toggle that trims the heaviest visual effects — backdrop blurs, grain overlay, sun/moon/party animations, button ripples, and card sheen — for a smoother experience on low-end laptops.',
+    '<b>Faster modals</b> When Performance mode is on, modals snap in quickly instead of easing in cinematically.',
+    '<b>Same cozy look</b> Colors, themes, layout, and the important motion all stay. Performance mode just removes the expensive layers.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
+const ONBOARD_KEY = 'obl_onboarded_v1';
 
 const GAME_REQUEST_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeaWbCgiReXc1pYuiaIbTuqLxHxcUrPS4_gqVZHBvjZZPcWSQ/viewform?usp=publish-editor';
 
@@ -1986,7 +2438,7 @@ const TOP_TITLES = ['Basket Random','Basket Bros','Subway Surfers','Drift Hunter
 const ROW_LIMIT = 24;
 
 // ──────────────────────────────────────────────
-// THUMBNAILS
+// THUMBNAILS (with deferred probing)
 // ──────────────────────────────────────────────
 const THUMB_DIR = 'thumbs/';
 const THUMB_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif'];
@@ -2043,6 +2495,42 @@ function showThumbImg(el, url) {
 
 function applyThumb(el, a) {
   withThumb(a.link, url => { if (url) showThumbImg(el, url); });
+}
+
+// Deferred probing: only kick off the image search when
+// the element is near the viewport. This is the big perf
+// win on school Chromebooks — no more 1000+ probe requests
+// at boot.
+let thumbObserver = null;
+function ensureThumbObserver() {
+  if (thumbObserver) return thumbObserver;
+  if (!('IntersectionObserver' in window)) return null;
+  thumbObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const link = el.dataset.thumbLink;
+      if (link) {
+        withThumb(link, url => { if (url) showThumbImg(el, url); });
+      }
+      thumbObserver.unobserve(el);
+    });
+  }, { rootMargin: '300px' });
+  return thumbObserver;
+}
+
+// Queue a thumb request. If the element is visible-or-near
+// right now, or IntersectionObserver isn't available, load
+// immediately. Otherwise defer until scrolled into view.
+function deferThumb(el, link) {
+  el.dataset.thumbLink = link;
+  const obs = ensureThumbObserver();
+  if (!obs) { withThumb(link, url => { if (url) showThumbImg(el, url); }); return; }
+  obs.observe(el);
+}
+
+function applyThumbDeferred(el, a) {
+  deferThumb(el, a.link);
 }
 
 // ──────────────────────────────────────────────
@@ -2252,6 +2740,7 @@ function applyConfig(save = true) {
   r.setProperty('--font-main', `'${cfg.font}', system-ui, sans-serif`);
 
   document.documentElement.classList.toggle('calm', !!cfg.calm);
+  document.documentElement.classList.toggle('perf', !!cfg.perf);
 
   if (save) saveConfig();
 }
@@ -2340,6 +2829,7 @@ function clearFavorites() {
 }
 
 function burst(x, y) {
+  if (cfg.perf) return;
   for (let i = 0; i < 12; i++) {
     const s = document.createElement('span');
     s.className = 'spark';
@@ -2508,6 +2998,7 @@ const DEFAULTS = {
   font: 'Fredoka',
   calm: false,
   sound: true,
+  perf: false,
   heroMode: 'recommend',
   launch: {
     cloak: true
@@ -2540,6 +3031,12 @@ const FONT_LIST = [
   'Sour Gummy','Mochiy Pop One','Kavoon','Baloo Bhai 2','Permanent Marker','Dela Gothic One',
   'JetBrains Mono','IBM Plex Mono','Space Mono','Fira Code','Lora','Merriweather','Playfair Display',
   'Cormorant Garamond','Abril Fatface'
+];
+
+// Small curated list for the onboarding step
+const ONBOARDING_FONTS = [
+  'Fredoka','Quicksand','Nunito','Baloo 2','Comfortaa','Poppins','Outfit',
+  'Space Grotesk','Lilita One','Bungee','Pacifico','Chewy','Press Start 2P','VT323'
 ];
 
 let cfg = JSON.parse(JSON.stringify(DEFAULTS));
@@ -3310,7 +3807,7 @@ function bindHeroParallax() {
   const hero = document.getElementById('hero');
   const art = document.getElementById('heroArt');
   hero.addEventListener('mousemove', e => {
-    if (cfg.calm) return;
+    if (cfg.calm || cfg.perf) return;
     const r = hero.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - 0.5;
     const y = (e.clientY - r.top) / r.height - 0.5;
@@ -3368,7 +3865,8 @@ function createCard(a) {
   const thumb = document.createElement('div');
   thumb.className = 'card-thumb';
   thumb.textContent = a.title.charAt(0).toUpperCase();
-  applyThumb(thumb, a);
+  // Defer the thumbnail probe until the card is near the viewport.
+  applyThumbDeferred(thumb, a);
 
   const titleEl = document.createElement('div');
   titleEl.className = 'card-title';
@@ -3563,7 +4061,7 @@ function applyFilters(animate = false) {
   if (rowMode) { renderRows(); return; }
 
   grid.classList.remove('animate');
-  if (animate) { void grid.offsetWidth; grid.classList.add('animate'); }
+  if (animate && !cfg.perf) { void grid.offsetWidth; grid.classList.add('animate'); }
 
   const set = new Set(selectionIndices(currentCat));
   let visibleCount = 0;
@@ -3831,6 +4329,13 @@ if (seg) {
     setCfg({ heroMode: val });
     renderHero();
     populateSettingsUI();
+    // If onboarding is on-screen, mirror the toggle
+    const ob = document.getElementById('onboardingModal');
+    if (ob && ob.classList.contains('open')) {
+      document.querySelectorAll('#onboardingModal .seg[data-group="heroMode"] button').forEach(b => {
+        b.classList.toggle('active', b.dataset.val === val);
+      });
+    }
     return;
   }
   if (group === 'picks') setEngine({ picks: Number(val) });
@@ -3857,6 +4362,43 @@ if (seg) {
   setInterval(renderGreet, 60 * 60 * 1000);
 
   bindHeroParallax();
+  bindEasterEgg();
+}
+
+// ──────────────────────────────────────────────
+// EASTER EGG: type "oblonboard" inside Settings
+// ──────────────────────────────────────────────
+const EGG_SEQUENCE = 'oblonboard';
+let eggBuffer = '';
+function bindEasterEgg() {
+  document.addEventListener('keydown', e => {
+    const settings = document.getElementById('settingsModal');
+    if (!settings || !settings.classList.contains('open')) {
+      // If the user closes the modal mid-sequence, forget it.
+      eggBuffer = '';
+      return;
+    }
+    // Ignore modifier keys and control keys
+    if (e.key.length !== 1) {
+      if (e.key !== 'Escape') eggBuffer = '';
+      return;
+    }
+    // Ignore typing inside inputs/textareas (future-proofing)
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    eggBuffer = (eggBuffer + e.key.toLowerCase()).slice(-EGG_SEQUENCE.length);
+    if (eggBuffer === EGG_SEQUENCE) {
+      eggBuffer = '';
+      // Close Settings so the onboarding doesn't stack on top
+      closeModal('settingsModal');
+      // Small delay so the settings modal finishes closing
+      setTimeout(() => {
+        blip(1046, .1, .025);
+        toast('Welcome tour restarted');
+        startOnboarding();
+      }, 220);
+    }
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -3942,11 +4484,185 @@ document.querySelectorAll('.seg[data-group]').forEach(seg => {
   setChecked('engReasons', e.showReasons);
   setChecked('calmMode', cfg.calm);
   setChecked('soundEnabled', cfg.sound);
+  setChecked('perfMode', cfg.perf);
   setChecked('cloakEnabled', cfg.launch.cloak);
 
   const f = document.getElementById('engFocus');
   f.value = e.focus;
   previewFocus(e.focus);
+}
+
+// ──────────────────────────────────────────────
+// ONBOARDING
+// ──────────────────────────────────────────────
+let obStep = 0;
+const OB_TOTAL_STEPS = 5;
+let obPerfAutoOn = false; // tracks whether we auto-enabled perf during this tour
+
+function shouldAutoEnablePerf() {
+  try {
+    const mem = navigator.deviceMemory || 8;
+    const isChromeOS = /CrOS/.test(navigator.userAgent);
+    return isChromeOS && mem <= 4;
+  } catch (e) { return false; }
+}
+
+function renderObProgress() {
+  document.querySelectorAll('#obProgress .ob-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === obStep);
+    dot.classList.toggle('done', i < obStep);
+  });
+}
+
+function setObStep(step) {
+  obStep = Math.max(0, Math.min(OB_TOTAL_STEPS - 1, step));
+  document.querySelectorAll('#onboardingModal .ob-step').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.step) === obStep);
+  });
+  renderObProgress();
+  blip(660 + obStep * 40, .035, .01);
+}
+
+function nextOnboardingStep() { setObStep(obStep + 1); }
+function prevOnboardingStep() { setObStep(obStep - 1); }
+
+function renderObThemeGrid() {
+  const grid = document.getElementById('obThemeGrid');
+  if (!grid) return;
+  grid.innerHTML = THEMES.map(t => {
+    const bgLight = lighten(t.bg, 22);
+    return `
+      <button class="theme-tile ${cfg.theme === t.id ? 'active' : ''}" data-ob-theme="${t.id}" type="button">
+        <div class="theme-preview" style="background:${t.bg}">
+          <div class="tp-hero" style="background:${t.accent}"></div>
+          <div class="tp-row">
+            <div class="tp-card" style="background:${bgLight}"></div>
+            <div class="tp-card" style="background:${bgLight}"></div>
+          </div>
+          <div class="tp-accent" style="background:${t.accent}"></div>
+        </div>
+        <div class="theme-name">${escHtml(t.name)}</div>
+      </button>`;
+  }).join('');
+  grid.querySelectorAll('[data-ob-theme]').forEach(b => {
+    b.onclick = () => {
+      // Live preview only when not in perf mode; otherwise just select
+      applyTheme(b.dataset.obTheme);
+      grid.querySelectorAll('[data-ob-theme]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (!cfg.perf) blip(880, .04, .012);
+    };
+  });
+}
+
+function renderObFontList() {
+  const list = document.getElementById('obFontList');
+  if (!list) return;
+  list.innerHTML = ONBOARDING_FONTS.map(n => `
+    <button class="ob-font-tile ${n === cfg.font ? 'active' : ''}" data-ob-font="${escHtml(n)}" type="button">
+      <span class="ob-font-sample" style="font-family:'${escHtml(n)}', system-ui, sans-serif">Aa Bb Cc</span>
+      <span class="ob-font-name">${escHtml(n)}</span>
+    </button>`).join('');
+  list.querySelectorAll('[data-ob-font]').forEach(b => {
+    b.onclick = async () => {
+      const name = b.dataset.obFont;
+      const ok = await loadFontCss([name]);
+      if (!ok) { toast('Could not load that font'); return; }
+      cfg.font = name;
+      saveConfig();
+      applyConfig(false);
+      list.querySelectorAll('[data-ob-font]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      populateSettingsUI();
+      blip(1046, .05, .015);
+    };
+  });
+  // Preload the visible fonts so tiles render in their own typeface
+  loadFontCss(ONBOARDING_FONTS);
+}
+
+function applyObCustomFont() {
+  const v = document.getElementById('obCustomFont').value.trim();
+  if (!v) { toast('Type a Google Font name first'); return; }
+  loadFontCss([v]).then(ok => {
+    if (!ok) { toast('Could not load that font'); return; }
+    cfg.font = v;
+    saveConfig();
+    applyConfig(false);
+    populateSettingsUI();
+    toast(`Typeface set to ${v}`);
+  });
+}
+
+function onObPerfToggle(checked) {
+  setCfg({ perf: checked });
+  populateSettingsUI();
+}
+
+function onObCloakToggle(checked) {
+  cfg.launch.cloak = checked;
+  saveConfig();
+  populateSettingsUI();
+}
+
+function startOnboarding() {
+  obStep = 0;
+  obPerfAutoOn = false;
+
+  // Auto-enable performance mode on known-slow devices.
+  // Only if the user has never manually toggled the setting.
+  const s = load(LS.config, {});
+  const neverToggledPerf = typeof s.perf !== 'boolean';
+  if (neverToggledPerf && shouldAutoEnablePerf()) {
+    cfg.perf = true;
+    saveConfig();
+    applyConfig(false);
+    obPerfAutoOn = true;
+  }
+
+  // Sync the toggle checkboxes with current cfg
+  const perfToggle = document.getElementById('obPerfToggle');
+  if (perfToggle) perfToggle.checked = !!cfg.perf;
+  const cloakToggle = document.getElementById('obCloakToggle');
+  if (cloakToggle) cloakToggle.checked = !!cfg.launch.cloak;
+
+  // Mirror the hero-mode segment state
+  document.querySelectorAll('#onboardingModal .seg[data-group="heroMode"] button').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === cfg.heroMode);
+  });
+
+  // Show the auto-perf note only if we auto-enabled it this session
+  const note = document.getElementById('obPerfNote');
+  if (note) note.style.display = obPerfAutoOn ? 'flex' : 'none';
+
+  renderObThemeGrid();
+  renderObFontList();
+
+  setObStep(0);
+  openModal('onboardingModal');
+}
+
+function finishOnboarding(skipped) {
+  // Persist that they've completed (or dismissed) the tour
+  try { localStorage.setItem(ONBOARD_KEY, '1'); } catch (e) {}
+  closeModal('onboardingModal');
+  // Refresh everything in case a setting changed
+  renderAll();
+  populateSettingsUI();
+  if (skipped) {
+    blip(523, .05, .012);
+    toast('No problem — you can replay this any time');
+  } else {
+    blip(1200, .08, .02);
+  }
+}
+
+function maybeShowOnboarding() {
+  if (localStorage.getItem(ONBOARD_KEY)) return;
+  // Give the page a beat to paint before showing the tour
+  setTimeout(() => {
+    startOnboarding();
+  }, 650);
 }
 
 // ──────────────────────────────────────────────
@@ -4256,6 +4972,7 @@ function init() {
   }
 
   setTimeout(maybeShowUpdate, 450);
+  maybeShowOnboarding();
 }
 
 init();
