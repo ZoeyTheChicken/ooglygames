@@ -18,7 +18,79 @@
 /* ─────────────────────────────────────────────
    THEMES
    ───────────────────────────────────────────── */
+
+body, header, .rail, .hero, .card, .card-thumb, .modal, .tool-btn,
+.cat-btn, #search, .btn, .inbox-item, .theme-tile, .font-tile, .rank {
+  transition: background-color .3s var(--ease),
+              border-color .3s var(--ease),
+              color .3s var(--ease),
+              box-shadow .3s var(--ease);
+}
+
+/* ───── INBOX TOOLBAR ───── */
+.inbox-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.inbox-filters {
+  display: inline-flex; gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 3px;
+}
+.inbox-filter {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-family: var(--font-main);
+  font-size: 13px; font-weight: 600;
+  padding: 6px 11px; border-radius: 8px;
+  transition: color .15s, background .2s var(--ease), transform .2s var(--spring);
+}
+.inbox-filter i { font-size: 11px; transition: transform .3s var(--spring); }
+.inbox-filter:hover { color: var(--text); }
+.inbox-filter:hover i { transform: scale(1.2); }
+.inbox-filter:active { transform: scale(.94); }
+.inbox-filter.active {
+  background: var(--surface3);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+.inbox-filter.active i { color: var(--accent); }
+.inbox-filter-count {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 700;
+  color: var(--muted2);
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 1px 5px;
+  min-width: 18px; text-align: center;
+  transition: color .15s, background .2s var(--ease);
+}
+.inbox-filter.active .inbox-filter-count {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.inbox-actions { margin-left: auto; display: flex; gap: 6px; }
+
+/* Empty state when a filter has no items */
+.inbox-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  text-align: center; color: var(--muted);
+  padding: 40px 20px; font-size: 13px;
+  border: 1px dashed var(--border2);
+  border-radius: 14px;
+  background: var(--text-tint);
+}
+.inbox-empty .pixel-icon { opacity: .8; }
+
+/* Fade-in for filter changes */
+#inboxList .inbox-item {
+  animation: rise .3s var(--ease) backwards;
+}
+
 :root {
+  /* ── Base colors (set by JS from theme + accent) ── */
   --bg: #0b0c0e;
   --bg-rgb: 11, 12, 14;
   --surface: #121418;
@@ -28,20 +100,45 @@
   --border2: #2b303a;
   --text: #f4ecdd;
   --text-soft: #e8ddc9;
-  --muted: rgba(244,236,221,.62);
-  --muted2: rgba(244,236,221,.38);
-  --muted-strong: rgba(244,236,221,.82);
+  --text-rgb: 244, 236, 221;
+  --muted: rgba(var(--text-rgb), .62);
+  --muted2: rgba(var(--text-rgb), .38);
+  --muted-strong: rgba(var(--text-rgb), .82);
   --accent: #3b82f6;
-  --accent-rgb: 59,130,246;
+  --accent-rgb: 59, 130, 246;
   --heart: #f472b6;
+  --heart-rgb: 244, 114, 182;
+
+  /* ── Derived tokens (recomputed by JS) ── */
+  --accent-soft: rgba(var(--accent-rgb), .15);
+  --accent-softer: rgba(var(--accent-rgb), .08);
+  --accent-line: rgba(var(--accent-rgb), .28);
+  --accent-glow: rgba(var(--accent-rgb), .45);
+  --bg-glass: rgba(var(--bg-rgb), .32);
+  --bg-glass-strong: rgba(var(--bg-rgb), .48);
+  --text-line: rgba(var(--text-rgb), .10);
+  --text-line-strong: rgba(var(--text-rgb), .18);
+  --text-ghost: rgba(var(--text-rgb), .05);
+  --text-tint: rgba(var(--text-rgb), .02);
+
+  /* ── Shape / motion ── */
   --radius: 14px;
   --radius-sm: 10px;
   --font-main: 'Fredoka', system-ui, sans-serif;
   --font-mono: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
   --ease: cubic-bezier(.2,.8,.2,1);
   --spring: cubic-bezier(.34,1.45,.5,1);
-  --cozy-shadow: 0 14px 34px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25);
+
+  /* ── Shadows (theme-tinted) ── */
+  --shadow-sm: 0 2px 6px rgba(0,0,0,.25);
+  --shadow-md: 0 14px 34px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25);
+  --shadow-lg: 0 30px 80px rgba(0,0,0,.7);
+  --shadow-hover: 0 18px 38px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--accent-rgb), .18);
+  --cozy-shadow: var(--shadow-md);
   --cozy-glow: 0 0 0 1px rgba(var(--accent-rgb), .12), 0 12px 30px rgba(var(--accent-rgb), .08);
+
+  /* ── Legacy aliases (kept so nothing breaks) ── */
+  --card-hover: var(--surface2);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,6 +153,7 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
+  transition: background .3s var(--ease), color .3s var(--ease);
 }
 
 body::before {
@@ -81,7 +179,6 @@ header, .layout, .toast { position: relative; z-index: 1; }
 @keyframes heartPop{ 0% { transform: scale(1); } 35% { transform: scale(1.5); } 65% { transform: scale(.85); } 100% { transform: scale(1); } }
 @keyframes bob     { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @keyframes spark   { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
-@keyframes waveHi  { 0% { transform: rotate(0); } 20% { transform: rotate(16deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(12deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(0); } }
 @keyframes heartBeat { 0%,100% { transform: scale(1); } 25% { transform: scale(1.12); } 60% { transform: scale(.96); } }
 @keyframes swatchPop { 0% { transform: scale(1); } 45% { transform: scale(1.28); } 100% { transform: scale(1.18); } }
 @keyframes arrowPulse { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
@@ -108,6 +205,7 @@ header {
   background-color: var(--surface);
   border-bottom: 1px solid var(--border);
   animation: fadeIn .4s var(--ease) both;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
 .logo {
   display: flex; align-items: center; gap: 8px;
@@ -145,6 +243,7 @@ header {
 }
 #search::placeholder { color: var(--muted2); }
 #search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .18); background: var(--surface3); transform: translateY(-1px); }
+#search.searching { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .12); }
 
 /* ───── LAYOUT ───── */
 .layout { display: flex; min-height: calc(100vh - 60px); }
@@ -159,6 +258,7 @@ header {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   overflow-y: auto;
   animation: fadeIn .5s var(--ease) both;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
 .tool-btn {
   width: 52px;
@@ -194,7 +294,7 @@ header {
   background: var(--heart); color: #fff;
   font-size: 10px; font-weight: 700; display: grid; place-items: center;
   animation: pop .4s var(--spring) both;
-  box-shadow: 0 2px 8px rgba(244,114,182,.45);
+  box-shadow: 0 2px 8px rgba(var(--heart-rgb), .45);
 }
 .rail-badge[hidden] { display: none; }
 
@@ -218,10 +318,11 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   background: var(--surface);
   box-shadow: var(--cozy-shadow);
   animation: rise .6s var(--ease) both;
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
 .hero-art {
   position: absolute; inset: -20px; background: var(--surface2);
-  transition: transform .5s var(--ease);
+  transition: transform .5s var(--ease), background-color .3s var(--ease);
 }
 .hero-art::before {
   content: ''; position: absolute; right: -80px; top: -90px;
@@ -273,8 +374,14 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   padding: 5px 11px; border-radius: 999px; margin-bottom: 14px;
 }
 .trend-pill i { animation: bob 2.4s ease-in-out infinite; }
-.hero-title { font-size: 50px; font-weight: 700; letter-spacing: -1px; line-height: 1.05; margin-bottom: 8px; }
-.hero-title.placeholder { font-size: 36px; }
+.trend-pill.continue { background: rgba(var(--heart-rgb), .15); color: var(--heart); }
+.trend-pill.continue i { color: var(--heart); }
+.hero-title {
+  font-size: 50px; font-weight: 700; letter-spacing: -1px; line-height: 1.05;
+  margin-bottom: 8px;
+  max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hero-title.placeholder { font-size: 36px; max-width: none; overflow: visible; white-space: normal; }
 .hero-meta { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 10px; }
 .hero-sub { font-size: 15px; color: var(--muted-strong); line-height: 1.5; margin-bottom: 20px; max-width: 460px; }
 
@@ -301,7 +408,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   overflow: hidden; padding: 0;
   animation: pop .5s var(--spring) backwards;
   animation-delay: calc(var(--i, 0) * 70ms + 200ms);
-  transition: border-color .2s, transform .3s var(--spring), box-shadow .25s;
+  transition: border-color .2s, transform .3s var(--spring), box-shadow .25s, background-color .3s var(--ease);
 }
 .hero-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hero-tile:hover { border-color: var(--accent); transform: translateY(-6px) rotate(-4deg) scale(1.06); box-shadow: 0 14px 28px rgba(0,0,0,.5); }
@@ -315,7 +422,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .row-section:nth-child(n+5) { animation-delay: .2s; }
 .row-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .row-title { font-size: 20px; font-weight: 600; letter-spacing: -.2px; display: flex; align-items: center; gap: 9px; }
-.row-title i { color: var(--accent); font-size: 16px; transition: transform .35s var(--spring); }
+.row-title i { color: var(--accent); font-size: 16px; transition: transform .35s var(--spring), color .3s var(--ease); }
 .row-section.fav-sec .row-title i { color: var(--heart); }
 .row-section.fav-sec.has-items .row-title i { animation: heartBeat 2.6s ease-in-out infinite; }
 .row-head:hover .row-title i { transform: rotate(-12deg) scale(1.18); }
@@ -342,16 +449,23 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   display: flex; gap: 12px;
   overflow-x: auto; padding: 6px 4px 16px;
   scroll-behavior: smooth; scrollbar-width: none;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right,
+    #000 0%, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to right,
+    #000 0%, #000 calc(100% - 24px), transparent 100%);
 }
 .row-scroll::-webkit-scrollbar { display: none; }
 .row-scroll .card { flex: 0 0 180px; }
 .empty-row {
-  display: flex; align-items: center; gap: 12px; width: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; width: 100%; text-align: center;
   color: var(--muted); font-size: 14px; font-weight: 500;
-  padding: 22px; border: 1px dashed var(--border2); border-radius: 14px;
-  background: rgba(244,236,221,.02);
+  padding: 32px 22px; border: 1px dashed var(--border2); border-radius: 14px;
+  background: var(--text-tint);
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
-.empty-row .pixel-icon { opacity: .85; }
+.empty-row .pixel-icon { opacity: .9; }
 
 /* ───── SECTION HEADER (grid) ───── */
 .section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; animation: rise .4s var(--ease) both; }
@@ -363,7 +477,11 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   gap: 12px; padding: 6px 4px;
 }
 .grid.animate .card:not(.is-hidden) { animation: cardIn .5s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 30ms); }
-.no-results { color: var(--muted); font-size: 15px; font-weight: 500; text-align: center; padding: 48px; grid-column: 1/-1; animation: fadeIn .4s both; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.no-results {
+  color: var(--muted); font-size: 15px; font-weight: 500; text-align: center;
+  padding: 48px; grid-column: 1/-1; animation: fadeIn .4s both;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
 .no-results .pixel-icon { opacity: .6; }
 
 /* ───── CARDS ───── */
@@ -375,42 +493,43 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   cursor: pointer; user-select: none;
   animation: cardIn .55s var(--ease) backwards;
   animation-delay: calc(var(--i, 0) * 35ms);
-  transition: transform .3s var(--spring), border-color .2s, box-shadow .3s var(--ease);
+  transition: transform .3s var(--spring), border-color .2s, box-shadow .3s var(--ease), background-color .3s var(--ease);
   content-visibility: auto;
   contain-intrinsic-size: 180px 120px;
 }
 .card:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-4px) scale(1.015);
   border-color: rgba(var(--accent-rgb), .6);
-  box-shadow: 0 18px 38px rgba(0,0,0,.55), 0 0 0 1px rgba(var(--accent-rgb), .18);
+  box-shadow: var(--shadow-hover);
   z-index: 2;
 }
-.card:active { transform: translateY(-1px) scale(.98); transition-duration: .1s; }
+.card:active { transform: translateY(-1px) scale(.985); transition-duration: .1s; }
 .card.is-hidden { display: none; }
 .card-thumb {
   position: absolute; inset: 0;
   display: grid; place-items: center;
   background: linear-gradient(135deg, var(--surface3), var(--surface2));
   font-size: 52px; font-weight: 700; color: var(--accent);
-  transition: transform .45s var(--ease), filter .3s;
+  transition: transform .45s var(--ease), filter .3s, background .3s var(--ease), color .3s var(--ease);
 }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-thumb img { animation: fadeIn .35s var(--ease) both; }
 .card:hover .card-thumb { transform: scale(1.08); filter: brightness(1.15); }
 .card-title {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   padding: 10px 13px;
-  background: rgba(var(--bg-rgb), .32);
+  background: var(--bg-glass);
   -webkit-backdrop-filter: blur(6px) saturate(130%);
   backdrop-filter: blur(6px) saturate(130%);
-  border-top: 1px solid rgba(244,236,221,.10);
-  box-shadow: inset 0 1px 0 rgba(244,236,221,.05);
+  border-top: 1px solid var(--text-line);
+  box-shadow: inset 0 1px 0 var(--text-ghost);
   font-size: 14px; font-weight: 600; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background .25s, border-color .25s;
 }
 .card:hover .card-title {
-  background: rgba(var(--bg-rgb), .48);
-  border-top-color: rgba(244,236,221,.18);
+  background: var(--bg-glass-strong);
+  border-top-color: var(--text-line-strong);
 }
 .card-cat { display: none; }
 .card-arrow {
@@ -419,7 +538,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   display: grid; place-items: center;
   background: var(--accent); color: #fff; font-size: 13px;
   opacity: 0; transform: translate(-50%, -50%) scale(.4);
-  transition: opacity .25s, transform .4s var(--spring);
+  transition: opacity .25s, transform .4s var(--spring), background-color .3s var(--ease);
   pointer-events: none; box-shadow: 0 10px 24px rgba(0,0,0,.5);
 }
 .card:hover .card-arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -444,7 +563,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   display: grid; place-items: center;
   animation: pop .5s var(--spring) backwards;
   animation-delay: calc(var(--i, 0) * 35ms + 150ms);
-  box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  box-shadow: var(--shadow-sm);
 }
 .rank.top { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(var(--accent-rgb),.4); }
 
@@ -468,7 +587,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   background: var(--surface); border: 1px solid var(--border2);
   border-radius: 18px; padding: 24px;
   width: 440px; max-width: 100%; max-height: 88vh; overflow-y: auto;
-  box-shadow: 0 30px 80px rgba(0,0,0,.7);
+  box-shadow: var(--shadow-lg);
+  transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
 .modal-bg.open .modal { animation: modalIn .4s var(--spring) both; }
 .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
@@ -523,6 +643,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   background: rgba(var(--accent-rgb), .15); color: var(--accent);
   display: grid; place-items: center; font-size: 22px;
   animation: spinIn .8s var(--spring) both;
+  transition: background-color .3s var(--ease), color .3s var(--ease);
 }
 .update-hero-label {
   font-size: 18px; font-weight: 700; letter-spacing: -.2px;
@@ -574,13 +695,13 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   transition: border-color .2s, transform .25s var(--spring), background .2s, box-shadow .25s;
 }
 .inbox-item:hover { transform: translateX(3px); border-color: var(--border2); box-shadow: var(--cozy-shadow); }
-.inbox-item.unread { border-color: rgba(var(--accent-rgb), .4); background: rgba(var(--accent-rgb), .06); }
+.inbox-item.unread { border-color: rgba(var(--accent-rgb), .4); background: var(--accent-softer); }
 .inbox-ico {
   width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
   display: grid; place-items: center;
   background: rgba(var(--accent-rgb), .15); color: var(--accent); font-size: 14px;
 }
-.inbox-item[data-type="game"] .inbox-ico { background: rgba(244,114,182,.15); color: var(--heart); }
+.inbox-item[data-type="game"] .inbox-ico { background: rgba(var(--heart-rgb), .15); color: var(--heart); }
 .inbox-body { flex: 1; min-width: 0; }
 .inbox-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
 .inbox-desc { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
@@ -658,7 +779,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .theme-swatches { display: flex; gap: 4px; margin-bottom: 8px; }
 .theme-swatch {
   width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid rgba(244,236,221,.15);
+  border: 1px solid var(--text-line);
   transition: transform .25s var(--spring);
 }
 .theme-tile:hover .theme-swatch { transform: scale(1.08); }
@@ -768,9 +889,54 @@ input[type="file"] { display: none; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; transition: background .2s; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
 
+/* ───── COZY PASS ───── */
+
+/* Ripple on click for interactive elements */
+.tool-btn, .cat-btn, .hero-tile, .theme-tile, .font-tile,
+.btn, .inbox-filter, .nav-arrow {
+  position: relative;
+  overflow: hidden;
+}
+.tool-btn::after, .cat-btn::after, .hero-tile::after,
+.btn::after, .inbox-filter::after, .nav-arrow::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center,
+    rgba(var(--accent-rgb), .28), transparent 60%);
+  opacity: 0; pointer-events: none;
+  transform: scale(.4);
+  transition: opacity .35s var(--ease), transform .5s var(--ease);
+}
+.tool-btn:active::after, .cat-btn:active::after, .hero-tile:active::after,
+.btn:active::after, .inbox-filter:active::after, .nav-arrow:active::after {
+  opacity: 1; transform: scale(1.4);
+  transition: opacity .05s, transform .05s;
+}
+
+/* Softer focus ring everywhere */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 /* ───── CALM MODE ───── */
 html.calm *, html.calm *::before, html.calm *::after {
   animation: none !important; transition: none !important;
+}
+
+/* Calm mode: freeze hero parallax transform */
+html.calm .hero-art { transform: none !important; }
+
+/* ───── REDUCED MOTION (OS-level fallback) ───── */
+@media (prefers-reduced-motion: reduce) {
+  html:not(.calm) *, html:not(.calm) *::before, html:not(.calm) *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ───── RESPONSIVE ───── */
@@ -801,14 +967,6 @@ html.calm *, html.calm *::before, html.calm *::after {
 @media (max-width: 480px) {
   .modal { padding: 20px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 </style>
 </head>
 <body>
@@ -816,34 +974,34 @@ html.calm *, html.calm *::before, html.calm *::after {
 <header>
   <div class="logo" onclick="filterCat('All')">Oogly Boogly</div>
   <nav id="sidebar"></nav>
-  <input id="search" type="text" placeholder="Search games and categories" oninput="onSearchInput(this.value)" autocomplete="off"/>
+  <input id="search" type="text" placeholder="Search games and categories" oninput="onSearchInput(this.value)" autocomplete="off" aria-label="Search games and categories"/>
 </header>
 
 <div class="layout">
   <aside class="rail">
-    <button class="tool-btn" title="Home" onclick="goHome()">
+    <button class="tool-btn" title="Home" aria-label="Home" onclick="goHome()">
       <i class="fa-solid fa-house"></i><span>Home</span>
     </button>
-    <button class="tool-btn" title="Roll the dice" onclick="surprise()">
+    <button class="tool-btn" title="Roll the dice" aria-label="Surprise me" onclick="surprise()">
       <i class="fa-solid fa-dice"></i><span>Surprise</span>
     </button>
-    <button class="tool-btn" title="Request a game" onclick="requestGame()">
+    <button class="tool-btn" title="Request a game" aria-label="Request a game" onclick="requestGame()">
       <i class="fa-solid fa-plus"></i><span>Request</span>
     </button>
-    <button class="tool-btn" title="Inbox" onclick="openInbox()">
+    <button class="tool-btn" title="Inbox" aria-label="Open inbox" onclick="openInbox()">
       <span class="rail-ico"><i class="fa-solid fa-inbox"></i><span class="rail-badge" id="inboxBadge" hidden>0</span></span>
       <span>Inbox</span>
     </button>
-    <button class="tool-btn" title="Updates" onclick="openModal('updatesModal')">
+    <button class="tool-btn" title="Updates" aria-label="Open updates" onclick="openModal('updatesModal')">
       <i class="fa-regular fa-bell"></i><span>Updates</span>
     </button>
-    <button class="tool-btn" title="Game Save" onclick="openModal('saveModal')">
+    <button class="tool-btn" title="Game Save" aria-label="Game save" onclick="openModal('saveModal')">
       <i class="fa-regular fa-floppy-disk"></i><span>Save</span>
     </button>
-    <button class="tool-btn" title="Settings" onclick="openModal('settingsModal')">
+    <button class="tool-btn" title="Settings" aria-label="Open settings" onclick="openModal('settingsModal')">
       <i class="fa-solid fa-gear"></i><span>Settings</span>
     </button>
-    <button class="tool-btn" title="About" onclick="openModal('aboutModal')">
+    <button class="tool-btn" title="About" aria-label="About Oogly Boogly" onclick="openModal('aboutModal')">
       <i class="fa-regular fa-circle-question"></i><span>About</span>
     </button>
   </aside>
@@ -851,24 +1009,11 @@ html.calm *, html.calm *::before, html.calm *::after {
   <main>
     <div class="greet">
       <div class="greet-text">
-        <div class="greet-hi" id="greetHi">
-          <svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
-            <rect x="2" y="12" width="12" height="1" fill="rgba(244,236,221,.35)"/>
-            <rect x="3" y="6" width="9" height="6" fill="var(--accent)"/>
-            <rect x="3" y="6" width="9" height="1" fill="rgba(255,255,255,.25)"/>
-            <rect x="4" y="7" width="7" height="1" fill="rgba(0,0,0,.35)"/>
-            <rect x="12" y="8" width="2" height="3" fill="var(--accent)"/>
-            <rect x="13" y="8" width="1" height="3" fill="rgba(0,0,0,.25)"/>
-            <rect class="steam-1" x="5" y="2" width="1" height="2" fill="rgba(244,236,221,.55)"/>
-            <rect class="steam-2" x="8" y="1" width="1" height="2" fill="rgba(244,236,221,.55)"/>
-            <rect class="steam-3" x="11" y="3" width="1" height="1" fill="rgba(244,236,221,.4)"/>
-          </svg>
-          Good morning
-        </div>
+        <div class="greet-hi" id="greetHi"></div>
       </div>
     </div>
 
-    <section class="hero" id="hero">
+    <section class="hero" id="hero" aria-label="Featured game">
       <div class="hero-art" id="heroArt">
         <img id="heroArtImg" alt="" />
       </div>
@@ -919,7 +1064,7 @@ html.calm *, html.calm *::before, html.calm *::after {
         <div class="modal-title">Updates</div>
         <div class="modal-sub">Everything that's changed in OBL</div>
       </div>
-      <button class="modal-close" onclick="closeModal('updatesModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('updatesModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div id="updatesList"></div>
   </div>
@@ -933,12 +1078,34 @@ html.calm *, html.calm *::before, html.calm *::after {
         <div class="modal-title">Inbox</div>
         <div class="modal-sub">Update alerts and new games, tailored to you</div>
       </div>
-      <button class="modal-close" onclick="closeModal('inboxModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('inboxModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="inbox-actions">
-      <button class="btn btn-ghost btn-sm" onclick="markAllRead()"><i class="fa-solid fa-envelope-open"></i> Mark all read</button>
-      <button class="btn btn-ghost btn-sm" onclick="clearInbox()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+
+    <div class="inbox-toolbar">
+      <div class="inbox-filters" id="inboxFilters">
+        <button class="inbox-filter active" data-filter="all" aria-label="Show all items">
+          <i class="fa-solid fa-inbox"></i> All
+          <span class="inbox-filter-count" id="inboxCountAll">0</span>
+        </button>
+        <button class="inbox-filter" data-filter="update" aria-label="Show updates only">
+          <i class="fa-solid fa-bell"></i> Updates
+          <span class="inbox-filter-count" id="inboxCountUpdate">0</span>
+        </button>
+        <button class="inbox-filter" data-filter="game" aria-label="Show games only">
+          <i class="fa-solid fa-gamepad"></i> Games
+          <span class="inbox-filter-count" id="inboxCountGame">0</span>
+        </button>
+      </div>
+      <div class="inbox-actions">
+        <button class="btn btn-ghost btn-sm" onclick="markAllRead()" title="Mark all read" aria-label="Mark all read">
+          <i class="fa-solid fa-envelope-open"></i>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="clearInbox()" title="Clear inbox" aria-label="Clear inbox">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
     </div>
+
     <div id="inboxList"></div>
   </div>
 </div>
@@ -949,9 +1116,9 @@ html.calm *, html.calm *::before, html.calm *::after {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.1.2</div>
+        <div class="modal-sub">Oogly Boogly Version 9.1.3</div>
       </div>
-      <button class="modal-close" onclick="closeModal('aboutModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <p class="about-p">Oogly Boogly makes assignments easy, with a simple, easy to use portal for your assignments.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to pick a theme, tune recommendations, and swap typefaces — plus a quick and easy <strong>Save</strong> system to back up your progress to a single file.</p>
@@ -966,14 +1133,14 @@ html.calm *, html.calm *::before, html.calm *::after {
         <div class="modal-title">Typeface</div>
         <div class="modal-sub">Pick a Google Font to make OBL yours</div>
       </div>
-      <button class="modal-close" onclick="closeModal('fontModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('fontModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="font-tools">
-      <input id="fontSearch" class="text-in wide" type="text" placeholder="Search fonts…" oninput="renderFontGrid(this.value)" autocomplete="off"/>
+      <input id="fontSearch" class="text-in wide" type="text" placeholder="Search fonts…" oninput="renderFontGrid(this.value)" autocomplete="off" aria-label="Search fonts"/>
     </div>
     <div class="font-grid" id="fontGrid"></div>
     <div class="custom-font">
-      <input id="customFont" class="text-in" type="text" placeholder="Or any Google Font name, e.g. Lobster" autocomplete="off"/>
+      <input id="customFont" class="text-in" type="text" placeholder="Or any Google Font name, e.g. Lobster" autocomplete="off" aria-label="Custom font name"/>
       <button class="btn btn-primary btn-sm" onclick="applyCustomFont()"><i class="fa-solid fa-check"></i> Use font</button>
     </div>
     <button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="applyFont('Fredoka')"><i class="fa-solid fa-rotate-left"></i> Reset to Fredoka</button>
@@ -988,7 +1155,7 @@ html.calm *, html.calm *::before, html.calm *::after {
         <div class="modal-title">Settings</div>
         <div class="modal-sub">Customize your experience</div>
       </div>
-      <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('settingsModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <section class="set-section">
@@ -1001,7 +1168,7 @@ html.calm *, html.calm *::before, html.calm *::after {
         </div>
         <div class="set-control">
           <div class="swatches" id="swatchRow"></div>
-          <input type="color" class="color-picker" id="colorPicker" oninput="setCfg({accent: this.value}); populateSettingsUI();"/>
+          <input type="color" class="color-picker" id="colorPicker" oninput="setCfg({accent: this.value}); populateSettingsUI();" aria-label="Custom accent color"/>
         </div>
       </div>
     </section>
@@ -1024,12 +1191,28 @@ html.calm *, html.calm *::before, html.calm *::after {
         </div>
         <div class="set-control">
           <label class="switch">
-            <input type="checkbox" id="calmMode" disabled onchange="setCfg({calm: this.checked}); populateSettingsUI();"/>
+            <input type="checkbox" id="calmMode" onchange="setCfg({calm: this.checked}); populateSettingsUI();" aria-label="Reduced motion"/>
             <span class="slider"></span>
           </label>
         </div>
       </div>
     </section>
+
+    <section class="set-section">
+  <div class="set-heading">Homepage</div>
+  <div class="set-row">
+    <div class="set-text">
+      <div class="set-label">Featured game</div>
+      <div class="set-desc">What should the big hero card at the top show?</div>
+    </div>
+    <div class="set-control">
+      <div class="seg" data-group="heroMode">
+        <button data-val="recommend">Recommended</button>
+        <button data-val="resume">Resume playing</button>
+      </div>
+    </div>
+  </div>
+</section>
 
     <section class="set-section">
       <div class="set-heading">Game launching</div>
@@ -1042,7 +1225,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Launch in an 'about:blank' tab for better privacy.</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="cloakEnabled" onchange="setLaunchCfg({cloak: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="cloakEnabled" onchange="setLaunchCfg({cloak: this.checked})" aria-label="Blank cloaking"/><span class="slider"></span></label>
         </div>
       </div>
     </section>
@@ -1055,7 +1238,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Picks update each time you launch a game. When off, picks stay fixed until you reload.</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="engAdaptive" onchange="setEngine({adaptive: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="engAdaptive" onchange="setEngine({adaptive: this.checked})" aria-label="Adapt after every play"/><span class="slider"></span></label>
         </div>
       </div>
       <div class="set-row">
@@ -1090,7 +1273,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc" id="engFocusDesc">Balance between category and similar titles</div>
         </div>
         <div class="set-control">
-          <input type="range" class="range" id="engFocus" min="0" max="100" step="5" oninput="previewFocus(this.value)" onchange="setEngine({focus: Number(this.value)})"/>
+          <input type="range" class="range" id="engFocus" min="0" max="100" step="5" oninput="previewFocus(this.value)" onchange="setEngine({focus: Number(this.value)})" aria-label="Genre focus"/>
           <span class="range-val" id="engFocusVal"></span>
         </div>
       </div>
@@ -1100,7 +1283,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Let your favorites steer picks, even before you've played them</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="engFav" onchange="setEngine({favBoost: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="engFav" onchange="setEngine({favBoost: this.checked})" aria-label="Favorites boost"/><span class="slider"></span></label>
         </div>
       </div>
       <div class="set-row">
@@ -1122,7 +1305,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Avoid stacking picks from one category</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="engVariety" onchange="setEngine({variety: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="engVariety" onchange="setEngine({variety: this.checked})" aria-label="Variety"/><span class="slider"></span></label>
         </div>
       </div>
       <div class="set-row">
@@ -1145,7 +1328,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Display a percentage match on the featured pick</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="engMatch" onchange="setEngine({showMatch: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="engMatch" onchange="setEngine({showMatch: this.checked})" aria-label="Show match score"/><span class="slider"></span></label>
         </div>
       </div>
       <div class="set-row">
@@ -1154,7 +1337,7 @@ html.calm *, html.calm *::before, html.calm *::after {
           <div class="set-desc">Explain why each pick was suggested</div>
         </div>
         <div class="set-control">
-          <label class="switch"><input type="checkbox" id="engReasons" onchange="setEngine({showReasons: this.checked})"/><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="engReasons" onchange="setEngine({showReasons: this.checked})" aria-label="Show reasons"/><span class="slider"></span></label>
         </div>
       </div>
     </section>
@@ -1213,7 +1396,7 @@ html.calm *, html.calm *::before, html.calm *::after {
         <div class="modal-title">Game Save</div>
         <div class="modal-sub">Back up your progress to a single file</div>
       </div>
-      <button class="modal-close" onclick="closeModal('saveModal')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" onclick="closeModal('saveModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <div class="set-row">
@@ -1234,7 +1417,7 @@ html.calm *, html.calm *::before, html.calm *::after {
     </div>
     <div style="margin-top: 12px;">
       <button class="btn btn-ghost btn-block" onclick="document.getElementById('saveFileInput').click()"><i class="fa-solid fa-file-import"></i> Choose Save</button>
-      <input type="file" id="saveFileInput" accept=".oblsave,.json,application/json" onchange="importSave(event)"/>
+      <input type="file" id="saveFileInput" accept=".oblsave,.json,application/json" onchange="importSave(event)" aria-label="Choose save file"/>
     </div>
 
     <div class="save-status" id="saveStatus"></div>
@@ -1250,12 +1433,31 @@ html.calm *, html.calm *::before, html.calm *::after {
 
 <script>
 // ──────────────────────────────────────────────
+// INBOX FILTER STATE
+// ──────────────────────────────────────────────
+let inboxFilter = 'all'; // 'all' | 'update' | 'game'
+
+function bindInboxFilters() {
+  const wrap = document.getElementById('inboxFilters');
+  if (!wrap) return;
+  wrap.addEventListener('click', e => {
+    const btn = e.target.closest('.inbox-filter');
+    if (!btn) return;
+    inboxFilter = btn.dataset.filter;
+    wrap.querySelectorAll('.inbox-filter').forEach(b => {
+      b.classList.toggle('active', b === btn);
+    });
+    renderInbox();
+  });
+}
+
+// ──────────────────────────────────────────────
 // TEMU NET DETECTION
 // ──────────────────────────────────────────────
 function isRunningInTemuNet() {
   try {
-    if (location.pathname.indexOf('/proxy/') === 0) return true;
-    if (document.referrer && document.referrer.indexOf('/proxy/') !== -1) return true;
+    if (location.pathname.indexOf('/learn/') === 0) return true;
+    if (document.referrer && document.referrer.indexOf('/learn/') !== -1) return true;
     var host = location.hostname || '';
     if (host === 'temu-net.vercel.app' || host.endsWith('.temu-net.vercel.app')) return true;
     if (host.indexOf('temunet') === 0) return true;
@@ -1269,6 +1471,7 @@ const IN_TEMUNET = isRunningInTemuNet();
 // ──────────────────────────────────────────────
 const assignments = [
   { title:"Report an issue...", link:"./help.html", category:"Utility" },
+  { title:"Plane Clicker", link:"assignment/planeclicker", category:"Idle" },
   { title:"City Idle", link:"assignment/ci", category:"Idle" },
   { title:"Mad Grand Prix", link:"assignment/mgp", category:"Action" },
   { title:"Brotato", link:"assignment/brotato", category:"Action" },
@@ -1462,6 +1665,7 @@ const assignments = [
 ];
 
 const newsData = [
+  { date: "2026-10-12", title: "v9.1.3 adds a hero mode setting, richer greetings, and Plane Clicker", body: "v9.1.3 introduces a Homepage setting to choose between a recommended hero or a resume-playing hero, replaces the single greeting with a bank of 500+ time- and day-aware messages, adds Plane Clicker to the catalog, wires up empty Jump back in and inbox filter states, and fixes Reduced motion so the toggle actually works. Also includes a handful of small polish fixes throughout." },
   { date: "2026-10-12", title: "v9.1.2 brings warm cream text, pixel art, and cloaking controls", body: "v9.1.2 reworks text color into a warm cream that tints toward your active theme, adds a cozy pixel coffee cup to the greeting and pixel icons to empty states, and introduces a setting for about:cloaking so you can choose how g@m35 launch." },
   { date: "2026-10-11", title: "v9.1.1 fixes 80 assignments", body: "v9.1.1 is an incremental update that includes fixes for over 80 of your favorite assignments, so they are maintained usable!" },
   { date: "2026-10-11", title: "v9.1 brings theme presets and card tooltips", body: "v9.1 adds a full theme selector with six hand-picked presets, hover tooltips on every game card, and a heap of microanimations to make the whole thing feel cozier." },
@@ -1503,17 +1707,16 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.1.2',
+  version: '9.1.3',
   date: '2026-10-12',
-  title: 'Oogly Boogly v9.1.2 is here!',
+  title: 'Oogly Boogly v9.1.3 is here!',
   items: [
-    '<b>Warm cream text</b> All text now uses a soft pastel cream that tints toward your active theme — no more harsh white.',
-    '<b>Theme-tinted glass</b> Card titles and hero gradients borrow their color from your theme instead of staying neutral black.',
-    '<b>Themes</b> Six hand-picked presets — Midnight, Slate, Forest, Sunset, Rose, Ocean — recolor the entire site in one click.',
-    '<b>Card tooltips</b> Hover any game card to see its full name, no more guessing at truncated titles.',
-    '<b>Pixel art</b> A cozy pixel coffee cup greets you each morning, and empty favorites, inbox, and search results now show pixel icons.',
-    '<b>Cloaking toggle</b> Game launching now respects a Setting for about:cloaking, on by default and marked recommended.',
-    '<b>Assignment fixes</b> Over 80 assignments have been fixed to ensure they remain playable and enjoyable.',
+    '<b>Hero mode</b> Pick whether the featured card at the top shows a fresh recommendation or picks up where you left off. Defaults to recommendations.',
+    '<b>Smarter greetings</b> The greeting is now a bank of 500+ messages that change with the time of day and the day of the week — a Monday morning and a Saturday evening feel different.',
+    '<b>Plane Clicker</b> A brand-new idle game has landed in the catalog.',
+    '<b>Empty states</b> The "Jump back in" row and the inbox now show friendly empty states instead of hiding or showing blank space.',
+    '<b>Reduced motion fixed</b> The Reduced motion toggle is now enabled and actually turns off animations.',
+    '<b>Polish pass</b> Card thumbnails fade in, the search bar shows a subtle "searching" glow, cards lift more gently on hover, buttons get a soft ripple on click, and focus rings appear for keyboard users.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -1691,6 +1894,25 @@ function pixelMagnifier(size = 26) {
       <rect x="12" y="12" width="2" height="2" fill="var(--accent)"/>
     </svg>`;
 }
+function pixelClock(size = 26) {
+  return `
+    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect x="5" y="1" width="6" height="1" fill="var(--accent)"/>
+      <rect x="5" y="14" width="6" height="1" fill="var(--accent)"/>
+      <rect x="1" y="5" width="1" height="6" fill="var(--accent)"/>
+      <rect x="14" y="5" width="1" height="6" fill="var(--accent)"/>
+      <rect x="3" y="3" width="2" height="2" fill="var(--accent)"/>
+      <rect x="11" y="3" width="2" height="2" fill="var(--accent)"/>
+      <rect x="3" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect x="11" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect x="2" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect x="13" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect x="2" y="11" width="1" height="1" fill="var(--accent)"/>
+      <rect x="13" y="11" width="1" height="1" fill="var(--accent)"/>
+      <rect x="7" y="4" width="2" height="1" fill="var(--accent)"/>
+      <rect x="7" y="7" width="4" height="1" fill="var(--accent)"/>
+    </svg>`;
+}
 
 // ──────────────────────────────────────────────
 // THEMES
@@ -1741,6 +1963,7 @@ function hexToRgb(hex) {
   return [(b >> 16) & 255, (b >> 8) & 255, b & 255];
 }
 function rgbCss(rgb) { return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`; }
+function rgbTriplet(rgb) { return `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`; }
 function mixRgb(a, b, t) {
   return [
     Math.round(a[0] + (b[0] - a[0]) * t),
@@ -1748,17 +1971,92 @@ function mixRgb(a, b, t) {
     Math.round(a[2] + (b[2] - a[2]) * t),
   ];
 }
+
 function creamForTheme(bgHex, accentHex) {
   const bgRgb = hexToRgb(bgHex);
   const accentRgb = hexToRgb(accentHex);
   const bgWarmth = (bgRgb[0] + bgRgb[1]) / 2 - bgRgb[2];
-  const warmBase = [246, 234, 214];
-  const coolBase = [232, 234, 224];
+  const warmBase  = [246, 234, 214];
+  const coolBase  = [232, 234, 224];
   const baseT = Math.min(1, Math.max(0, (bgWarmth + 20) / 40));
   const base = mixRgb(coolBase, warmBase, baseT);
-  const text = mixRgb(base, accentRgb, 0.12);
-  const textSoft = mixRgb(base, accentRgb, 0.20);
+  const text      = mixRgb(base, accentRgb, 0.12);
+  const textSoft  = mixRgb(base, accentRgb, 0.20);
   return { text, textSoft };
+}
+
+function heartForTheme(accentHex) {
+  const accentRgb = hexToRgb(accentHex);
+  const pink = [244, 114, 182];
+  return mixRgb(accentRgb, pink, 0.55);
+}
+
+function lighten(hex, amt) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const b = parseInt(hex, 16);
+  const r = Math.min(255, Math.max(0, ((b >> 16) & 255) + amt));
+  const g = Math.min(255, Math.max(0, ((b >> 8) & 255) + amt));
+  const bl = Math.min(255, Math.max(0, (b & 255) + amt));
+  return '#' + [r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+// ──────────────────────────────────────────────
+// APPLY CONFIG
+// ──────────────────────────────────────────────
+function applyConfig(save = true) {
+  const r = document.documentElement.style;
+
+  const accentRgb = hexToRgb(cfg.accent);
+  const bgRgb     = hexToRgb(cfg.bg);
+
+  r.setProperty('--accent', cfg.accent);
+  r.setProperty('--accent-rgb', rgbTriplet(accentRgb));
+  r.setProperty('--bg', cfg.bg);
+  r.setProperty('--bg-rgb', rgbTriplet(bgRgb));
+
+  r.setProperty('--surface',  lighten(cfg.bg, 8));
+  r.setProperty('--surface2', lighten(cfg.bg, 14));
+  r.setProperty('--surface3', lighten(cfg.bg, 22));
+  r.setProperty('--border',   lighten(cfg.bg, 16));
+  r.setProperty('--border2',  lighten(cfg.bg, 28));
+
+  const cream = creamForTheme(cfg.bg, cfg.accent);
+  const textRgb = cream.text;
+  r.setProperty('--text', rgbCss(textRgb));
+  r.setProperty('--text-soft', rgbCss(cream.textSoft));
+  r.setProperty('--text-rgb', rgbTriplet(textRgb));
+
+  const heartRgb = heartForTheme(cfg.accent);
+  r.setProperty('--heart', rgbCss(heartRgb));
+  r.setProperty('--heart-rgb', rgbTriplet(heartRgb));
+
+  r.setProperty('--accent-soft',   `rgba(${rgbTriplet(accentRgb)}, .15)`);
+  r.setProperty('--accent-softer', `rgba(${rgbTriplet(accentRgb)}, .08)`);
+  r.setProperty('--accent-line',   `rgba(${rgbTriplet(accentRgb)}, .28)`);
+  r.setProperty('--accent-glow',   `rgba(${rgbTriplet(accentRgb)}, .45)`);
+
+  r.setProperty('--bg-glass',        `rgba(${rgbTriplet(bgRgb)}, .32)`);
+  r.setProperty('--bg-glass-strong', `rgba(${rgbTriplet(bgRgb)}, .48)`);
+
+  r.setProperty('--text-line',        `rgba(${rgbTriplet(textRgb)}, .10)`);
+  r.setProperty('--text-line-strong', `rgba(${rgbTriplet(textRgb)}, .18)`);
+  r.setProperty('--text-ghost',       `rgba(${rgbTriplet(textRgb)}, .05)`);
+  r.setProperty('--text-tint',        `rgba(${rgbTriplet(textRgb)}, .02)`);
+
+  r.setProperty('--shadow-sm', `0 2px 6px rgba(0,0,0,.25)`);
+  r.setProperty('--shadow-md', `0 14px 34px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25)`);
+  r.setProperty('--shadow-lg', `0 30px 80px rgba(0,0,0,.7)`);
+  r.setProperty('--shadow-hover',
+    `0 18px 38px rgba(0,0,0,.55), 0 0 0 1px rgba(${rgbTriplet(accentRgb)}, .18)`);
+  r.setProperty('--cozy-glow',
+    `0 0 0 1px rgba(${rgbTriplet(accentRgb)}, .12), 0 12px 30px rgba(${rgbTriplet(accentRgb)}, .08)`);
+
+  r.setProperty('--font-main', `'${cfg.font}', system-ui, sans-serif`);
+
+  document.documentElement.classList.toggle('calm', !!cfg.calm);
+
+  if (save) saveConfig();
 }
 
 // ──────────────────────────────────────────────
@@ -1998,6 +2296,7 @@ const DEFAULTS = {
   bg: '#140d0d',
   font: 'Fredoka',
   calm: false,
+  heroMode: 'recommend',
   launch: {
     cloak: true
   },
@@ -2094,40 +2393,6 @@ function applyTheme(id) {
   populateSettingsUI();
 }
 
-function applyConfig(save = true) {
-  const r = document.documentElement;
-  r.style.setProperty('--accent', cfg.accent);
-  const bi = hexToRgb(cfg.accent);
-  r.style.setProperty('--accent-rgb', `${bi[0]},${bi[1]},${bi[2]}`);
-  r.style.setProperty('--bg', cfg.bg);
-  r.style.setProperty('--surface', lighten(cfg.bg, 8));
-  r.style.setProperty('--surface2', lighten(cfg.bg, 14));
-  r.style.setProperty('--surface3', lighten(cfg.bg, 22));
-  r.style.setProperty('--border', lighten(cfg.bg, 16));
-  r.style.setProperty('--border2', lighten(cfg.bg, 28));
-  const bgRgb = hexToRgb(cfg.bg);
-  r.style.setProperty('--bg-rgb', `${bgRgb[0]}, ${bgRgb[1]}, ${bgRgb[2]}`);
-  const cream = creamForTheme(cfg.bg, cfg.accent);
-  r.style.setProperty('--text', rgbCss(cream.text));
-  r.style.setProperty('--text-soft', rgbCss(cream.textSoft));
-  r.style.setProperty('--muted', `rgba(${cream.text.join(',')}, .62)`);
-  r.style.setProperty('--muted2', `rgba(${cream.text.join(',')}, .38)`);
-  r.style.setProperty('--muted-strong', `rgba(${cream.text.join(',')}, .82)`);
-  r.style.setProperty('--font-main', `'${cfg.font}', system-ui, sans-serif`);
-  r.classList.toggle('calm', !!cfg.calm);
-  if (save) saveConfig();
-}
-
-function lighten(hex, amt) {
-  hex = hex.replace('#', '');
-  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
-  const b = parseInt(hex, 16);
-  const r = Math.min(255, ((b >> 16) & 255) + amt);
-  const g = Math.min(255, ((b >> 8) & 255) + amt);
-  const bl = Math.min(255, (b & 255) + amt);
-  return '#' + [r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('');
-}
-
 function resetSettings() {
   cfg = JSON.parse(JSON.stringify(DEFAULTS));
   frozenRecs = null;
@@ -2195,27 +2460,13 @@ function renderFontGrid(q) {
   });
 }
 
-
 // ──────────────────────────────────────────────
 // GAME LAUNCH
-//
-// Two modes:
-//   cloak: true  → open about:blank, fetch the game HTML, inject a
-//                  <base>, a cloaked <title>, and a cloak script that
-//                  keeps the tab title pinned while the game runs.
-//   cloak: false → just window.open(absUrl)
-//
-// The cloak script is what makes it work without modding any game file.
 // ──────────────────────────────────────────────
 const CLOAK_TITLE = 'Home - Classroom';
 const GC_ICON = '/favicon-32x32.png';
 
 function buildCloakScript() {
-  // Injected into every cloaked game document. It:
-  //   - pins document.title to the cloak title
-  //   - replaces the favicon
-  //   - hides the real location path via a shallow pushState shim (best-effort)
-  //   - re-runs the pin on a short interval to survive SPA title churn
   return `<script>
     (function(){
       var CLOAK = ${JSON.stringify(CLOAK_TITLE)};
@@ -2231,7 +2482,6 @@ function buildCloakScript() {
         } catch(e){}
       }
       pinTitle(); pinIcon();
-      // Keep the title pinned even if the game tries to change it.
       try {
         var t = document.querySelector('title');
         if (t) {
@@ -2247,15 +2497,12 @@ function buildCloakScript() {
 }
 
 function buildGameHtml(html, gameBase, title) {
-  // Strip any existing <title> so ours wins.
   html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '');
-
   const injectedHead =
     '<base href="' + gameBase + '"/>' +
     '<title>' + CLOAK_TITLE + '</title>' +
     '<link rel="icon" href="' + GC_ICON + '"/>' +
     buildCloakScript();
-
   if (/<head[^>]*>/i.test(html)) {
     html = html.replace(/(<head[^>]*>)/i, '$1' + injectedHead);
   } else {
@@ -2267,7 +2514,6 @@ function buildGameHtml(html, gameBase, title) {
 async function launchGame(link, title) {
   recordPlay(title);
 
-  // Resolve to an absolute URL.
   let absUrl;
   if (link.startsWith('http://') || link.startsWith('https://')) absUrl = link;
   else if (link.startsWith('/')) absUrl = window.location.origin + link;
@@ -2276,7 +2522,6 @@ async function launchGame(link, title) {
     absUrl = base + link;
   }
 
-  // Exempt origins always go direct.
   const EXEMPT_URLS = [
     'https://exactpath.lovable.app',
     'https://studyclient.vercel.app',
@@ -2287,7 +2532,6 @@ async function launchGame(link, title) {
   }
   if (IN_TEMUNET) { window.location.href = absUrl; return; }
 
-  // ── Cloak OFF → raw open ──
   if (!cfg.launch.cloak) {
     const tab = window.open(absUrl, '_blank', 'noopener');
     if (!tab) toast('Popup blocked — enable popups for this site');
@@ -2295,7 +2539,6 @@ async function launchGame(link, title) {
     return;
   }
 
-  // ── Cloak ON → fetch, rewrite, inject ──
   const gameBase = absUrl.endsWith('/') ? absUrl : absUrl.substring(0, absUrl.lastIndexOf('/') + 1);
 
   const gameTab = window.open('about:blank', '_blank');
@@ -2311,12 +2554,9 @@ async function launchGame(link, title) {
     gameTab.document.open();
     gameTab.document.write(html);
     gameTab.document.close();
-    // Re-pin the title on the tab for a few frames in case the game
-    // sets it after our script runs.
     setTimeout(() => { try { gameTab.document.title = CLOAK_TITLE; } catch (e) {} }, 300);
     setTimeout(() => { try { gameTab.document.title = CLOAK_TITLE; } catch (e) {} }, 1200);
   } catch (err) {
-    // Fallback: iframe inside a cloaked shell. Same cloak script still applies.
     gameTab.document.open();
     gameTab.document.write(
       '<!DOCTYPE html><html><head>' +
@@ -2356,14 +2596,415 @@ function goHome() {
 // ──────────────────────────────────────────────
 // GREETING
 // ──────────────────────────────────────────────
+
+const COFFEE_SVG = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <rect x="2" y="12" width="12" height="1" fill="rgba(244,236,221,.35)"/>
+  <rect x="3" y="6" width="9" height="6" fill="var(--accent)"/>
+  <rect x="3" y="6" width="9" height="1" fill="rgba(255,255,255,.25)"/>
+  <rect x="4" y="7" width="7" height="1" fill="rgba(0,0,0,.35)"/>
+  <rect x="12" y="8" width="2" height="3" fill="var(--accent)"/>
+  <rect x="13" y="8" width="1" height="3" fill="rgba(0,0,0,.25)"/>
+  <rect class="steam-1" x="5" y="2" width="1" height="2" fill="rgba(244,236,221,.55)"/>
+  <rect class="steam-2" x="8" y="1" width="1" height="2" fill="rgba(244,236,221,.55)"/>
+  <rect class="steam-3" x="11" y="3" width="1" height="1" fill="rgba(244,236,221,.4)"/>
+</svg>`;
+
+const PIXEL_SUN = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <rect x="6" y="6" width="4" height="4" fill="var(--accent)"/>
+  <rect x="5" y="7" width="6" height="2" fill="var(--accent)"/>
+  <rect x="7" y="5" width="2" height="6" fill="var(--accent)"/>
+  <rect x="7" y="1" width="2" height="2" fill="var(--accent)"/>
+  <rect x="7" y="13" width="2" height="2" fill="var(--accent)"/>
+  <rect x="1" y="7" width="2" height="2" fill="var(--accent)"/>
+  <rect x="13" y="7" width="2" height="2" fill="var(--accent)"/>
+  <rect x="3" y="3" width="1" height="1" fill="var(--accent)"/>
+  <rect x="12" y="3" width="1" height="1" fill="var(--accent)"/>
+  <rect x="3" y="12" width="1" height="1" fill="var(--accent)"/>
+  <rect x="12" y="12" width="1" height="1" fill="var(--accent)"/>
+</svg>`;
+
+const PIXEL_MOON = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <rect x="4" y="4" width="7" height="1" fill="var(--accent)"/>
+  <rect x="3" y="5" width="1" height="6" fill="var(--accent)"/>
+  <rect x="4" y="11" width="7" height="1" fill="var(--accent)"/>
+  <rect x="5" y="3" width="5" height="1" fill="var(--accent)"/>
+  <rect x="5" y="12" width="5" height="1" fill="var(--accent)"/>
+  <rect x="10" y="6" width="2" height="1" fill="var(--accent)"/>
+  <rect x="11" y="7" width="1" height="2" fill="var(--accent)"/>
+  <rect x="10" y="9" width="2" height="1" fill="var(--accent)"/>
+  <rect x="6" y="6" width="1" height="1" fill="rgba(0,0,0,.25)"/>
+  <rect x="7" y="8" width="1" height="1" fill="rgba(0,0,0,.25)"/>
+</svg>`;
+
+const PIXEL_PARTY = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <rect x="2" y="2" width="1" height="1" fill="#f472b6"/>
+  <rect x="13" y="2" width="1" height="1" fill="#fbbf24"/>
+  <rect x="2" y="13" width="1" height="1" fill="#4ade80"/>
+  <rect x="13" y="13" width="1" height="1" fill="#60a5fa"/>
+  <rect x="7" y="1" width="2" height="1" fill="#f472b6"/>
+  <rect x="7" y="14" width="2" height="1" fill="#fbbf24"/>
+  <rect x="1" y="7" width="1" height="2" fill="#4ade80"/>
+  <rect x="14" y="7" width="1" height="2" fill="#60a5fa"/>
+  <rect x="6" y="6" width="4" height="4" fill="var(--accent)"/>
+  <rect x="5" y="7" width="6" height="2" fill="var(--accent)"/>
+  <rect x="7" y="5" width="2" height="6" fill="var(--accent)"/>
+</svg>`;
+
+const GREETINGS = {
+  lateNight: {
+    icon: PIXEL_MOON, weight: 1,
+    messages: [
+      'Still up?', 'The night shift starts now', 'Late night session',
+      'Burning the midnight oil', 'The world is quiet', 'Just one more round',
+      'You and the moon', 'Quiet hours', 'Moonlight mode', 'Owl hours',
+      'Even the crickets went to bed', 'Past your bedtime', 'The stars are out',
+      'Running on caffeine', 'Whos gonna know', 'Almost tomorrow',
+      'Sleep is for the weak', 'Still going strong', 'The sun took a nap',
+      'Shhh… the site is sleeping', 'Youre the only one here',
+      'Just you and the pixels', 'Night owl detected', 'The lamp is your friend',
+      'Cant sleep? Same.', 'Insomnia gang', '2 AM thoughts',
+      'Everything is funnier at 3 AM', 'The moon says hi', 'Owls are hooting',
+      'Midnight marauder', 'Ghost hour', 'The witching hour',
+      'Moth to the screen light', 'Rest is optional', 'The world is asleep',
+      'You are not alone', 'Sleep tracker said no', 'Napping is a myth',
+      'Night mode engaged', 'You forgot to sleep', 'The void stares back',
+      'Late hours club', 'Welcome to the shadows', 'Still scrolling?',
+      'Screen glow only', 'Vampire mode', 'Bedtime is a suggestion',
+      'The stars are watching', 'Sleep can wait', 'Running on vibes',
+      'Dark outside, bright inside', 'The night is young', 'Suns asleep',
+      'Wide awake club', 'Somebody has to be awake', 'Welcome back, insomniac',
+      'Night owl vibes', 'The cat is also awake', 'Go to sleep… after this',
+      'Bright screen, dark room', 'The moon approves', 'No sleep gang',
+      'RIP your sleep schedule', 'Its a late one', 'Midnight club',
+      'Sleep is overrated', 'Greetings, night owl', 'The quiet hours',
+      'Late night gremlin', 'Nocturnal now', 'You and the screen',
+      'One more game?', 'You should really sleep', 'Moonlight vibes',
+      'We never sleep', 'The pillow misses you'
+    ]
+  },
+  morning: {
+    icon: COFFEE_SVG, weight: 1,
+    messages: [
+      'Good morning', 'Morning, sunshine', 'Rise and shine',
+      'Top of the morning', 'A brand new day', 'Fresh start',
+      'Coffee time', 'Good morning, sleepyhead', 'The sun is up',
+      'Morning vibes', 'Just woke up too', 'The birds are singing',
+      'The day is young', 'A fresh cup of coffee awaits', 'Sunny and awake',
+      'Morning, legend', 'Feeling fresh?', 'New day, new wins',
+      'Coffee check', 'Wakey wakey', 'The world is waking up',
+      'A new day begins', 'Welcome back to the land of the living',
+      'Sunrise session', 'Time to shine', 'Morning, gamer',
+      'The kettle is on', 'Sun on your face', 'Bright and early',
+      'Awake mode: enabled', 'The day has started', 'Ready for today?',
+      'Rise and grind', 'Morning, hero', 'Another day to conquer',
+      'Cereal and games', 'Sunlight and pixels', 'New morning, new mood',
+      'Birds, sun, games', 'The sun says hello', 'Fresh morning air',
+      'Bright eyes', 'Another sunrise, another chance', 'You vs. Monday',
+      'The alarm worked', 'Awake and ready', 'Sunrise started',
+      'First light', 'The day is calling', 'Good morning, beautiful',
+      'Rise from your slumber', 'Coffee has entered the chat',
+      'First play of the day', 'Morning victory', 'You made it past snooze',
+      'Ready when you are', 'Time to face the day', 'Morning has landed',
+      'The alarm is silent now', 'Morning glory', 'Awake and dangerous',
+      'Fresh coffee energy', 'First light, first click', 'A.M. energy',
+      'The morning is yours', 'Starting the day right', 'Sun up, screens up',
+      'Good morning from the pixel world', 'Coffee, then games',
+      'You, coffee, and Oogly', 'Dawn patrol', 'Welcome to the A.M.',
+      'Fresh day, fresh start', 'Here we go again'
+    ]
+  },
+  afternoon: {
+    icon: PIXEL_SUN, weight: 1,
+    messages: [
+      'Good afternoon', 'Afternoon vibes', 'Halfway through the day',
+      'The sun is high', 'Hello, afternoon', 'Midday break',
+      'Peak daylight', 'Post-lunch session', 'The day is in full swing',
+      'Afternoon, friend', 'Bright and warm', 'Midday moment',
+      'Post-lunch vibes', 'Sun is at its peak', 'Good afternoon, legend',
+      'Youre doing great', 'Midday check-in', 'Day mode: active',
+      'Afternoon energy', 'Warm afternoon vibes', 'Hello, sun',
+      'Afternoon, gamer', 'Post-lunch crew', 'Peak hours',
+      'Right in the middle of the day', 'Afternoon break time',
+      'Great time for a game', 'Midday recess', 'Afternoon sun',
+      'Afternoon, hero', 'Warm and sunny', 'Bright hours',
+      'Hello, daylight', 'Midday magic', 'The clock says afternoon',
+      'Sunny session', 'Daytime champion', 'Right on time',
+      'Afternoon victory', 'The day is still yours', 'Halfway home',
+      'Post-lunch power', 'Afternoon has landed', 'Bright and busy',
+      'Afternoon, comrade', 'Daylight mode', 'The sun approves',
+      'Nice timing', 'Afternoon, sunshine', 'The hours are warm',
+      'Midday has begun', 'Youre halfway', 'Sunny side up',
+      'Mid-day break', 'The work continues', 'Afternoon, mate',
+      'Peak of the day', 'Afternoon, chief', 'A well-deserved break',
+      'Sunlight champion', 'Post-lunch has entered', 'Afternoon, boss',
+      'The middle hours', 'You got this', 'Afternoon vibes only',
+      'Daylight all around', 'Afternoon, warrior', 'Halfway through the grind',
+      'Mid-day meeting (with games)', 'Afternoon, ace', 'Sunshine hours',
+      'Daytime dreamer', 'Peak day mode'
+    ]
+  },
+  evening: {
+    icon: PIXEL_MOON, weight: 1,
+    messages: [
+      'Good evening', 'Evening has arrived', 'The sun is setting',
+      'Good evening to you', 'Evening vibes', 'Dusk mode',
+      'Evening, friend', 'The day is winding down', 'Welcome to the evening',
+      'Golden hour', 'Sunset session', 'Good evening, gamer',
+      'The world is getting quiet', 'Dusk is here', 'Sun going down',
+      'Evening, legend', 'Cozy hours have begun', 'The sky is turning orange',
+      'Time to relax', 'The sun says goodnight', 'Dusk vibes',
+      'Evening, hero', 'Warm orange sky', 'Evening mode',
+      'The night approaches', 'Golden hour glow', 'Sunset vibes',
+      'Welcome to the cozy hours', 'Evening, mate',
+      'The lamps are turning on', 'Twilight zone', 'Evening, chief',
+      'The day is ending well', 'Evening, champion', 'Cozy time',
+      'The evening sun', 'Golden hour begins', 'Evening, star',
+      'Cozy vibes only', 'Sunset hour', 'Evening, ace',
+      'The sun went to bed', 'Twilight glow', 'Evening, warrior',
+      'Golden hour arrived', 'Cozy hours activated', 'Evening, boss',
+      'Sunset, then games', 'The sky says hello', 'Dusk has fallen',
+      'Golden hour magic', 'Evening, guru', 'Warm orange skies',
+      'Cozy mode: on', 'Evening, captain', 'Sunset paints the sky',
+      'The day is ending', 'Golden hour treat', 'Dusk mode engaged',
+      'Sun dipping low', 'Cozy evening vibes', 'Sunset moment',
+      'Warm glow hours', 'The day is winding', 'Sunset over the world',
+      'Cozy time now', 'Sun went down', 'Twilight is here',
+      'Cozy evening has landed', 'Sunset mode: active', 'Dusk approaches'
+    ]
+  },
+  sundayMorning: {
+    icon: PIXEL_SUN, weight: 3,
+    messages: [
+      'Last day of the weekend', 'Sunday morning', 'One more day of freedom',
+      'Sunday, funday', 'Last slice of the weekend', 'Enjoy it while it lasts',
+      'The final weekend morning', 'Sunday vibes', 'Pancake time',
+      'Slow Sunday start', 'Wake up, its Sunday', 'Sunday morning glow',
+      'Just one day left', 'Make Sunday count', 'Sunday, refreshed',
+      'Weekend finale begins', 'Last lazy morning', 'Sunday mode',
+      'Tomorrow is Monday (sorry)', 'Sunday sunlight', 'Sunday has entered',
+      'Weekend, day two', 'Sunday slow start', 'Sunday, cozy',
+      'Last morning of freedom', 'Sunday morning magic', 'Welcome to Sunday',
+      'Sunday morning coffee', 'Sundays are for resting', 'Sunday session',
+      'Last day to sleep in', 'Sunday sun', 'Sunday mode: engaged',
+      'Sunday has landed', 'Sunday morning calm', 'Sunday, yours',
+      'Morning, Sunday', 'Sunday, at last', 'Relax, its Sunday',
+      'Sunday chill', 'Still the weekend', 'Sunday glow',
+      'Sunday is here', 'Sunday morning sun', 'Sunday morning joy',
+      'Sunday morning vibes', 'Sunday, easy', 'Sunday morning quiet',
+      'Sunday relaxation', 'Sunday feels', 'Sunday and sun',
+      'Sunday morning warmth', 'Sunday, do nothing', 'Sunday, at ease',
+      'Sunday morning peace', 'Sunday morning light', 'Sunday, no rush',
+      'Sunday morning snooze', 'Sunday, warm', 'Sunday morning hope',
+      'Sunday, no alarm', 'Sunday, your day', 'Sunday, calm'
+    ]
+  },
+  sundayEvening: {
+    icon: PIXEL_MOON, weight: 3,
+    messages: [
+      'Sunday scaries? Game through it.', 'Sunday evening',
+      'The weekend is ending', 'Last night of freedom',
+      'Tomorrow is Monday (sorry)', 'Sunday sunset', 'One more night',
+      'Sunday vibes, evening edition', 'Enjoy the last hours',
+      'Sunday is almost over', 'Sunday evening glow', 'The week is coming',
+      'Dont think about Monday', 'Sunday night', 'Relax, its still Sunday',
+      'Last evening of the weekend', 'Sunday sunset vibes',
+      'Make the most of it', 'Sunday, evening mode', 'One final evening',
+      'Sunday chill night', 'Dont look at the clock', 'Sunday night magic',
+      'Sunday, winding down', 'Final hours of the weekend', 'Sunday night calm',
+      'Cozy Sunday evening', 'Sunday night peace', 'Late Sunday vibes',
+      'Sunday sunset energy', 'One last Sunday', 'Sunday night rest',
+      'Cozy Sunday', 'The last Sunday night', 'Sunday, soft landing',
+      'Sunday night glow', 'Sunday, unwind', 'Sunday evening calm',
+      'Sun sets on Sunday', 'Sunday, quiet night', 'Sunday evening rest',
+      'Last of the weekend', 'Sunday night, all yours', 'Sunday evening warmth',
+      'Sunday, gentle end', 'Sunday, one more', 'Sunday night, cozy',
+      'Sunday, easy evening', 'Sunday evening, enjoy', 'Sunday, last night',
+      'Sunday, relaxed', 'Sunday evening peace', 'Sunday, slow',
+      'Sunday, warm evening', 'Sunday, cozy', 'Sunday, easy',
+      'Sunday, peaceful', 'Sunday, yours', 'Sunday, quiet',
+      'Sunday, warm', 'Sunday, calm'
+    ]
+  },
+  mondayAllDay: {
+    icon: PIXEL_PARTY, weight: 4,
+    messages: [
+      'Welcome to a new week', 'Monday has arrived', 'New week, new wins',
+      'Monday mode: engaged', 'Another Monday', 'Here we go again',
+      'Fresh week starts now', 'Monday, lets do this', 'New week energy',
+      'Monday has entered the chat', 'Week one, day one',
+      'The week begins', 'Monday, ready or not', 'Lets make it a good week',
+      'Monday blues? Game through it', 'New week, new chances',
+      'Welcome back to Monday', 'Monday, one day at a time',
+      'Monday motivation', 'Facing Monday head-on', 'Monday, we got this',
+      'Week, day one', 'Monday morning warrior', 'Mondays are for starting',
+      'Monday grind begins', 'Welcome to the work week',
+      'Monday, no fear', 'New week, new goals',
+      'Monday, one step at a time', 'Monday has landed',
+      'Week starts today', 'Monday, soft start', 'Monday, ready',
+      'New week begins', 'Monday, we move', 'Monday, game plan',
+      'Monday, first day', 'Welcome to Monday', 'Monday, easy does it',
+      'New week, new me', 'Monday mode', 'Monday, let it be',
+      'Weekday one', 'Monday, here we are', 'Monday morning',
+      'Monday, on your mark', 'Monday, slowly', 'Monday, we go',
+      'Monday, one more', 'Monday, fresh', 'Monday, calm',
+      'Monday, start', 'Monday, begin', 'Monday, awake',
+      'Monday, go', 'Monday, easy', 'Monday, first',
+      'Monday, here', 'Monday, up'
+    ]
+  },
+  wednesdayAllDay: {
+    icon: PIXEL_PARTY, weight: 4,
+    messages: [
+      'Hump day', 'Happy hump day', 'Halfway through the week',
+      'Wednesday, the middle', 'Middle of the week',
+      'We made it to hump day', 'Wednesday, over the hump',
+      'Halfway there', 'Wednesday has arrived', 'Wednesday, one more push',
+      'Midweek energy', 'Wednesday mode', 'Welcome to Wednesday',
+      'Wednesday, still strong', 'The week is half done',
+      'Wednesday, halfway', 'Wednesday, keep going',
+      'Over the hump', 'Wednesday, halfway home', 'Mid-week check-in',
+      'Wednesday, halfway point', 'Wednesday, almost there',
+      'Halfway through', 'Wednesday, keep pushing', 'Wednesday, strong',
+      'Wednesday, moving', 'Wednesday, steady', 'Wednesday, go',
+      'Wednesday, up', 'Wednesday, half', 'Wednesday, push',
+      'Wednesday, ready', 'Wednesday, here', 'Wednesday, continue',
+      'Wednesday, forward', 'Wednesday, on', 'Wednesday, mid',
+      'Wednesday, midpoint', 'Wednesday, over'
+    ]
+  },
+  fridayMorning: {
+    icon: PIXEL_SUN, weight: 5,
+    messages: [
+      'Welcome to pre-weekend!', 'Friday morning',
+      'The weekend is close', 'Friday has arrived',
+      'Happy Friday', 'One more day', 'Friday vibes',
+      'Pre-weekend energy', 'Friday morning glow',
+      'Almost the weekend', 'Friday, finally', 'TGIF',
+      'Friday is here', 'Weekend loading', 'Friday morning joy',
+      'Just one more day', 'Friday mode: on', 'Friday has entered',
+      'Welcome to Friday', 'Friday, we made it', 'Friday energy',
+      'Friday morning magic', 'The end is near',
+      'Friday morning vibes', 'Pre-weekend starts now',
+      'Friday, best day', 'Friday, ready', 'Friday, here',
+      'Friday, go', 'Friday, yes', 'Friday, on', 'Friday, up'
+    ]
+  },
+  fridayAfternoon: {
+    icon: PIXEL_SUN, weight: 5,
+    messages: [
+      'Almost there…', 'Friday afternoon', 'Just a few more hours',
+      'The weekend is so close', 'Friday afternoon vibes',
+      'Countdown to freedom', 'So close',
+      'Friday, final stretch', 'Almost weekend time',
+      'Friday afternoon energy', 'Almost done',
+      'Weekend inbound', 'Friday, final push',
+      'Friday, almost', 'Friday, ready', 'Friday, go',
+      'Friday, here', 'Friday, yes'
+    ]
+  },
+  fridayEvening: {
+    icon: PIXEL_MOON, weight: 5,
+    messages: [
+      'Happy Friday!', 'The weekend begins', 'Friday night',
+      'Weekend, here we come', 'Friday night vibes',
+      'Its officially the weekend', 'Friday, we made it',
+      'Party mode', 'Friday night energy', 'Weekend has arrived',
+      'Friday night magic', 'Time to relax', 'Weekend mode: on',
+      'Friday night, all yours', 'Welcome to the weekend',
+      'Friday night glow', 'You made it through the week',
+      'Friday, finally', 'Happy weekend',
+      'Friday, relax', 'Friday, free', 'Friday, yes',
+      'Friday, weekend', 'Friday, party'
+    ]
+  },
+  saturdayAllDay: {
+    icon: PIXEL_PARTY, weight: 5,
+    messages: [
+      'Happy Saturday', 'Saturday, the best day', 'Weekend day two',
+      'Saturday vibes', 'Welcome to Saturday', 'Saturday has arrived',
+      'Saturday mode: on', 'The day is yours', 'Saturday energy',
+      'Saturday, relax', 'Saturday, no rules', 'Saturday freedom',
+      'Saturday morning glow', 'Saturday, all yours',
+      'Saturday has landed', 'Saturday, do nothing',
+      'Saturday vibes only', 'Saturday sun', 'Saturday, easy',
+      'Saturday, calm', 'Saturday, here', 'Saturday, go',
+      'Saturday, yes', 'Saturday, free', 'Saturday, yours'
+    ]
+  }
+};
+
+let lastGreetingText = '';
+
+function pickGreeting() {
+  const now = new Date();
+  const h = now.getHours();
+  const d = now.getDay();
+  const candidates = [];
+
+  if (h < 5)       candidates.push({ key: 'lateNight',  weight: 1 });
+  else if (h < 12) candidates.push({ key: 'morning',    weight: 1 });
+  else if (h < 17) candidates.push({ key: 'afternoon',  weight: 1 });
+  else if (h < 22) candidates.push({ key: 'evening',    weight: 1 });
+  else             candidates.push({ key: 'lateNight',  weight: 1 });
+
+  if (d === 0) {
+    if (h < 12) candidates.push({ key: 'sundayMorning', weight: 3 });
+    else        candidates.push({ key: 'sundayEvening', weight: 3 });
+  }
+  if (d === 1) candidates.push({ key: 'mondayAllDay',   weight: 4 });
+  if (d === 3) candidates.push({ key: 'wednesdayAllDay', weight: 4 });
+  if (d === 5) {
+    if (h < 12)      candidates.push({ key: 'fridayMorning',   weight: 5 });
+    else if (h < 17) candidates.push({ key: 'fridayAfternoon', weight: 5 });
+    else             candidates.push({ key: 'fridayEvening',   weight: 5 });
+  }
+  if (d === 6) candidates.push({ key: 'saturdayAllDay', weight: 5 });
+
+  candidates.sort((a, b) => b.weight - a.weight);
+  const occasion = GREETINGS[candidates[0].key];
+
+  let text;
+  let attempts = 0;
+  do {
+    text = occasion.messages[Math.floor(Math.random() * occasion.messages.length)];
+    attempts++;
+  } while (text === lastGreetingText && attempts < 8);
+  lastGreetingText = text;
+
+  return { text, icon: occasion.icon };
+}
+
 function renderGreet() {
-  // The coffee SVG is already in the HTML — nothing to re-render.
+  const el = document.getElementById('greetHi');
+  if (!el) return;
+  const { text, icon } = pickGreeting();
+  el.innerHTML = icon + ' ' + escHtml(text);
 }
 
 // ──────────────────────────────────────────────
 // HERO
 // ──────────────────────────────────────────────
 let lastHeroTitle = null;
+
+function pickHeroGame() {
+  // Resume mode only — skip the recommendation branch entirely
+  if (cfg.heroMode === 'resume') {
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const recent = Object.entries(profile.plays || {})
+      .filter(([t, p]) => p.last > oneDayAgo && findGame(t))
+      .sort((a, b) => b[1].last - a[1].last);
+    if (recent.length > 0) {
+      return { mode: 'continue', a: findGame(recent[0][0]) };
+    }
+    // Nothing recent — fall through to recommendations so the hero
+    // isn't empty. The pill will show "Picked for you" either way.
+  }
+
+  // Recommend mode (default) OR resume mode with nothing to resume
+  const recs = currentRecs();
+  if (recs.length > 0) return { mode: 'recommend', rec: recs[0], a: recs[0].a, recs };
+  return null;
+}
 
 function renderHero() {
   const hero = document.getElementById('hero');
@@ -2375,11 +3016,12 @@ function renderHero() {
   const tilesEl = document.getElementById('heroTiles');
   const artWrap = document.getElementById('heroArt');
   const artImg = document.getElementById('heroArtImg');
+  const pill = hero.querySelector('.trend-pill');
 
-  const recs = currentRecs();
+  const pick = pickHeroGame();
   tilesEl.innerHTML = '';
 
-  if (!recs.length) {
+  if (!pick) {
     artWrap.classList.remove('has-image');
     artImg.removeAttribute('src');
     titleEl.textContent = 'Your picks start here';
@@ -2387,11 +3029,14 @@ function renderHero() {
     metaEl.textContent = 'Recommendations';
     subEl.textContent = 'Play something to get recommendations! Every game you launch sharpens what we suggest.';
     playBtn.style.display = 'none';
+    if (pill) { pill.classList.remove('continue'); pill.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Picked for you'; }
     lastHeroTitle = null;
     return;
   }
 
-  const top = recs[0];
+  const top = pick.mode === 'continue'
+    ? { a: pick.a, reason: 'Pick up where you left off.', matchPct: null }
+    : pick.rec;
 
   if (lastHeroTitle !== top.a.title) {
     body.classList.remove('swap');
@@ -2402,10 +3047,20 @@ function renderHero() {
 
   titleEl.textContent = top.a.title;
   titleEl.classList.remove('placeholder');
-  metaEl.textContent = (cfg.engine.showMatch ? `${top.matchPct}% match · ` : '') + top.a.category;
-  subEl.textContent = `${cfg.engine.showReasons ? top.reason + '. ' : ''}${cfg.engine.adaptive
-    ? 'Updates after every game you play.'
-    : 'Held steady until you reload.'}`;
+
+  if (pick.mode === 'continue') {
+    metaEl.textContent = top.a.category;
+    subEl.textContent = 'Continue playing — resume your session.';
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+    if (pill) { pill.classList.add('continue'); pill.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Continue playing'; }
+  } else {
+    metaEl.textContent = (cfg.engine.showMatch ? `${top.matchPct}% match · ` : '') + top.a.category;
+    subEl.textContent = `${cfg.engine.showReasons ? top.reason + '. ' : ''}${cfg.engine.adaptive
+      ? 'Updates after every game you play.'
+      : 'Held steady until you reload.'}`;
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play now';
+    if (pill) { pill.classList.remove('continue'); pill.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Picked for you'; }
+  }
 
   playBtn.style.display = '';
   playBtn.onclick = () => launchGame(top.a.link, top.a.title);
@@ -2418,18 +3073,24 @@ function renderHero() {
     pre.src = url;
   });
 
-  const tiles = recs.slice(1, 6);
+  const tiles = (pick.mode === 'continue' ? currentRecs() : (pick.recs || []).slice(1, 6))
+    .slice(0, 5);
+
   tiles.forEach((r, i) => {
+    const a = r.a || r;
+    const reason = r.reason || '';
     const b = document.createElement('button');
     b.className = 'hero-tile';
     b.style.setProperty('--i', i);
-    b.title = `${r.a.title} — ${r.reason}`;
-    b.textContent = r.a.title.charAt(0).toUpperCase();
-    b.onclick = () => launchGame(r.a.link, r.a.title);
-    applyThumb(b, r.a);
+    b.setAttribute('aria-label', a.title);
+    b.title = reason ? `${a.title} — ${reason}` : a.title;
+    b.textContent = a.title.charAt(0).toUpperCase();
+    b.onclick = () => launchGame(a.link, a.title);
+    applyThumb(b, a);
     tilesEl.appendChild(b);
   });
-  tiles.forEach(r => withThumb(r.a.link, () => {}));
+
+  tiles.forEach(r => withThumb((r.a || r).link, () => {}));
 }
 
 function bindHeroParallax() {
@@ -2627,10 +3288,18 @@ function renderJump() {
     .sort((a, b) => b[1].last - a[1].last)
     .slice(0, 8)
     .map(([t]) => findGame(t));
+
   const sec = rowRefs.jump.el;
-  sec.style.display = items.length ? '' : 'none';
   const sc = rowRefs.jump.scroll;
   sc.replaceChildren();
+
+  if (!items.length) {
+    sec.style.display = '';
+    sc.innerHTML = `<div class="empty-row">${pixelClock(28)}<span>Play something and it'll show up here.</span></div>`;
+    return;
+  }
+
+  sec.style.display = '';
   items.forEach((a, i) => {
     const card = createCard(a);
     card.style.setProperty('--i', i);
@@ -2770,6 +3439,8 @@ function updateInboxBadge() {
 
 function renderInbox() {
   const list = document.getElementById('inboxList');
+  if (!list) return;
+
   const sorted = [...inbox.items].sort((a, b) => {
     const da = String(a.date || '');
     const db = String(b.date || '');
@@ -2778,31 +3449,69 @@ function renderInbox() {
     return 0;
   });
 
-  if (!sorted.length) {
-    list.innerHTML = `<div class="empty-row">${pixelEnvelope(22)}<span>You're all caught up.</span></div>`;
-  } else {
-    list.innerHTML = sorted.map(it => `
-      <div class="inbox-item ${it.read ? '' : 'unread'}" data-id="${escHtml(it.id)}" data-type="${it.type}">
-        <div class="inbox-ico"><i class="${it.type === 'game' ? 'fa-solid fa-gamepad' : 'fa-solid fa-bell'}"></i></div>
-        <div class="inbox-body">
-          <div class="inbox-title">${escHtml(it.title)}</div>
-          <div class="inbox-desc">${escHtml(it.body)}</div>
-          <div class="inbox-meta">${escHtml(it.date)} · ${it.type === 'game' ? 'New game' : 'Update'}</div>
-        </div>
-        ${it.type === 'game' ? `<button class="btn btn-primary btn-sm inbox-play" data-id="${escHtml(it.id)}" data-title="${escHtml(it.title)}"><i class="fa-solid fa-play"></i> Play</button>` : ''}
-        ${it.read ? '' : '<span class="unread-dot"></span>'}
-      </div>`).join('');
+  const counts = {
+    all:    sorted.length,
+    update: sorted.filter(i => i.type === 'update').length,
+    game:   sorted.filter(i => i.type === 'game').length,
+  };
+  const cAll    = document.getElementById('inboxCountAll');
+  const cUpdate = document.getElementById('inboxCountUpdate');
+  const cGame   = document.getElementById('inboxCountGame');
+  if (cAll)    cAll.textContent    = counts.all;
+  if (cUpdate) cUpdate.textContent = counts.update;
+  if (cGame)   cGame.textContent   = counts.game;
 
-    list.querySelectorAll('.inbox-item').forEach(el => { el.onclick = () => markRead(el.dataset.id); });
-    list.querySelectorAll('.inbox-play').forEach(b => {
-      b.onclick = e => {
-        e.stopPropagation();
-        markRead(b.dataset.id);
-        const a = findGame(b.dataset.title);
-        if (a) launchGame(a.link, a.title);
-      };
-    });
+  const filtered = inboxFilter === 'all'
+    ? sorted
+    : sorted.filter(i => i.type === inboxFilter);
+
+  if (!filtered.length) {
+    let icon, message;
+    if (!sorted.length) {
+      icon = pixelEnvelope(28);
+      message = "You're all caught up.";
+    } else if (inboxFilter === 'update') {
+      icon = pixelMagnifier(28);
+      message = "No updates right now.";
+    } else if (inboxFilter === 'game') {
+      icon = pixelMagnifier(28);
+      message = "No new games yet.";
+    } else {
+      icon = pixelMagnifier(28);
+      message = "Nothing here.";
+    }
+    list.innerHTML = `<div class="inbox-empty">${icon}<span>${message}</span></div>`;
+    updateInboxBadge();
+    return;
   }
+
+  list.innerHTML = filtered.map((it, idx) => `
+    <div class="inbox-item ${it.read ? '' : 'unread'}"
+         data-id="${escHtml(it.id)}"
+         data-type="${it.type}"
+         style="animation-delay:${Math.min(idx, 10) * 25}ms">
+      <div class="inbox-ico"><i class="${it.type === 'game' ? 'fa-solid fa-gamepad' : 'fa-solid fa-bell'}"></i></div>
+      <div class="inbox-body">
+        <div class="inbox-title">${escHtml(it.title)}</div>
+        <div class="inbox-desc">${escHtml(it.body)}</div>
+        <div class="inbox-meta">${escHtml(it.date)} · ${it.type === 'game' ? 'New game' : 'Update'}</div>
+      </div>
+      ${it.type === 'game' ? `<button class="btn btn-primary btn-sm inbox-play" data-id="${escHtml(it.id)}" data-title="${escHtml(it.title)}"><i class="fa-solid fa-play"></i> Play</button>` : ''}
+      ${it.read ? '' : '<span class="unread-dot"></span>'}
+    </div>`).join('');
+
+  list.querySelectorAll('.inbox-item').forEach(el => {
+    el.onclick = () => markRead(el.dataset.id);
+  });
+  list.querySelectorAll('.inbox-play').forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      markRead(b.dataset.id);
+      const a = findGame(b.dataset.title);
+      if (a) launchGame(a.link, a.title);
+    };
+  });
+
   updateInboxBadge();
 }
 function markRead(id) {
@@ -2866,6 +3575,12 @@ function filterCat(cat) {
   applyFilters(true);
 }
 function onSearchInput(v) {
+  const el = document.getElementById('search');
+  if (el) {
+    el.classList.add('searching');
+    clearTimeout(el._searchingTimer);
+    el._searchingTimer = setTimeout(() => el.classList.remove('searching'), 500);
+  }
   clearTimeout(searchDebounceTimer);
   searchDebounceTimer = setTimeout(() => {
     searchQ = v.toLowerCase();
@@ -2885,19 +3600,38 @@ function closeModal(id) {
 function bindGlobal() {
   document.addEventListener('click', e => {
     if (e.target.classList && e.target.classList.contains('modal-bg')) closeModal(e.target.id);
-    const seg = e.target.closest && e.target.closest('.seg button');
-    if (seg) {
-      const group = seg.parentElement.dataset.group;
-      const val = seg.dataset.val;
-      if (group === 'picks') setEngine({ picks: Number(val) });
-      else if (group === 'pace' || group === 'discovery' || group === 'popularity') setEngine({ [group]: val });
-      populateSettingsUI();
+const seg = e.target.closest && e.target.closest('.seg button');
+if (seg) {
+  const group = seg.parentElement.dataset.group;
+  const val = seg.dataset.val;
+  if (group === 'heroMode') {
+    setCfg({ heroMode: val });
+    renderHero();
+    populateSettingsUI();
+    return;
+  }
+  if (group === 'picks') setEngine({ picks: Number(val) });
+  else if (group === 'pace' || group === 'discovery' || group === 'popularity') setEngine({ [group]: val });
+  populateSettingsUI();
+}
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-bg.open').forEach(m => closeModal(m.id));
     }
   });
 
+  // Single visibilitychange handler
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) renderAll();
+    if (!document.hidden) {
+      renderGreet();
+      renderAll();
+    }
   });
+
+  // Hourly greeting refresh
+  setInterval(renderGreet, 60 * 60 * 1000);
 
   bindHeroParallax();
 }
@@ -2952,11 +3686,14 @@ function populateSettingsUI() {
 
   renderThemeGrid();
 
-  document.querySelectorAll('.seg[data-group]').forEach(seg => {
-    const g = seg.dataset.group;
-    const cur = g === 'picks' ? String(cfg.engine.picks) : cfg.engine[g];
-    seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.val === cur));
-  });
+document.querySelectorAll('.seg[data-group]').forEach(seg => {
+  const g = seg.dataset.group;
+  let cur;
+  if (g === 'picks')       cur = String(cfg.engine.picks);
+  else if (g === 'heroMode') cur = cfg.heroMode;
+  else                     cur = cfg.engine[g];
+  seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.val === cur));
+});
 
   const e = cfg.engine;
   setChecked('engAdaptive', e.adaptive);
@@ -3245,6 +3982,7 @@ function toast(msg) {
 // INIT
 // ──────────────────────────────────────────────
 function init() {
+  bindInboxFilters();
   loadProfile();
   loadFavs();
   loadConfig();
@@ -3263,6 +4001,7 @@ function init() {
   populateSettingsUI();
   renderAll();
   bindGlobal();
+  renderGreet();
   updateInstallButton();
 
   if (cfg.font !== 'Fredoka') {
