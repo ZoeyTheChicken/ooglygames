@@ -531,6 +531,11 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .no-results .pixel-icon { opacity: .6; }
 
 /* ───── CARDS ───── */
+/* v9.2.1: content-visibility removed. Cards stay in the DOM
+   permanently so thumbnails don't get discarded on scroll.
+   contain: layout paint style keeps the isolation benefit
+   without triggering the discard-and-rebuild cycle that was
+   causing the "reload every scroll up" flicker. */
 .card {
   position: relative; overflow: hidden;
   aspect-ratio: 3 / 2;
@@ -540,8 +545,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   animation: cardIn .55s var(--ease) backwards;
   animation-delay: calc(var(--i, 0) * 35ms);
   transition: transform .3s var(--spring), border-color .2s, box-shadow .3s var(--ease), background-color .3s var(--ease);
-  content-visibility: auto;
-  contain-intrinsic-size: 180px 120px;
+  contain: layout paint style;
 }
 .card:hover {
   transform: translateY(-4px) scale(1.015);
@@ -1521,7 +1525,7 @@ html.perf .mini-heart {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.2.0</div>
+        <div class="modal-sub">Oogly Boogly Version 9.2.1</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1812,6 +1816,15 @@ html.perf .mini-heart {
           <button class="btn btn-ghost btn-sm" onclick="clearUpdateCache()"><i class="fa-solid fa-rotate-left"></i> Clear update cache</button>
         </div>
       </div>
+      <div class="set-row">
+        <div class="set-text">
+          <div class="set-label">Thumbnail cache</div>
+          <div class="set-desc">Clears cached thumbnail lookups. They'll be re-detected on next load.</div>
+        </div>
+        <div class="set-control">
+          <button class="btn btn-ghost btn-sm" onclick="clearThumbCache()"><i class="fa-solid fa-image"></i> Clear cache</button>
+        </div>
+      </div>
     </section>
 
     <div class="settings-foot">
@@ -1870,6 +1883,7 @@ html.perf .mini-heart {
       <span class="ob-dot" data-step="2"></span>
       <span class="ob-dot" data-step="3"></span>
       <span class="ob-dot" data-step="4"></span>
+      <span class="ob-dot" data-step="5"></span>
     </div>
 
     <!-- STEP 0: WELCOME -->
@@ -1923,8 +1937,45 @@ html.perf .mini-heart {
       </div>
     </div>
 
-    <!-- STEP 2: FONT -->
+    <!-- STEP 2: REDUCED MOTION (NEW in v9.2.1) -->
     <div class="ob-step" data-step="2">
+      <div class="ob-hero">
+        <div class="ob-hero-icon">
+          <i class="fa-solid fa-wind" style="font-size:24px; color:var(--accent);"></i>
+        </div>
+        <div class="ob-hero-text">
+          <div class="ob-title">Do you prefer less motion?</div>
+          <div class="ob-sub">Some people find animations distracting or uncomfortable.</div>
+        </div>
+      </div>
+      <div class="ob-body">
+        <p>Reduced motion turns off <b>all</b> animations and transitions across the site — the hero parallax, the pixel art motion, the modal bounces, everything.</p>
+        <p>It's an accessibility option. Leave it off if you're not sure.</p>
+      </div>
+      <div class="set-row" style="padding: 4px 0; border-bottom: none;">
+        <div class="set-text">
+          <div class="set-label" style="font-size:14px;">Enable reduced motion</div>
+          <div class="set-desc">You can flip this any time in Settings.</div>
+        </div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="obCalmToggle" onchange="onObCalmToggle(this.checked)" aria-label="Reduced motion"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="ob-footer">
+        <button class="ob-skip" onclick="finishOnboarding(true)">Skip all</button>
+        <div class="ob-spacer"></div>
+        <button class="btn btn-ghost" onclick="prevOnboardingStep()">Back</button>
+        <button class="btn btn-primary" onclick="nextOnboardingStep()">
+          Next <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FONT -->
+    <div class="ob-step" data-step="3">
       <div class="ob-hero">
         <div class="ob-hero-icon">
           <i class="fa-solid fa-font" style="font-size:24px; color:var(--accent);"></i>
@@ -1950,8 +2001,8 @@ html.perf .mini-heart {
       </div>
     </div>
 
-    <!-- STEP 3: PERFORMANCE -->
-    <div class="ob-step" data-step="3">
+    <!-- STEP 4: PERFORMANCE -->
+    <div class="ob-step" data-step="4">
       <div class="ob-hero">
         <div class="ob-hero-icon">
           <i class="fa-solid fa-gauge-high" style="font-size:24px; color:var(--accent);"></i>
@@ -2020,8 +2071,8 @@ html.perf .mini-heart {
       </div>
     </div>
 
-    <!-- STEP 4: DONE -->
-    <div class="ob-step" data-step="4">
+    <!-- STEP 5: DONE -->
+    <div class="ob-step" data-step="5">
       <div class="ob-hero">
         <div class="ob-hero-icon" id="obDoneIcon">
           <i class="fa-solid fa-star" style="font-size:24px; color:var(--accent);"></i>
@@ -2311,6 +2362,7 @@ const assignments = [
 ];
 
 const newsData = [
+  { date: "2026-10-13", title: "v9.2.1 polishes onboarding, caches thumbnails, and stops card flicker", body: "v9.2.1 adds a reduced motion step to the welcome tour, keeps cards permanently mounted so thumbnails don't reload when you scroll back up, and caches every thumbnail lookup so subsequent visits never re-probe for images. New thumbnails you add later are picked up automatically within about a week, or instantly if you clear the thumbnail cache in Settings." },
   { date: "2026-10-13", title: "v9.2.0 adds onboarding and optimizes the experience for low-end hardware", body: "v9.2.0 welcomes new users with a friendly onboarding tour that walks through theme, font, performance, and privacy in about thirty seconds. It also cuts initial memory and GPU work by deferring thumbnail loads until you scroll near them, and adds a Performance mode toggle that trims heavy animations, backdrop blurs, and grain overlays. Plus: the secret 'oblonboard' code inside Settings replays the tour any time." },
   { date: "2026-10-13", title: "v9.1.4 brings polish, sound, and cinematic flourishes", body: "v9.1.4 layers in the cozy touches: animated pixel art (sun, moon, party icons that shine and change color), cinematic hero parallax that moves the art and thumbnail at different rates, heart trails on favorite, animated empty-state icons, slower modal entries, a soft backdrop blur fade, live theme previews in Settings, a spring wobble on switches, a fully custom range slider, and optional soft sound blips on favorite, launch, and toggle." },
   { date: "2026-10-12", title: "v9.1.3 adds a hero mode setting, richer greetings, and Plane Clicker", body: "v9.1.3 introduces a Homepage setting to choose between a recommended hero or a resume-playing hero, replaces the single greeting with a bank of 500+ time- and day-aware messages, adds Plane Clicker to the catalog, wires up empty Jump back in and inbox filter states, and fixes Reduced motion so the toggle actually works. Also includes a handful of small polish fixes throughout." },
@@ -2355,16 +2407,15 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.2.0',
+  version: '9.2.1',
   date: '2026-10-13',
-  title: 'Oogly Boogly v9.2.0 is here!',
+  title: 'Oogly Boogly v9.2.1 is here!',
   items: [
-    '<b>Welcome tour</b> A friendly five-step onboarding walks new users through theme, font, performance, and privacy — in about thirty seconds.',
-    '<b>Built with optimization in mind</b> Tested on real garbage hardware (school chromebooks), this release fixes the lag you may have previously experienced if you were using a Chromebook.',
-    '<b>Deferred thumbnails</b> Game images now load only when they scroll near your viewport, cutting initial memory use by roughly 60% on cold load.',
-    '<b>Performance mode</b> A new Settings toggle that trims the heaviest visual effects — backdrop blurs, grain overlay, sun/moon/party animations, button ripples, and card sheen — for a smoother experience on low-end laptops.',
-    '<b>Faster modals</b> When Performance mode is on, modals snap in quickly instead of easing in cinematically.',
-    '<b>Same cozy look</b> Colors, themes, layout, and the important motion all stay. Performance mode just removes the expensive layers.',
+    '<b>Reduced motion in onboarding</b> A new step in the welcome tour lets you turn on reduced motion right away — animations across the site are fully disabled when it\'s on. Accessibility made easy.',
+    '<b>Cards stay put</b> Removed the browser optimization that was discarding card content on scroll. Thumbnails now stay rendered even when you scroll past them and come back.',
+    '<b>Persistent thumbnail cache</b> Every thumbnail lookup is now cached on your device. Subsequent visits skip the probe entirely — the site already knows which image belongs to which game.',
+    '<b>Automatic new-thumbnail detection</b> Add a thumbnail for a game that didn\'t have one, and OBL will pick it up automatically within about a week. Or clear the thumbnail cache in Settings to refresh instantly.',
+    '<b>Everything from v9.2.0 included</b> Onboarding, performance mode, deferred probing, and all the polish underneath.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -2438,11 +2489,23 @@ const TOP_TITLES = ['Basket Random','Basket Bros','Subway Surfers','Drift Hunter
 const ROW_LIMIT = 24;
 
 // ──────────────────────────────────────────────
-// THUMBNAILS (with deferred probing)
+// THUMBNAILS — PERSISTENT CACHE (v9.2.1)
 // ──────────────────────────────────────────────
+// Every probe result is stored in IndexedDB so reloads never
+// have to re-probe. Hits are cached indefinitely (they don't
+// change unless the file moves, which is rare). Misses expire
+// after MISS_TTL_DAYS so newly-added thumbnails eventually
+// pick up on their own. Users can also nuke the cache from
+// Settings → Data → Thumbnail cache.
 const THUMB_DIR = 'thumbs/';
 const THUMB_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif'];
-const thumbState = new Map();
+const THUMB_CACHE_DB = 'obl_thumb_cache';
+const THUMB_CACHE_STORE = 'thumbs';
+const THUMB_CACHE_VERSION = 1;
+const MISS_TTL_DAYS = 7;
+const MISS_TTL_MS = MISS_TTL_DAYS * 24 * 60 * 60 * 1000;
+
+const thumbState = new Map(); // in-memory mirror of the persistent cache
 
 function thumbKey(link) {
   return link
@@ -2453,12 +2516,133 @@ function thumbKey(link) {
     .replace(/[^a-zA-Z0-9._-]/g, '');
 }
 
+// ── IndexedDB wrapper ──
+let thumbDb = null;
+function openThumbDb() {
+  if (thumbDb) return Promise.resolve(thumbDb);
+  if (!('indexedDB' in window)) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    try {
+      const req = indexedDB.open(THUMB_CACHE_DB, THUMB_CACHE_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(THUMB_CACHE_STORE)) {
+          db.createObjectStore(THUMB_CACHE_STORE, { keyPath: 'link' });
+        }
+      };
+      req.onsuccess = () => { thumbDb = req.result; resolve(thumbDb); };
+      req.onerror = () => resolve(null);
+    } catch (e) { resolve(null); }
+  });
+}
+
+async function thumbCacheGet(link) {
+  const db = await openThumbDb();
+  if (!db) return null;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(THUMB_CACHE_STORE, 'readonly');
+      const store = tx.objectStore(THUMB_CACHE_STORE);
+      const req = store.get(link);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    } catch (e) { resolve(null); }
+  });
+}
+
+async function thumbCachePut(entry) {
+  const db = await openThumbDb();
+  if (!db) return;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(THUMB_CACHE_STORE, 'readwrite');
+      const store = tx.objectStore(THUMB_CACHE_STORE);
+      store.put(entry);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch (e) { resolve(); }
+  });
+}
+
+async function thumbCacheDelete(link) {
+  const db = await openThumbDb();
+  if (!db) return;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(THUMB_CACHE_STORE, 'readwrite');
+      const store = tx.objectStore(THUMB_CACHE_STORE);
+      store.delete(link);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch (e) { resolve(); }
+  });
+}
+
+async function thumbCacheClear() {
+  const db = await openThumbDb();
+  if (!db) return;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(THUMB_CACHE_STORE, 'readwrite');
+      const store = tx.objectStore(THUMB_CACHE_STORE);
+      store.clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch (e) { resolve(); }
+  });
+}
+
+async function thumbCacheAll() {
+  const db = await openThumbDb();
+  if (!db) return [];
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(THUMB_CACHE_STORE, 'readonly');
+      const store = tx.objectStore(THUMB_CACHE_STORE);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    } catch (e) { resolve([]); }
+  });
+}
+
+// ── Hydration: pull every cached entry into memory at boot ──
+async function hydrateThumbCache() {
+  try {
+    const all = await thumbCacheAll();
+    const now = Date.now();
+    for (const entry of all) {
+      if (!entry || !entry.link) continue;
+      if (entry.url) {
+        // Hit — indefinite. Only invalidate if a schema version bump happens.
+        thumbState.set(entry.link, {
+          status: 'hit', url: entry.url, waiting: []
+        });
+      } else if (entry.missedAt && (now - entry.missedAt) < MISS_TTL_MS) {
+        // Fresh miss — skip probing for now
+        thumbState.set(entry.link, {
+          status: 'miss', url: null, waiting: []
+        });
+      }
+      // Expired misses are simply not hydrated → they'll be probed fresh
+    }
+  } catch (e) {}
+}
+
+// ── Prober ──
 function probeThumb(link, s) {
   const base = THUMB_DIR + thumbKey(link);
   let i = 0;
   const finish = url => {
     s.status = url ? 'hit' : 'miss';
     s.url = url;
+    // Write to persistent cache (fire and forget)
+    thumbCachePut({
+      link,
+      url: url || null,
+      missedAt: url ? null : Date.now(),
+      cachedAt: Date.now(),
+    });
     const queued = s.waiting; s.waiting = [];
     queued.forEach(cb => cb(url));
   };
@@ -2498,9 +2682,7 @@ function applyThumb(el, a) {
 }
 
 // Deferred probing: only kick off the image search when
-// the element is near the viewport. This is the big perf
-// win on school Chromebooks — no more 1000+ probe requests
-// at boot.
+// the element is near the viewport.
 let thumbObserver = null;
 function ensureThumbObserver() {
   if (thumbObserver) return thumbObserver;
@@ -2519,11 +2701,14 @@ function ensureThumbObserver() {
   return thumbObserver;
 }
 
-// Queue a thumb request. If the element is visible-or-near
-// right now, or IntersectionObserver isn't available, load
-// immediately. Otherwise defer until scrolled into view.
 function deferThumb(el, link) {
   el.dataset.thumbLink = link;
+  // Fast path: if we already know the result, apply immediately.
+  const s = thumbState.get(link);
+  if (s && s.status !== 'pending') {
+    if (s.url) showThumbImg(el, s.url);
+    return;
+  }
   const obs = ensureThumbObserver();
   if (!obs) { withThumb(link, url => { if (url) showThumbImg(el, url); }); return; }
   obs.observe(el);
@@ -2531,6 +2716,27 @@ function deferThumb(el, link) {
 
 function applyThumbDeferred(el, a) {
   deferThumb(el, a.link);
+}
+
+// Public cleanup: wipes the cache and refreshes the grid so
+// every card is forced to re-probe.
+async function clearThumbCache() {
+  thumbState.clear();
+  await thumbCacheClear();
+  // Force every card to re-probe by removing the img
+  document.querySelectorAll('.card-thumb img').forEach(img => img.remove());
+  document.querySelectorAll('.card-thumb[data-thumb-link]').forEach(el => {
+    delete el.dataset.thumbLink;
+  });
+  // Re-enter every card through the deferred system
+  document.querySelectorAll('.card').forEach(card => {
+    const link = card.dataset.link;
+    const thumb = card.querySelector('.card-thumb');
+    if (link && thumb) applyThumbDeferred(thumb, { link });
+  });
+  // Also refresh hero art
+  renderHero();
+  toast('Thumbnail cache cleared');
 }
 
 // ──────────────────────────────────────────────
@@ -4496,7 +4702,7 @@ document.querySelectorAll('.seg[data-group]').forEach(seg => {
 // ONBOARDING
 // ──────────────────────────────────────────────
 let obStep = 0;
-const OB_TOTAL_STEPS = 5;
+const OB_TOTAL_STEPS = 6;
 let obPerfAutoOn = false; // tracks whether we auto-enabled perf during this tour
 
 function shouldAutoEnablePerf() {
@@ -4605,6 +4811,11 @@ function onObCloakToggle(checked) {
   populateSettingsUI();
 }
 
+function onObCalmToggle(checked) {
+  setCfg({ calm: checked });
+  populateSettingsUI();
+}
+
 function startOnboarding() {
   obStep = 0;
   obPerfAutoOn = false;
@@ -4625,6 +4836,8 @@ function startOnboarding() {
   if (perfToggle) perfToggle.checked = !!cfg.perf;
   const cloakToggle = document.getElementById('obCloakToggle');
   if (cloakToggle) cloakToggle.checked = !!cfg.launch.cloak;
+  const calmToggle = document.getElementById('obCalmToggle');
+  if (calmToggle) calmToggle.checked = !!cfg.calm;
 
   // Mirror the hero-mode segment state
   document.querySelectorAll('#onboardingModal .seg[data-group="heroMode"] button').forEach(b => {
@@ -4676,6 +4889,8 @@ async function collectAllIndexedDB() {
   for (const dbInfo of dbList) {
     const name = dbInfo.name;
     if (!name) continue;
+    // Skip our own thumbnail cache — it's not "save data".
+    if (name === THUMB_CACHE_DB) continue;
     try { result[name] = await dumpIndexedDB(name); } catch (e) { result[name] = { error: String(e) }; }
   }
   return result;
@@ -4937,8 +5152,13 @@ function toast(msg) {
 // ──────────────────────────────────────────────
 // INIT
 // ──────────────────────────────────────────────
-function init() {
+async function init() {
   bindInboxFilters();
+
+  // Hydrate the persistent thumbnail cache BEFORE building the grid,
+  // so cards can hit the fast path and skip probing entirely.
+  await hydrateThumbCache();
+
   loadProfile();
   loadFavs();
   loadConfig();
