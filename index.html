@@ -184,6 +184,30 @@ header, .layout, .toast { position: relative; z-index: 1; }
 @keyframes arrowPulse { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
 @keyframes railIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
 @keyframes steamRise { 0% { opacity: .55; transform: translateY(0); } 60% { opacity: 0; transform: translateY(-3px); } 100% { opacity: 0; transform: translateY(-3px); } }
+@keyframes sunShine { 0%,100% { filter: brightness(1); transform: rotate(0); } 50% { filter: brightness(1.6); transform: rotate(180deg); } }
+@keyframes moonShine { 0%,100% { filter: brightness(1) drop-shadow(0 0 2px rgba(var(--accent-rgb), .0)); } 50% { filter: brightness(1.35) drop-shadow(0 0 4px rgba(var(--accent-rgb), .8)); } }
+@keyframes partyColor {
+  0%   { fill: #f472b6; }
+  25%  { fill: #fbbf24; }
+  50%  { fill: #4ade80; }
+  75%  { fill: #60a5fa; }
+  100% { fill: #f472b6; }
+}
+@keyframes pixelFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.08); } }
+@keyframes pixelPulse { 0%,100% { opacity: .9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
+@keyframes pixelShimmer { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.35) drop-shadow(0 0 3px rgba(var(--accent-rgb), .6)); } }
+@keyframes toggleWobble {
+  0% { transform: translateX(18px) scale(1); }
+  50% { transform: translateX(18px) scale(.82); }
+  75% { transform: translateX(18px) scale(1.06); }
+  100% { transform: translateX(18px) scale(1); }
+}
+@keyframes miniHeartRise {
+  to {
+    transform: translateY(-46px) scale(.4) rotate(-14deg);
+    opacity: 0;
+  }
+}
 
 /* ───── PIXEL ART ───── */
 .pixel-icon {
@@ -195,6 +219,28 @@ header, .layout, .toast { position: relative; z-index: 1; }
 .pixel-icon .steam-1 { animation: steamRise 2.4s ease-in-out infinite; }
 .pixel-icon .steam-2 { animation: steamRise 2.4s ease-in-out .8s infinite; }
 .pixel-icon .steam-3 { animation: steamRise 2.4s ease-in-out 1.6s infinite; }
+
+/* Sun rays shine and slowly rotate */
+.pixel-icon.pixel-sun .shine {
+  animation: sunShine 6s ease-in-out infinite;
+  transform-origin: center;
+}
+/* Moon softly glows */
+.pixel-icon.pixel-moon .shine {
+  animation: moonShine 3.4s ease-in-out infinite;
+}
+/* Party icon color-cycles its dots */
+.pixel-icon.pixel-party .dot-1 { animation: partyColor 4s linear infinite; }
+.pixel-icon.pixel-party .dot-2 { animation: partyColor 4s linear infinite .6s; }
+.pixel-icon.pixel-party .dot-3 { animation: partyColor 4s linear infinite 1.2s; }
+.pixel-icon.pixel-party .dot-4 { animation: partyColor 4s linear infinite 1.8s; }
+
+/* Generic pixel icon animation */
+.pixel-icon.pixel-anim {
+  animation: pixelFloat 3s ease-in-out infinite;
+}
+.pixel-icon.pixel-anim .pixel-pulse { animation: pixelPulse 2.4s ease-in-out infinite; }
+.pixel-icon.pixel-anim .pixel-shimmer { animation: pixelShimmer 2.8s ease-in-out infinite; }
 
 /* ───── HEADER ───── */
 header {
@@ -515,6 +561,27 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card-thumb img { animation: fadeIn .35s var(--ease) both; }
 .card:hover .card-thumb { transform: scale(1.08); filter: brightness(1.15); }
+.card-thumb::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(var(--accent-rgb), .18) 50%,
+    transparent 60%,
+    transparent 100%);
+  background-size: 200% 200%;
+  background-position: 100% 100%;
+  opacity: 0;
+  transition: opacity .3s var(--ease), background-position .7s var(--ease);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.card:hover .card-thumb::after {
+  opacity: 1;
+  background-position: -100% -100%;
+}
+
 .card-title {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   padding: 10px 13px;
@@ -572,16 +639,31 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   background: var(--heart); pointer-events: none; z-index: 999;
   animation: spark .7s var(--ease) forwards;
 }
+.mini-heart {
+  position: fixed;
+  color: var(--heart);
+  font-size: 10px;
+  pointer-events: none;
+  z-index: 999;
+  text-shadow: 0 0 4px rgba(var(--heart-rgb), .6);
+  animation: miniHeartRise 1s cubic-bezier(.2,.8,.2,1) forwards;
+}
 
 /* ───── MODALS ───── */
 .modal-bg {
   position: fixed; inset: 0; background: rgba(0,0,0,.66);
   z-index: 200;
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity .25s var(--ease);
+  opacity: 0; pointer-events: none;
+  transition: opacity .5s var(--ease), backdrop-filter .5s var(--ease);
   padding: 20px; backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
 }
-.modal-bg.open { opacity: 1; pointer-events: all; backdrop-filter: blur(6px); }
+.modal-bg.open {
+  opacity: 1; pointer-events: all;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
 .modal-bg.stacked { z-index: 300; }
 .modal {
   background: var(--surface); border: 1px solid var(--border2);
@@ -590,7 +672,7 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   box-shadow: var(--shadow-lg);
   transition: background-color .3s var(--ease), border-color .3s var(--ease);
 }
-.modal-bg.open .modal { animation: modalIn .4s var(--spring) both; }
+.modal-bg.open .modal { animation: modalIn .55s cubic-bezier(.34, 1.56, .64, 1) both; }
 .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
 .modal-title { font-size: 21px; font-weight: 700; letter-spacing: -.2px; }
 .modal-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
@@ -672,6 +754,8 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 .update-list li:nth-child(5) { animation-delay: .38s; }
 .update-list li:nth-child(6) { animation-delay: .45s; }
 .update-list li:nth-child(7) { animation-delay: .52s; }
+.update-list li:nth-child(8) { animation-delay: .59s; }
+.update-list li:nth-child(9) { animation-delay: .66s; }
 .update-list li i {
   color: var(--accent); font-size: 11px; margin-top: 4px;
   width: 18px; height: 18px; border-radius: 7px;
@@ -776,13 +860,38 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .theme-tile:hover { transform: translateY(-3px); border-color: var(--muted2); box-shadow: var(--cozy-shadow); }
 .theme-tile.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
-.theme-swatches { display: flex; gap: 4px; margin-bottom: 8px; }
-.theme-swatch {
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid var(--text-line);
-  transition: transform .25s var(--spring);
+
+/* ── Miniature UI preview inside each theme tile ── */
+.theme-preview {
+  height: 46px;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
 }
-.theme-tile:hover .theme-swatch { transform: scale(1.08); }
+.tp-hero {
+  height: 12px;
+  border-radius: 3px;
+  opacity: .55;
+}
+.tp-row { display: flex; gap: 3px; flex: 1; }
+.tp-card {
+  flex: 1;
+  border-radius: 3px;
+  opacity: .85;
+}
+.tp-accent {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  opacity: 1;
+  margin-top: auto;
+}
+
 .theme-name { font-size: 13px; font-weight: 600; }
 .theme-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
@@ -842,9 +951,51 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
 }
 .switch input:checked + .slider { background: var(--accent); border-color: var(--accent); }
 .switch input:checked + .slider::before { transform: translateX(18px); background: #fff; }
+.switch input:checked + .slider::before { animation: toggleWobble .5s var(--spring); }
 .switch input:focus-visible + .slider { box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .3); }
-.range { width: 160px; accent-color: var(--accent); }
+
+/* ── Custom range slider ── */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 160px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface3);
+  outline: none;
+  cursor: pointer;
+  transition: background .3s var(--ease);
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,.5), 0 0 0 0 rgba(var(--accent-rgb), .4);
+  transition: transform .2s var(--spring), box-shadow .25s var(--ease);
+}
+.range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,.5), 0 0 0 6px rgba(var(--accent-rgb), .12);
+}
+.range::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,.5);
+  transition: transform .2s var(--spring), box-shadow .25s var(--ease);
+}
+.range::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,.5), 0 0 0 6px rgba(var(--accent-rgb), .12);
+}
 .range-val { font-family: var(--font-mono); font-size: 11px; color: var(--muted); min-width: 110px; text-align: right; }
+
 .key-cap {
   min-width: 64px; padding: 7px 12px; border-radius: 9px; cursor: pointer;
   background: var(--surface2); border: 1px solid var(--border2); color: var(--text);
@@ -1116,7 +1267,7 @@ html.calm .hero-art { transform: none !important; }
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.1.3</div>
+        <div class="modal-sub">Oogly Boogly Version 9.1.4</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -1192,6 +1343,18 @@ html.calm .hero-art { transform: none !important; }
         <div class="set-control">
           <label class="switch">
             <input type="checkbox" id="calmMode" onchange="setCfg({calm: this.checked}); populateSettingsUI();" aria-label="Reduced motion"/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="set-row">
+        <div class="set-text">
+          <div class="set-label">Sound effects</div>
+          <div class="set-desc">Play a soft blip when you favorite, launch, or toggle</div>
+        </div>
+        <div class="set-control">
+          <label class="switch">
+            <input type="checkbox" id="soundEnabled" onchange="setCfg({sound: this.checked}); populateSettingsUI();" aria-label="Sound effects"/>
             <span class="slider"></span>
           </label>
         </div>
@@ -1452,6 +1615,36 @@ function bindInboxFilters() {
 }
 
 // ──────────────────────────────────────────────
+// SOUND (Web Audio blip)
+// ──────────────────────────────────────────────
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) { return null; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function blip(freq = 880, duration = 0.06, gain = 0.02) {
+  if (!cfg.sound || cfg.calm) return;
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    osc.connect(g).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {}
+}
+
+// ──────────────────────────────────────────────
 // TEMU NET DETECTION
 // ──────────────────────────────────────────────
 function isRunningInTemuNet() {
@@ -1665,8 +1858,9 @@ const assignments = [
 ];
 
 const newsData = [
+  { date: "2026-10-13", title: "v9.1.4 brings polish, sound, and cinematic flourishes", body: "v9.1.4 layers in the cozy touches: animated pixel art (sun, moon, party icons that shine and change color), cinematic hero parallax that moves the art and thumbnail at different rates, heart trails on favorite, animated empty-state icons, slower modal entries, a soft backdrop blur fade, live theme previews in Settings, a spring wobble on switches, a fully custom range slider, and optional soft sound blips on favorite, launch, and toggle." },
   { date: "2026-10-12", title: "v9.1.3 adds a hero mode setting, richer greetings, and Plane Clicker", body: "v9.1.3 introduces a Homepage setting to choose between a recommended hero or a resume-playing hero, replaces the single greeting with a bank of 500+ time- and day-aware messages, adds Plane Clicker to the catalog, wires up empty Jump back in and inbox filter states, and fixes Reduced motion so the toggle actually works. Also includes a handful of small polish fixes throughout." },
-  { date: "2026-10-12", title: "v9.1.2 brings warm cream text, pixel art, and cloaking controls", body: "v9.1.2 reworks text color into a warm cream that tints toward your active theme, adds a cozy pixel coffee cup to the greeting and pixel icons to empty states, and introduces a setting for about:cloaking so you can choose how g@m35 launch." },
+  { date: "2026-10-12", title: "v9.1.2 brings warm cream text, pixel art, and cloaking controls", body: "v9.1.2 reworks text color into a warm cream that tints toward your active theme, adds a cozy pixel coffee cup to the greeting and pixel icons to empty states, and introduces a setting for about:cloaking so you can choose how games launch." },
   { date: "2026-10-11", title: "v9.1.1 fixes 80 assignments", body: "v9.1.1 is an incremental update that includes fixes for over 80 of your favorite assignments, so they are maintained usable!" },
   { date: "2026-10-11", title: "v9.1 brings theme presets and card tooltips", body: "v9.1 adds a full theme selector with six hand-picked presets, hover tooltips on every game card, and a heap of microanimations to make the whole thing feel cozier." },
   { date: "2026-10-11", title: "v9.0.2 introduces a new assignment", body: "v9.0.2 introduces City Idle, a new math assignment where you add numbers and multiply to make buildings and grow your city." },
@@ -1707,16 +1901,19 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.1.3',
-  date: '2026-10-12',
-  title: 'Oogly Boogly v9.1.3 is here!',
+  version: '9.1.4',
+  date: '2026-10-13',
+  title: 'Oogly Boogly v9.1.4 is here!',
   items: [
-    '<b>Hero mode</b> Pick whether the featured card at the top shows a fresh recommendation or picks up where you left off. Defaults to recommendations.',
-    '<b>Smarter greetings</b> The greeting is now a bank of 500+ messages that change with the time of day and the day of the week — a Monday morning and a Saturday evening feel different.',
-    '<b>Plane Clicker</b> A brand-new idle game has landed in the catalog.',
-    '<b>Empty states</b> The "Jump back in" row and the inbox now show friendly empty states instead of hiding or showing blank space.',
-    '<b>Reduced motion fixed</b> The Reduced motion toggle is now enabled and actually turns off animations.',
-    '<b>Polish pass</b> Card thumbnails fade in, the search bar shows a subtle "searching" glow, cards lift more gently on hover, buttons get a soft ripple on click, and focus rings appear for keyboard users.',
+    '<b>Cozy pixel motion</b> The sun, moon, and party icons in your greeting now shine, glow, and shift color. Empty states animate too.',
+    '<b>Cinematic hero</b> The hero art and the thumbnail inside it now drift at different rates as you move the cursor — real depth.',
+    '<b>Heart trails</b> Favoriting a game now sends a soft trail of mini hearts up from the button.',
+    '<b>Landed modals</b> Modals enter more slowly and bounce gently into place, and the backdrop fade is a soft blur now instead of a snap.',
+    '<b>Theme previews</b> Each theme tile in Settings now shows a tiny preview of what your homepage will look like in that theme.',
+    '<b>Springy switches</b> Toggle switches wobble slightly as they land in the on position.',
+    '<b>Custom slider</b> The Genre focus slider is now a fully custom-accent control instead of the browser default.',
+    '<b>Soft sound</b> Optional audio blips on favorite, launch, and toggle. Turn off any time in Settings.',
+    '<b>Greeting & inbox polish</b> Refresh flow is more consistent, and the inbox empty states are now friendlier.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -1853,7 +2050,7 @@ function applyThumb(el, a) {
 // ──────────────────────────────────────────────
 function pixelHeart(size = 22) {
   return `
-    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+    <svg class="pixel-icon pixel-anim" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
       <rect x="2" y="3" width="4" height="2" fill="var(--heart)"/>
       <rect x="10" y="3" width="4" height="2" fill="var(--heart)"/>
       <rect x="1" y="5" width="14" height="3" fill="var(--heart)"/>
@@ -1864,8 +2061,8 @@ function pixelHeart(size = 22) {
 }
 function pixelEnvelope(size = 22) {
   return `
-    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
-      <rect x="1" y="4" width="14" height="9" fill="var(--accent)"/>
+    <svg class="pixel-icon pixel-anim" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect class="pixel-shimmer" x="1" y="4" width="14" height="9" fill="var(--accent)"/>
       <rect x="1" y="4" width="14" height="1" fill="rgba(0,0,0,.25)"/>
       <rect x="2" y="5" width="1" height="1" fill="rgba(0,0,0,.4)"/>
       <rect x="3" y="6" width="1" height="1" fill="rgba(0,0,0,.4)"/>
@@ -1881,30 +2078,30 @@ function pixelEnvelope(size = 22) {
 }
 function pixelMagnifier(size = 26) {
   return `
-    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
-      <rect x="5" y="3" width="6" height="1" fill="var(--accent)"/>
-      <rect x="3" y="4" width="1" height="6" fill="var(--accent)"/>
-      <rect x="12" y="4" width="1" height="6" fill="var(--accent)"/>
-      <rect x="5" y="10" width="6" height="1" fill="var(--accent)"/>
-      <rect x="4" y="4" width="1" height="1" fill="var(--accent)"/>
-      <rect x="11" y="4" width="1" height="1" fill="var(--accent)"/>
-      <rect x="4" y="9" width="1" height="1" fill="var(--accent)"/>
-      <rect x="11" y="9" width="1" height="1" fill="var(--accent)"/>
-      <rect x="10" y="11" width="2" height="2" fill="var(--accent)"/>
-      <rect x="12" y="12" width="2" height="2" fill="var(--accent)"/>
+    <svg class="pixel-icon pixel-anim" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect class="pixel-shimmer" x="5" y="3" width="6" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="3" y="4" width="1" height="6" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="12" y="4" width="1" height="6" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="5" y="10" width="6" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="4" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="11" y="4" width="1" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="4" y="9" width="1" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="11" y="9" width="1" height="1" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="10" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect class="pixel-shimmer" x="12" y="12" width="2" height="2" fill="var(--accent)"/>
     </svg>`;
 }
 function pixelClock(size = 26) {
   return `
-    <svg class="pixel-icon" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
-      <rect x="5" y="1" width="6" height="1" fill="var(--accent)"/>
-      <rect x="5" y="14" width="6" height="1" fill="var(--accent)"/>
+    <svg class="pixel-icon pixel-anim" viewBox="0 0 16 16" width="${size}" height="${size}" aria-hidden="true">
+      <rect class="pixel-pulse" x="5" y="1" width="6" height="1" fill="var(--accent)"/>
+      <rect class="pixel-pulse" x="5" y="14" width="6" height="1" fill="var(--accent)"/>
       <rect x="1" y="5" width="1" height="6" fill="var(--accent)"/>
       <rect x="14" y="5" width="1" height="6" fill="var(--accent)"/>
-      <rect x="3" y="3" width="2" height="2" fill="var(--accent)"/>
-      <rect x="11" y="3" width="2" height="2" fill="var(--accent)"/>
-      <rect x="3" y="11" width="2" height="2" fill="var(--accent)"/>
-      <rect x="11" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect class="pixel-pulse" x="3" y="3" width="2" height="2" fill="var(--accent)"/>
+      <rect class="pixel-pulse" x="11" y="3" width="2" height="2" fill="var(--accent)"/>
+      <rect class="pixel-pulse" x="3" y="11" width="2" height="2" fill="var(--accent)"/>
+      <rect class="pixel-pulse" x="11" y="11" width="2" height="2" fill="var(--accent)"/>
       <rect x="2" y="4" width="1" height="1" fill="var(--accent)"/>
       <rect x="13" y="4" width="1" height="1" fill="var(--accent)"/>
       <rect x="2" y="11" width="1" height="1" fill="var(--accent)"/>
@@ -2120,11 +2317,13 @@ function toggleFav(title, btn) {
   const rect = btn ? btn.getBoundingClientRect() : null;
   if (isFav(title)) {
     favs = favs.filter(t => t !== title);
+    blip(523, .06, .015);
     toast('Removed from favorites');
   } else {
     favs.unshift(title);
     if (rect) burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
     if (btn) { btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop'); }
+    blip(1046, .07, .022);
     toast('Added to favorites ♥');
   }
   save(LS.favs, favs);
@@ -2141,7 +2340,7 @@ function clearFavorites() {
 }
 
 function burst(x, y) {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
     const s = document.createElement('span');
     s.className = 'spark';
     const ang = Math.random() * Math.PI * 2;
@@ -2152,6 +2351,18 @@ function burst(x, y) {
     s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
     document.body.appendChild(s);
     setTimeout(() => s.remove(), 750);
+  }
+  // Mini heart trail
+  if (cfg.calm) return;
+  for (let i = 0; i < 3; i++) {
+    const h = document.createElement('span');
+    h.className = 'mini-heart';
+    h.textContent = '♥';
+    h.style.left = (x - 6 + (Math.random() * 12)) + 'px';
+    h.style.top = y + 'px';
+    h.style.animationDelay = (i * 60) + 'ms';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 1200);
   }
 }
 
@@ -2296,6 +2507,7 @@ const DEFAULTS = {
   bg: '#140d0d',
   font: 'Fredoka',
   calm: false,
+  sound: true,
   heroMode: 'recommend',
   launch: {
     cloak: true
@@ -2372,6 +2584,7 @@ function setLaunchCfg(patch) {
   cfg.launch = { ...cfg.launch, ...patch };
   saveConfig();
   populateSettingsUI();
+  blip(patch.cloak ? 1046 : 523, .05, .015);
   toast(patch.cloak === false ? 'Cloaking disabled' : 'Cloaking enabled ✓');
 }
 
@@ -2513,6 +2726,7 @@ function buildGameHtml(html, gameBase, title) {
 
 async function launchGame(link, title) {
   recordPlay(title);
+  blip(880, .05, .018);
 
   let absUrl;
   if (link.startsWith('http://') || link.startsWith('https://')) absUrl = link;
@@ -2609,42 +2823,46 @@ const COFFEE_SVG = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" heigh
   <rect class="steam-3" x="11" y="3" width="1" height="1" fill="rgba(244,236,221,.4)"/>
 </svg>`;
 
-const PIXEL_SUN = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
-  <rect x="6" y="6" width="4" height="4" fill="var(--accent)"/>
-  <rect x="5" y="7" width="6" height="2" fill="var(--accent)"/>
-  <rect x="7" y="5" width="2" height="6" fill="var(--accent)"/>
-  <rect x="7" y="1" width="2" height="2" fill="var(--accent)"/>
-  <rect x="7" y="13" width="2" height="2" fill="var(--accent)"/>
-  <rect x="1" y="7" width="2" height="2" fill="var(--accent)"/>
-  <rect x="13" y="7" width="2" height="2" fill="var(--accent)"/>
-  <rect x="3" y="3" width="1" height="1" fill="var(--accent)"/>
-  <rect x="12" y="3" width="1" height="1" fill="var(--accent)"/>
-  <rect x="3" y="12" width="1" height="1" fill="var(--accent)"/>
-  <rect x="12" y="12" width="1" height="1" fill="var(--accent)"/>
+const PIXEL_SUN = `<svg class="pixel-icon pixel-sun" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <g class="shine">
+    <rect x="6" y="6" width="4" height="4" fill="var(--accent)"/>
+    <rect x="5" y="7" width="6" height="2" fill="var(--accent)"/>
+    <rect x="7" y="5" width="2" height="6" fill="var(--accent)"/>
+    <rect x="7" y="1" width="2" height="2" fill="var(--accent)"/>
+    <rect x="7" y="13" width="2" height="2" fill="var(--accent)"/>
+    <rect x="1" y="7" width="2" height="2" fill="var(--accent)"/>
+    <rect x="13" y="7" width="2" height="2" fill="var(--accent)"/>
+    <rect x="3" y="3" width="1" height="1" fill="var(--accent)"/>
+    <rect x="12" y="3" width="1" height="1" fill="var(--accent)"/>
+    <rect x="3" y="12" width="1" height="1" fill="var(--accent)"/>
+    <rect x="12" y="12" width="1" height="1" fill="var(--accent)"/>
+  </g>
 </svg>`;
 
-const PIXEL_MOON = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
-  <rect x="4" y="4" width="7" height="1" fill="var(--accent)"/>
-  <rect x="3" y="5" width="1" height="6" fill="var(--accent)"/>
-  <rect x="4" y="11" width="7" height="1" fill="var(--accent)"/>
-  <rect x="5" y="3" width="5" height="1" fill="var(--accent)"/>
-  <rect x="5" y="12" width="5" height="1" fill="var(--accent)"/>
-  <rect x="10" y="6" width="2" height="1" fill="var(--accent)"/>
-  <rect x="11" y="7" width="1" height="2" fill="var(--accent)"/>
-  <rect x="10" y="9" width="2" height="1" fill="var(--accent)"/>
-  <rect x="6" y="6" width="1" height="1" fill="rgba(0,0,0,.25)"/>
-  <rect x="7" y="8" width="1" height="1" fill="rgba(0,0,0,.25)"/>
+const PIXEL_MOON = `<svg class="pixel-icon pixel-moon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <g class="shine">
+    <rect x="4" y="4" width="7" height="1" fill="var(--accent)"/>
+    <rect x="3" y="5" width="1" height="6" fill="var(--accent)"/>
+    <rect x="4" y="11" width="7" height="1" fill="var(--accent)"/>
+    <rect x="5" y="3" width="5" height="1" fill="var(--accent)"/>
+    <rect x="5" y="12" width="5" height="1" fill="var(--accent)"/>
+    <rect x="10" y="6" width="2" height="1" fill="var(--accent)"/>
+    <rect x="11" y="7" width="1" height="2" fill="var(--accent)"/>
+    <rect x="10" y="9" width="2" height="1" fill="var(--accent)"/>
+    <rect x="6" y="6" width="1" height="1" fill="rgba(0,0,0,.25)"/>
+    <rect x="7" y="8" width="1" height="1" fill="rgba(0,0,0,.25)"/>
+  </g>
 </svg>`;
 
-const PIXEL_PARTY = `<svg class="pixel-icon" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
-  <rect x="2" y="2" width="1" height="1" fill="#f472b6"/>
-  <rect x="13" y="2" width="1" height="1" fill="#fbbf24"/>
-  <rect x="2" y="13" width="1" height="1" fill="#4ade80"/>
-  <rect x="13" y="13" width="1" height="1" fill="#60a5fa"/>
-  <rect x="7" y="1" width="2" height="1" fill="#f472b6"/>
-  <rect x="7" y="14" width="2" height="1" fill="#fbbf24"/>
-  <rect x="1" y="7" width="1" height="2" fill="#4ade80"/>
-  <rect x="14" y="7" width="1" height="2" fill="#60a5fa"/>
+const PIXEL_PARTY = `<svg class="pixel-icon pixel-party" viewBox="0 0 16 16" width="28" height="28" aria-hidden="true">
+  <rect class="dot-1" x="2" y="2" width="1" height="1" fill="#f472b6"/>
+  <rect class="dot-2" x="13" y="2" width="1" height="1" fill="#fbbf24"/>
+  <rect class="dot-3" x="2" y="13" width="1" height="1" fill="#4ade80"/>
+  <rect class="dot-4" x="13" y="13" width="1" height="1" fill="#60a5fa"/>
+  <rect class="dot-1" x="7" y="1" width="2" height="1" fill="#f472b6"/>
+  <rect class="dot-2" x="7" y="14" width="2" height="1" fill="#fbbf24"/>
+  <rect class="dot-3" x="1" y="7" width="1" height="2" fill="#4ade80"/>
+  <rect class="dot-4" x="14" y="7" width="1" height="2" fill="#60a5fa"/>
   <rect x="6" y="6" width="4" height="4" fill="var(--accent)"/>
   <rect x="5" y="7" width="6" height="2" fill="var(--accent)"/>
   <rect x="7" y="5" width="2" height="6" fill="var(--accent)"/>
@@ -2987,7 +3205,6 @@ function renderGreet() {
 let lastHeroTitle = null;
 
 function pickHeroGame() {
-  // Resume mode only — skip the recommendation branch entirely
   if (cfg.heroMode === 'resume') {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const recent = Object.entries(profile.plays || {})
@@ -2996,11 +3213,7 @@ function pickHeroGame() {
     if (recent.length > 0) {
       return { mode: 'continue', a: findGame(recent[0][0]) };
     }
-    // Nothing recent — fall through to recommendations so the hero
-    // isn't empty. The pill will show "Picked for you" either way.
   }
-
-  // Recommend mode (default) OR resume mode with nothing to resume
   const recs = currentRecs();
   if (recs.length > 0) return { mode: 'recommend', rec: recs[0], a: recs[0].a, recs };
   return null;
@@ -3102,8 +3315,17 @@ function bindHeroParallax() {
     const x = (e.clientX - r.left) / r.width - 0.5;
     const y = (e.clientY - r.top) / r.height - 0.5;
     art.style.transform = `translate(${x * -18}px, ${y * -14}px)`;
+    const img = art.querySelector('img');
+    if (img) {
+      img.style.transform =
+        `translate(${x * -8}px, ${y * -6}px) scale(1.05)`;
+    }
   });
-  hero.addEventListener('mouseleave', () => { art.style.transform = ''; });
+  hero.addEventListener('mouseleave', () => {
+    art.style.transform = '';
+    const img = art.querySelector('img');
+    if (img) img.style.transform = '';
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -3604,6 +3826,7 @@ const seg = e.target.closest && e.target.closest('.seg button');
 if (seg) {
   const group = seg.parentElement.dataset.group;
   const val = seg.dataset.val;
+  blip(700, .04, .012);
   if (group === 'heroMode') {
     setCfg({ heroMode: val });
     renderHero();
@@ -3646,6 +3869,16 @@ function focusLabel(v) {
 }
 function previewFocus(v) {
   document.getElementById('engFocusVal').textContent = focusLabel(Number(v));
+  updateRangeFill(document.getElementById('engFocus'));
+}
+function updateRangeFill(el) {
+  if (!el) return;
+  const min = Number(el.min) || 0;
+  const max = Number(el.max) || 100;
+  const val = Number(el.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.background =
+    `linear-gradient(90deg, var(--accent) ${pct}%, var(--surface3) ${pct}%)`;
 }
 function setChecked(id, val) {
   const el = document.getElementById(id);
@@ -3654,16 +3887,22 @@ function setChecked(id, val) {
 
 function renderThemeGrid() {
   const grid = document.getElementById('themeGrid');
-  grid.innerHTML = THEMES.map((t, i) => `
+  grid.innerHTML = THEMES.map((t, i) => {
+    const bgLight = lighten(t.bg, 22);
+    return `
     <button class="theme-tile ${cfg.theme === t.id ? 'active' : ''}" data-theme="${t.id}" style="animation-delay:${i * 40}ms" type="button">
-      <div class="theme-swatches">
-        <span class="theme-swatch" style="background:${t.bg}"></span>
-        <span class="theme-swatch" style="background:${lighten(t.bg, 22)}"></span>
-        <span class="theme-swatch" style="background:${t.accent}"></span>
+      <div class="theme-preview" style="background:${t.bg}">
+        <div class="tp-hero" style="background:${t.accent}"></div>
+        <div class="tp-row">
+          <div class="tp-card" style="background:${bgLight}"></div>
+          <div class="tp-card" style="background:${bgLight}"></div>
+        </div>
+        <div class="tp-accent" style="background:${t.accent}"></div>
       </div>
       <div class="theme-name">${escHtml(t.name)}</div>
       <div class="theme-desc">${escHtml(t.desc)}</div>
-    </button>`).join('');
+    </button>`;
+  }).join('');
   grid.querySelectorAll('.theme-tile').forEach(b => {
     b.onclick = () => applyTheme(b.dataset.theme);
   });
@@ -3702,6 +3941,7 @@ document.querySelectorAll('.seg[data-group]').forEach(seg => {
   setChecked('engMatch', e.showMatch);
   setChecked('engReasons', e.showReasons);
   setChecked('calmMode', cfg.calm);
+  setChecked('soundEnabled', cfg.sound);
   setChecked('cloakEnabled', cfg.launch.cloak);
 
   const f = document.getElementById('engFocus');
@@ -4003,6 +4243,13 @@ function init() {
   bindGlobal();
   renderGreet();
   updateInstallButton();
+
+  // Initialize custom range slider fill
+  const focusEl = document.getElementById('engFocus');
+  if (focusEl) {
+    updateRangeFill(focusEl);
+    focusEl.addEventListener('input', () => updateRangeFill(focusEl));
+  }
 
   if (cfg.font !== 'Fredoka') {
     loadFontCss([cfg.font]).then(ok => { if (ok) applyConfig(false); });
