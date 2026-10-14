@@ -19,12 +19,11 @@
    THEMES
    ───────────────────────────────────────────── */
 
-body, header, .rail, .hero, .card, .card-thumb, .modal, .tool-btn,
-.cat-btn, #search, .btn, .inbox-item, .theme-tile, .font-tile, .rank {
+body, header, .rail, .hero, .modal, .tool-btn,
+.cat-btn, #search, .btn, .inbox-item, .theme-tile, .font-tile {
   transition: background-color .3s var(--ease),
               border-color .3s var(--ease),
-              color .3s var(--ease),
-              box-shadow .3s var(--ease);
+              color .3s var(--ease);
 }
 
 /* ───── INBOX TOOLBAR ───── */
@@ -161,7 +160,6 @@ body::before {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   opacity: .025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
 }
 header, .layout, .toast { position: relative; z-index: 1; }
 
@@ -183,9 +181,10 @@ header, .layout, .toast { position: relative; z-index: 1; }
 @keyframes swatchPop { 0% { transform: scale(1); } 45% { transform: scale(1.28); } 100% { transform: scale(1.18); } }
 @keyframes arrowPulse { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
 @keyframes railIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
-@keyframes steamRise { 0% { opacity: .55; transform: translateY(0); } 60% { opacity: 0; transform: translateY(-3px); } 100% { opacity: 0; transform: translateY(-3px); } }
-@keyframes sunShine { 0%,100% { filter: brightness(1); transform: rotate(0); } 50% { filter: brightness(1.6); transform: rotate(180deg); } }
-@keyframes moonShine { 0%,100% { filter: brightness(1) drop-shadow(0 0 2px rgba(var(--accent-rgb), .0)); } 50% { filter: brightness(1.35) drop-shadow(0 0 4px rgba(var(--accent-rgb), .8)); } }
+@keyframes sunShine   { 0%,100% { opacity: 1; transform: rotate(0); } 50% { opacity: .75; transform: rotate(180deg); } }
+@keyframes moonShine  { 0%,100% { opacity: 1; } 50% { opacity: .7; } }
+@keyframes pixelShimmer { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+@keyframes partyBlink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 @keyframes partyColor {
   0%   { fill: #f472b6; }
   25%  { fill: #fbbf24; }
@@ -230,10 +229,10 @@ header, .layout, .toast { position: relative; z-index: 1; }
   animation: moonShine 3.4s ease-in-out infinite;
 }
 /* Party icon color-cycles its dots */
-.pixel-icon.pixel-party .dot-1 { animation: partyColor 4s linear infinite; }
-.pixel-icon.pixel-party .dot-2 { animation: partyColor 4s linear infinite .6s; }
-.pixel-icon.pixel-party .dot-3 { animation: partyColor 4s linear infinite 1.2s; }
-.pixel-icon.pixel-party .dot-4 { animation: partyColor 4s linear infinite 1.8s; }
+.pixel-icon.pixel-party .dot-1 { animation: partyBlink 4s linear infinite; }
+.pixel-icon.pixel-party .dot-2 { animation: partyBlink 4s linear infinite .6s; }
+.pixel-icon.pixel-party .dot-3 { animation: partyBlink 4s linear infinite 1.2s; }
+.pixel-icon.pixel-party .dot-4 { animation: partyBlink 4s linear infinite 1.8s; }
 
 /* Generic pixel icon animation */
 .pixel-icon.pixel-anim {
@@ -387,7 +386,6 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   width: 100%; height: 100%; object-fit: cover;
   opacity: 0; transform: scale(1.08);
   transition: opacity .6s var(--ease), transform .8s var(--ease);
-  filter: brightness(.55) saturate(1.05);
 }
 .hero-art.has-image img { opacity: 1; transform: scale(1); }
 .hero-art.has-image::after {
@@ -544,8 +542,9 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   cursor: pointer; user-select: none;
   animation: cardIn .55s var(--ease) backwards;
   animation-delay: calc(var(--i, 0) * 35ms);
-  transition: transform .3s var(--spring), border-color .2s, box-shadow .3s var(--ease), background-color .3s var(--ease);
+  transition: transform .3s var(--spring), border-color .2s, box-shadow .3s var(--ease);
   contain: layout paint style;
+  transform: translateZ(0);
 }
 .card:hover {
   transform: translateY(-4px) scale(1.015);
@@ -553,75 +552,37 @@ main { flex: 1; min-width: 0; padding: 20px 24px 60px; }
   box-shadow: var(--shadow-hover);
   z-index: 2;
 }
-.card:active { transform: translateY(-1px) scale(.985); transition-duration: .1s; }
-.card.is-hidden { display: none; }
 .card-thumb {
   position: absolute; inset: 0;
   display: grid; place-items: center;
   background: linear-gradient(135deg, var(--surface3), var(--surface2));
   font-size: 52px; font-weight: 700; color: var(--accent);
-  transition: transform .45s var(--ease), filter .3s, background .3s var(--ease), color .3s var(--ease);
+  transition: transform .45s var(--ease);
 }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card-thumb img { animation: fadeIn .35s var(--ease) both; }
-.card:hover .card-thumb { transform: scale(1.08); filter: brightness(1.15); }
+.card:hover .card-thumb { transform: scale(1.08); }
 .card-thumb::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(135deg,
-    transparent 0%,
-    transparent 40%,
-    rgba(var(--accent-rgb), .18) 50%,
-    transparent 60%,
-    transparent 100%);
-  background-size: 200% 200%;
-  background-position: 100% 100%;
+  background: linear-gradient(115deg, transparent 40%, rgba(var(--accent-rgb), .18) 50%, transparent 60%);
+  transform: translateX(-100%);
   opacity: 0;
-  transition: opacity .3s var(--ease), background-position .7s var(--ease);
+  transition: transform .7s var(--ease), opacity .3s var(--ease);
   pointer-events: none;
-  mix-blend-mode: overlay;
 }
-.card:hover .card-thumb::after {
-  opacity: 1;
-  background-position: -100% -100%;
-}
+.card:hover .card-thumb::after { transform: translateX(100%); opacity: 1; }
 
 .card-title {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   padding: 10px 13px;
-  background: var(--bg-glass);
+  background: rgba(var(--bg-rgb), .55);
   -webkit-backdrop-filter: blur(6px) saturate(130%);
   backdrop-filter: blur(6px) saturate(130%);
   border-top: 1px solid var(--text-line);
-  box-shadow: inset 0 1px 0 var(--text-ghost);
   font-size: 14px; font-weight: 600; line-height: 1.2;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: background .25s, border-color .25s;
 }
-.card:hover .card-title {
-  background: var(--bg-glass-strong);
-  border-top-color: var(--text-line-strong);
-}
-.card-cat { display: none; }
-.card-arrow {
-  position: absolute; left: 50%; top: 42%; z-index: 2;
-  width: 42px; height: 42px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--accent); color: #fff; font-size: 13px;
-  opacity: 0; transform: translate(-50%, -50%) scale(.4);
-  transition: opacity .25s, transform .4s var(--spring), background-color .3s var(--ease);
-  pointer-events: none; box-shadow: 0 10px 24px rgba(0,0,0,.5);
-}
-.card:hover .card-arrow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-.fav-btn {
-  position: absolute; top: 8px; right: 8px; z-index: 3;
-  width: 30px; height: 30px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: rgba(0,0,0,.55); border: none; color: var(--muted); font-size: 13px; cursor: pointer;
-  opacity: 0; transform: scale(.8);
-  transition: opacity .2s, transform .3s var(--spring), color .2s, background .2s;
-}
-.card:hover .fav-btn, .fav-btn.on { opacity: 1; transform: scale(1); }
+.card:hover .card-title { background: rgba(var(--bg-rgb), .7); }
 .fav-btn.on { color: var(--heart); background: rgba(0,0,0,.7); }
 .fav-btn:hover { transform: scale(1.22); color: var(--heart); }
 .fav-btn.pop i { animation: heartPop .5s var(--spring); }
@@ -1247,89 +1208,41 @@ html.calm .hero-art { transform: none !important; }
    of cinematic. Everything else (colors, layout, transitions of
    opacity and transform) still works — it just runs cleaner.
    ──────────────────────────────── */
-html.perf body::before {
-  display: none;
+html.perf *, html.perf *::before, html.perf *::after {
+  animation-play-state: paused !important;
 }
-html.perf .modal-bg,
-html.perf .modal-bg.open {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  background: rgba(0,0,0,.78);
-  transition: opacity .2s var(--ease);
-}
-html.perf .modal-bg.open .modal {
-  animation: modalIn .25s var(--ease) both;
-}
-html.perf .hero-art::before,
-html.perf .hero-art::after {
-  animation: none;
-  opacity: .55;
-}
-html.perf .card-thumb::after {
-  display: none;
-}
+html.perf body::before,
+html.perf .card-thumb::after,
+html.perf .tool-btn::after, html.perf .cat-btn::after,
+html.perf .hero-tile::after, html.perf .btn::after,
+html.perf .inbox-filter::after, html.perf .nav-arrow::after,
+html.perf .hero-art::before, html.perf .hero-art::after,
+html.perf .mini-heart, html.perf .spark { display: none !important; }
 html.perf .card-title,
 html.perf .card:hover .card-title {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background: rgba(var(--bg-rgb), .78);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: rgba(var(--bg-rgb), .92);
 }
-html.perf .tool-btn::after,
-html.perf .cat-btn::after,
-html.perf .hero-tile::after,
-html.perf .btn::after,
-html.perf .inbox-filter::after,
-html.perf .nav-arrow::after {
-  display: none;
+html.perf .modal-bg, html.perf .modal-bg.open {
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: rgba(0,0,0,.8); transition: opacity .15s;
 }
-html.perf .pixel-icon.pixel-sun .shine,
-html.perf .pixel-icon.pixel-moon .shine,
-html.perf .pixel-icon.pixel-party .dot-1,
-html.perf .pixel-icon.pixel-party .dot-2,
-html.perf .pixel-icon.pixel-party .dot-3,
-html.perf .pixel-icon.pixel-party .dot-4,
-html.perf .pixel-icon.pixel-anim,
-html.perf .pixel-icon.pixel-anim .pixel-pulse,
-html.perf .pixel-icon.pixel-anim .pixel-shimmer,
-html.perf .pixel-icon .steam-1,
-html.perf .pixel-icon .steam-2,
-html.perf .pixel-icon .steam-3 {
-  animation: none;
-}
-html.perf .trend-pill i,
-html.perf .row-section.fav-sec.has-items .row-title i,
-html.perf .play-btn:hover i,
-html.perf .ob-hero-icon {
-  animation: none;
-}
-html.perf .row-scroll {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-html.perf .row-section {
-  animation: none;
-}
-html.perf .card {
-  animation: none;
-}
-html.perf .tool-btn {
-  animation: none;
-}
-html.perf .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-html.perf .hero-tile:hover {
-  transform: translateY(-3px);
-}
-html.perf .cat-btn.active i,
-html.perf .tool-btn:hover i {
-  animation: none;
-}
-html.perf .mini-heart {
-  display: none;
-}
-
+html.perf .modal-bg.open .modal { animation: none; }
+html.perf .hero-art img { transition: none; }
+html.perf .row-scroll { -webkit-mask-image: none; mask-image: none; }
+html.perf .row-section, html.perf .card,
+html.perf .tool-btn, html.perf .hero-body > *,
+html.perf .hero-tiles .hero-tile,
+html.perf .rail, html.perf header,
+html.perf .greet, html.perf .hero { animation: none !important; }
+html.perf .card, html.perf .card-thumb, html.perf .tool-btn,
+html.perf .btn, html.perf .hero-tile, html.perf .play-btn { transition: none !important; }
+html.perf .trend-pill i, html.perf .row-section.fav-sec.has-items .row-title i,
+html.perf .ob-hero-icon, html.perf .update-hero > i { animation: none !important; }
+html.perf .card:hover { transform: none; box-shadow: none; border-color: rgba(var(--accent-rgb), .6); }
+html.perf .card:hover .card-thumb { transform: none; }
+html.perf .pixel-icon * { animation: none !important; }
+html.perf .card-title { -webkit-backdrop-filter: none; backdrop-filter: none; }
 /* ───── REDUCED MOTION (OS-level fallback) ───── */
 @media (prefers-reduced-motion: reduce) {
   html:not(.calm) *, html:not(.calm) *::before, html:not(.calm) *::after {
@@ -1525,7 +1438,7 @@ html.perf .mini-heart {
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.2.1</div>
+        <div class="modal-sub">Oogly Boogly Version 9.2.2</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -2362,6 +2275,7 @@ const assignments = [
 ];
 
 const newsData = [
+  { date: "2026-10-13", title: "v9.2.2 further optimizes Oogly Boogly", body: "v9.2.2 further optimizes Oogly Boogly to ensure the utmost performance on every device." },
   { date: "2026-10-13", title: "v9.2.1 polishes onboarding, caches thumbnails, and stops card flicker", body: "v9.2.1 adds a reduced motion step to the welcome tour, keeps cards permanently mounted so thumbnails don't reload when you scroll back up, and caches every thumbnail lookup so subsequent visits never re-probe for images. New thumbnails you add later are picked up automatically within about a week, or instantly if you clear the thumbnail cache in Settings." },
   { date: "2026-10-13", title: "v9.2.0 adds onboarding and optimizes the experience for low-end hardware", body: "v9.2.0 welcomes new users with a friendly onboarding tour that walks through theme, font, performance, and privacy in about thirty seconds. It also cuts initial memory and GPU work by deferring thumbnail loads until you scroll near them, and adds a Performance mode toggle that trims heavy animations, backdrop blurs, and grain overlays. Plus: the secret 'oblonboard' code inside Settings replays the tour any time." },
   { date: "2026-10-13", title: "v9.1.4 brings polish, sound, and cinematic flourishes", body: "v9.1.4 layers in the cozy touches: animated pixel art (sun, moon, party icons that shine and change color), cinematic hero parallax that moves the art and thumbnail at different rates, heart trails on favorite, animated empty-state icons, slower modal entries, a soft backdrop blur fade, live theme previews in Settings, a spring wobble on switches, a fully custom range slider, and optional soft sound blips on favorite, launch, and toggle." },
@@ -2407,15 +2321,12 @@ const newsData = [
 ];
 
 const UPDATE = {
-  version: '9.2.1',
+  version: '9.2.2',
   date: '2026-10-13',
-  title: 'Oogly Boogly v9.2.1 is here!',
+  title: 'Oogly Boogly v9.2.2 is here!',
   items: [
-    '<b>Reduced motion in onboarding</b> A new step in the welcome tour lets you turn on reduced motion right away — animations across the site are fully disabled when it\'s on. Accessibility made easy.',
-    '<b>Cards stay put</b> Removed the browser optimization that was discarding card content on scroll. Thumbnails now stay rendered even when you scroll past them and come back.',
-    '<b>Persistent thumbnail cache</b> Every thumbnail lookup is now cached on your device. Subsequent visits skip the probe entirely — the site already knows which image belongs to which game.',
-    '<b>Automatic new-thumbnail detection</b> Add a thumbnail for a game that didn\'t have one, and OBL will pick it up automatically within about a week. Or clear the thumbnail cache in Settings to refresh instantly.',
-    '<b>Everything from v9.2.0 included</b> Onboarding, performance mode, deferred probing, and all the polish underneath.',
+    '<b>Improved performance</b> Oogly Boogly is now even faster and more responsive thanks to continuously evolving optimizations to make the experience better.',
+    '<b>Tweaked performance mode</b> Performance mode now tweaks even more core settings of Oogly Boogly behind the scenes to ensure you won\'t experience lag.',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -3405,7 +3316,6 @@ function buildCloakScript() {
           mo.observe(t, { childList: true, characterData: true, subtree: true });
         }
       } catch(e){}
-      setInterval(pinTitle, 500);
       window.addEventListener('load', pinTitle);
       window.addEventListener('pageshow', pinTitle);
     })();
@@ -4012,23 +3922,21 @@ function renderHero() {
 function bindHeroParallax() {
   const hero = document.getElementById('hero');
   const art = document.getElementById('heroArt');
+  let queued = false, mx = 0, my = 0;
   hero.addEventListener('mousemove', e => {
     if (cfg.calm || cfg.perf) return;
-    const r = hero.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    art.style.transform = `translate(${x * -18}px, ${y * -14}px)`;
-    const img = art.querySelector('img');
-    if (img) {
-      img.style.transform =
-        `translate(${x * -8}px, ${y * -6}px) scale(1.05)`;
-    }
+    mx = e.clientX; my = e.clientY;
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      const r = hero.getBoundingClientRect();
+      const x = (mx - r.left) / r.width - 0.5;
+      const y = (my - r.top) / r.height - 0.5;
+      art.style.transform = `translate(${x * -18}px, ${y * -14}px)`;
+    });
   });
-  hero.addEventListener('mouseleave', () => {
-    art.style.transform = '';
-    const img = art.querySelector('img');
-    if (img) img.style.transform = '';
-  });
+  hero.addEventListener('mouseleave', () => { art.style.transform = ''; });
 }
 
 // ──────────────────────────────────────────────
@@ -4557,12 +4465,9 @@ if (seg) {
   });
 
   // Single visibilitychange handler
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-      renderGreet();
-      renderAll();
-    }
-  });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) renderGreet();
+});
 
   // Hourly greeting refresh
   setInterval(renderGreet, 60 * 60 * 1000);
