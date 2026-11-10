@@ -1256,7 +1256,7 @@ html.perf .card { content-visibility: auto; contain-intrinsic-size: auto 120px; 
 <body>
 
 <header>
-  <div class="logo" onclick="filterCat('All')">Oogly Boogly</div>
+  <div class="logo" onclick="filterCat('All')">Scientific Calculator</div>
   <nav id="sidebar"></nav>
   <input id="search" type="text" placeholder="Search games and categories" oninput="onSearchInput(this.value)" autocomplete="off" aria-label="Search games and categories"/>
 </header>
@@ -1285,7 +1285,7 @@ html.perf .card { content-visibility: auto; contain-intrinsic-size: auto 120px; 
     <button class="tool-btn" title="Settings" aria-label="Open settings" onclick="openModal('settingsModal')">
       <i class="fa-solid fa-gear"></i><span>Settings</span>
     </button>
-    <button class="tool-btn" title="About" aria-label="About Oogly Boogly" onclick="openModal('aboutModal')">
+    <button class="tool-btn" title="About" aria-label="About Scientific Calculator" onclick="openModal('aboutModal')">
       <i class="fa-regular fa-circle-question"></i><span>About</span>
     </button>
   </aside>
@@ -1326,7 +1326,7 @@ html.perf .card { content-visibility: auto; contain-intrinsic-size: auto 120px; 
   <div class="modal update-modal">
     <div class="update-hero">
       <i class="fa-solid fa-wand-magic-sparkles"></i>
-      <span class="update-hero-label">Oogly Boogly Update</span>
+      <span class="update-hero-label">Scientific Calculator Update</span>
     </div>
     <div class="update-meta">
       <span class="pill" id="updVersion"></span>
@@ -1400,11 +1400,11 @@ html.perf .card { content-visibility: auto; contain-intrinsic-size: auto 120px; 
     <div class="modal-head">
       <div>
         <div class="modal-title">About</div>
-        <div class="modal-sub">Oogly Boogly Version 9.2.2</div>
+        <div class="modal-sub">Scientific Calculator Version 9.3.0</div>
       </div>
       <button class="modal-close" onclick="closeModal('aboutModal')" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <p class="about-p">Oogly Boogly makes assignments easy, with a simple, easy to use portal for your assignments.</p>
+    <p class="about-p">Scientific Calculator makes calculations easy, with a simple, easy to use interface for your mathematical needs.</p>
     <p class="about-p">Use the <strong>Settings</strong> menu to pick a theme, tune recommendations, and swap typefaces — plus a quick and easy <strong>Save</strong> system to back up your progress to a single file.</p>
   </div>
 </div>
@@ -1768,8 +1768,8 @@ html.perf .card { content-visibility: auto; contain-intrinsic-size: auto 120px; 
           <i class="fa-solid fa-wand-magic-sparkles" style="font-size:24px; color:var(--accent);"></i>
         </div>
         <div class="ob-hero-text">
-          <div class="ob-title">Welcome to Oogly Boogly</div>
-          <div class="ob-sub">Your portal to fun things everyday</div>
+          <div class="ob-title">Welcome to Scientific Calculator</div>
+          <div class="ob-sub">Your portal to calculations everyday</div>
         </div>
       </div>
       <div class="ob-body">
@@ -2239,8 +2239,8 @@ const assignments = [
 
 const newsData = [
   { date: "2026-10-14", title: "v9.2.4 adds AI Fortnite! Get ready to play!", body: "v9.2.4 adds AI Fortnite, so you can experience Fortnite in your browser." },
-  { date: "2026-10-14", title: "v9.2.3 optimizes Oogly Boogly even more...", body: "v9.2.3 optimizes Oogly Boogly more to ensure the best experience, and making it more accessible." },
-  { date: "2026-10-13", title: "v9.2.2 further optimizes Oogly Boogly", body: "v9.2.2 further optimizes Oogly Boogly to ensure the utmost performance on every device." },
+  { date: "2026-10-14", title: "v9.2.3 optimizes Scientific Calculator even more...", body: "v9.2.3 optimizes Scientific Calculator more to ensure the best experience, and making it more accessible." },
+  { date: "2026-10-13", title: "v9.2.2 further optimizes Scientific Calculator", body: "v9.2.2 further optimizes Scientific Calculator to ensure the utmost performance on every device." },
   { date: "2026-10-13", title: "v9.2.1 polishes onboarding, caches thumbnails, and stops card flicker", body: "v9.2.1 adds a reduced motion step to the welcome tour, keeps cards permanently mounted so thumbnails don't reload when you scroll back up, and caches every thumbnail lookup so subsequent visits never re-probe for images. New thumbnails you add later are picked up automatically within about a week, or instantly if you clear the thumbnail cache in Settings." },
   { date: "2026-10-13", title: "v9.2.0 adds onboarding and optimizes the experience for low-end hardware", body: "v9.2.0 welcomes new users with a friendly onboarding tour that walks through theme, font, performance, and privacy in about thirty seconds. It also cuts initial memory and GPU work by deferring thumbnail loads until you scroll near them, and adds a Performance mode toggle that trims heavy animations, backdrop blurs, and grain overlays. Plus: the secret 'oblonboard' code inside Settings replays the tour any time." },
   { date: "2026-10-13", title: "v9.1.4 brings polish, sound, and cinematic flourishes", body: "v9.1.4 layers in the cozy touches: animated pixel art (sun, moon, party icons that shine and change color), cinematic hero parallax that moves the art and thumbnail at different rates, heart trails on favorite, animated empty-state icons, slower modal entries, a soft backdrop blur fade, live theme previews in Settings, a spring wobble on switches, a fully custom range slider, and optional soft sound blips on favorite, launch, and toggle." },
@@ -2288,9 +2288,9 @@ const newsData = [
 const UPDATE = {
   version: '9.2.3',
   date: '2026-10-14',
-  title: 'Oogly Boogly v9.2.4 is here!',
+  title: 'Scientific Calculator v9.3.0 is here!',
   items: [
-    '<b>New Assignment</b> Oogly Boogly has just added AI Fortnite!',
+    '<b>Updates to Scientific Calculator</b> Scientific Calculator has just updated its system to include new features, and a new name (Scientific Calculator)!',
   ]
 };
 const UPDATE_KEY = 'obl_update_seen';
@@ -3505,7 +3505,7 @@ const GREETINGS = {
       'Fresh coffee energy', 'First light, first click', 'A.M. energy',
       'The morning is yours', 'Starting the day right', 'Sun up, screens up',
       'Good morning from the pixel world', 'Coffee, then games',
-      'You, coffee, and Oogly', 'Dawn patrol', 'Welcome to the A.M.',
+      'Yes, it\'s morning', 'Dawn patrol', 'Welcome to the A.M.',
       'Fresh day, fresh start', 'Here we go again'
     ]
   },
